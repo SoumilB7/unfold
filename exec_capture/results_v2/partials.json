@@ -460,6 +460,76 @@
   "level": "REAL"
  },
  {
+  "repo": "microsoft/layoutlmv3-base",
+  "category": "encoder_only",
+  "class": "LayoutLMv3Model",
+  "causes": [
+   [
+    "T1",
+    "unused_path_not_run",
+    "GAP?",
+    "patch_embed.proj",
+    590592
+   ],
+   [
+    "T1",
+    "unused_weight_module_ran",
+    "REAL",
+    "(root)",
+    152064
+   ],
+   [
+    "T1",
+    "unused_path_not_run",
+    "GAP?",
+    "LayerNorm",
+    1536
+   ],
+   [
+    "T1",
+    "unused_path_not_run",
+    "GAP?",
+    "norm",
+    1536
+   ],
+   [
+    "T2",
+    "path_not_run",
+    "GAP?",
+    "LayerNorm",
+    1
+   ],
+   [
+    "T2",
+    "path_not_run",
+    "GAP?",
+    "norm",
+    1
+   ],
+   [
+    "T2",
+    "path_not_run",
+    "GAP?",
+    "patch_embed",
+    1
+   ],
+   [
+    "T2",
+    "path_not_run",
+    "GAP?",
+    "patch_embed.proj",
+    1
+   ]
+  ],
+  "failed_passes": {},
+  "input_notes": [
+   "input construction: ValueError: Words must be of type `List[str]` (single pretokenized example), or `List[List[str]]` (batch of pretokenized examples).",
+   "no processor-built input path for this model's forward(): synthesized inputs will be tried",
+   "inputs synthesized by argument name (latent=image,text=None); processor-built passes all failed"
+  ],
+  "level": "UNCLEAR"
+ },
+ {
   "repo": "kssteven/ibert-roberta-base",
   "category": "encoder_only",
   "class": "IBertForMaskedLM",
@@ -475,6 +545,76 @@
   "failed_passes": {},
   "input_notes": [],
   "level": "REAL"
+ },
+ {
+  "repo": "microsoft/layoutlmv3-large",
+  "category": "encoder_only",
+  "class": "LayoutLMv3Model",
+  "causes": [
+   [
+    "T1",
+    "unused_weight_module_ran",
+    "REAL",
+    "layoutlmv3.patch_embed.proj",
+    787456
+   ],
+   [
+    "T1",
+    "unused_weight_module_ran",
+    "REAL",
+    "layoutlmv3",
+    202752
+   ],
+   [
+    "T1",
+    "unused_weight_module_ran",
+    "REAL",
+    "layoutlmv3.LayerNorm",
+    2048
+   ],
+   [
+    "T1",
+    "unused_weight_module_ran",
+    "REAL",
+    "layoutlmv3.norm",
+    2048
+   ],
+   [
+    "T2",
+    "path_not_run",
+    "GAP?",
+    "LayerNorm",
+    1
+   ],
+   [
+    "T2",
+    "path_not_run",
+    "GAP?",
+    "norm",
+    1
+   ],
+   [
+    "T2",
+    "path_not_run",
+    "GAP?",
+    "patch_embed",
+    1
+   ],
+   [
+    "T2",
+    "path_not_run",
+    "GAP?",
+    "patch_embed.proj",
+    1
+   ]
+  ],
+  "failed_passes": {},
+  "input_notes": [
+   "input construction: ValueError: Words must be of type `List[str]` (single pretokenized example), or `List[List[str]]` (batch of pretokenized examples).",
+   "no processor-built input path for this model's forward(): synthesized inputs will be tried",
+   "inputs synthesized by argument name (latent=image,text=None); processor-built passes all failed"
+  ],
+  "level": "UNCLEAR"
  },
  {
   "repo": "microsoft/deberta-v3-small",
@@ -1427,6 +1567,92 @@
    "image input via processor+text"
   ],
   "level": "REAL"
+ },
+ {
+  "repo": "google/diffusiongemma-26B-A4B-it",
+  "category": "vision_language",
+  "class": "DiffusionGemmaForBlockDiffusion",
+  "causes": [
+   [
+    "T1",
+    "unused_path_not_run",
+    "GAP",
+    "model.encoder.vision_tower.encoder.layers.*.mlp.down_proj.linear",
+    133871616
+   ],
+   [
+    "T1",
+    "unused_path_not_run",
+    "GAP",
+    "model.encoder.vision_tower.encoder.layers.*.mlp.gate_proj.linear",
+    133871616
+   ],
+   [
+    "T1",
+    "unused_path_not_run",
+    "GAP",
+    "model.encoder.vision_tower.encoder.layers.*.mlp.up_proj.linear",
+    133871616
+   ],
+   [
+    "T1",
+    "unused_path_not_run",
+    "GAP",
+    "model.encoder.vision_tower.encoder.layers.*.self_attn.k_proj.linear",
+    35831808
+   ],
+   [
+    "T1",
+    "unused_path_not_run",
+    "GAP",
+    "model.encoder.vision_tower.encoder.layers.*.self_attn.o_proj.linear",
+    35831808
+   ],
+   [
+    "T2",
+    "path_not_run",
+    "GAP",
+    "model.encoder.vision_tower.encoder.layers.N",
+    27
+   ],
+   [
+    "T2",
+    "path_not_run",
+    "GAP",
+    "model.encoder.vision_tower.encoder.layers.N.input_layernorm",
+    27
+   ],
+   [
+    "T2",
+    "path_not_run",
+    "GAP",
+    "model.encoder.vision_tower.encoder.layers.N.mlp",
+    27
+   ],
+   [
+    "T2",
+    "path_not_run",
+    "GAP",
+    "model.encoder.vision_tower.encoder.layers.N.mlp.down_proj",
+    27
+   ],
+   [
+    "input",
+    "modality_pass_failed",
+    "GAP",
+    "audio: ValueError: The decoder of DiffusionGemma always uses a cache, so it d",
+    0
+   ]
+  ],
+  "failed_passes": {
+   "text": "ValueError: The decoder of DiffusionGemma always uses a cache, so it doesn't accept the `u",
+   "audio": "ValueError: The decoder of DiffusionGemma always uses a cache, so it doesn't accept the `u",
+   "generate": "RuntimeError: The size of tensor a (39) must match the size of tensor b (17) at non-single"
+  },
+  "input_notes": [
+   "inputs synthesized by argument name (latent=image,text=None); processor-built passes all failed"
+  ],
+  "level": "GAP"
  },
  {
   "repo": "microsoft/Florence-2-base",
@@ -2549,6 +2775,36 @@
   },
   "input_notes": [],
   "level": "GAP"
+ },
+ {
+  "repo": "google/reformer-enwik8",
+  "category": "text_decoder",
+  "class": "ReformerModelWithLMHead",
+  "causes": [
+   [
+    "T1",
+    "ckpt_part_class_lacks",
+    "REAL",
+    "lm_head.decoder",
+    258
+   ],
+   [
+    "T1",
+    "unused_weight_module_ran",
+    "REAL",
+    "lm_head",
+    258
+   ]
+  ],
+  "failed_passes": {
+   "generate": "ValueError: `bos_token_id` has to be defined when no `input_ids` are provided."
+  },
+  "input_notes": [
+   "input construction: Exception: Unk token `<unk>` not found in the vocabulary",
+   "no processor-built input path for this model's forward(): synthesized inputs will be tried",
+   "inputs synthesized by argument name (latent=image,text=None); processor-built passes all failed"
+  ],
+  "level": "REAL"
  },
  {
   "repo": "l0ulan/chinese-babylm-nanochat-d22-step10000",
@@ -3752,74 +4008,11 @@
     0
    ],
    [
-    "T5",
-    "input_dependent",
+    "T1",
+    "unused_weight_module_ran",
     "REAL",
-    "vae: None vs None",
-    0
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "vocoder: resblocks.*.convs1.*",
-    22007520
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "vocoder: resblocks.*.convs2.*",
-    22007520
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "vocoder: upsampler.*",
-    10789856
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "vocoder: conv_pre",
-    459776
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "vocoder: resblocks.N.convs1.N",
-    45
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "vocoder: resblocks.N.convs2.N",
-    45
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "vocoder: resblocks.N",
-    15
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "vocoder: upsampler.N",
-    5
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "vocoder: None vs None",
-    0
+    "vocoder: (root)",
+    128
    ]
   ],
   "failed_passes": {},
@@ -3842,86 +4035,6 @@
   "failed_passes": {},
   "input_notes": [],
   "level": "REAL"
- },
- {
-  "repo": "VisualCloze/VisualClozePipeline-512",
-  "category": "image_diffusion",
-  "class": "VisualClozePipeline",
-  "causes": [
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "transformer: single_transformer_blocks.*.proj_out",
-    1793181696
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "transformer: single_transformer_blocks.*.proj_mlp",
-    1434918912
-   ],
-   [
-    "T1",
-    "unused_weight_module_ran",
-    "REAL",
-    "transformer: transformer_blocks.*.norm1.linear",
-    1076189184
-   ],
-   [
-    "T1",
-    "unused_weight_module_ran",
-    "REAL",
-    "transformer: transformer_blocks.*.norm1_context.linear",
-    1076189184
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "transformer: single_transformer_blocks.N",
-    38
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "transformer: single_transformer_blocks.N.attn",
-    38
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "transformer: single_transformer_blocks.N.attn.norm_k",
-    38
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "transformer: single_transformer_blocks.N.attn.norm_q",
-    38
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "transformer: None vs None",
-    0
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "vae: None vs None",
-    0
-   ]
-  ],
-  "failed_passes": {},
-  "input_notes": [],
-  "level": "UNCLEAR"
  },
  {
   "repo": "Shitao/OmniGen-v1-diffusers",
@@ -4009,69 +4122,6 @@
     32
    ],
    [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "transformer: transformer_blocks.*.ff.net.*.proj",
-    1359396864
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "transformer: transformer_blocks.*.ff.net.*",
-    1359065088
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "transformer: transformer_blocks.*.txt_ff.net.*.proj",
-    679698432
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "transformer: transformer_blocks.*.txt_ff.net.*",
-    679532544
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "transformer: transformer_blocks.N.ff.net.N",
-    72
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "transformer: transformer_blocks.N",
-    36
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "transformer: transformer_blocks.N.attn1",
-    36
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "transformer: transformer_blocks.N.attn1.norm_k",
-    36
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "transformer: None vs None",
-    0
-   ],
-   [
     "T5",
     "input_dependent",
     "REAL",
@@ -4092,29 +4142,29 @@
     "T1",
     "unused_weight_module_ran",
     "REAL",
-    "text_encoder: model.layers.*.mlp.down_proj",
-    1901068288
+    "text_encoder: visual.blocks.*.mlp.fc1",
+    209879040
    ],
    [
     "T1",
     "unused_weight_module_ran",
     "REAL",
-    "text_encoder: model.layers.*.mlp.gate_proj",
-    1901068288
+    "text_encoder: visual.blocks.*.mlp.fc2",
+    209756160
    ],
    [
     "T1",
     "unused_weight_module_ran",
     "REAL",
-    "text_encoder: model.layers.*.mlp.up_proj",
-    1901068288
+    "text_encoder: visual.blocks.*.attn.qkv",
+    157409280
    ],
    [
     "T1",
     "unused_weight_module_ran",
     "REAL",
-    "text_encoder: model.embed_tokens",
-    544997376
+    "text_encoder: visual.blocks.*.attn.proj",
+    52469760
    ],
    [
     "T2",
@@ -4143,13 +4193,6 @@
     "GAP?",
     "text_encoder: model.visual.blocks.N.attn.qkv",
     32
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "text_encoder: None vs None",
-    0
    ],
    [
     "T1",
@@ -4395,69 +4438,6 @@
     "T1",
     "unused_path_not_run",
     "GAP?",
-    "controlnet: down_blocks.*.resnets.*.conv2",
-    68205440
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "controlnet: down_blocks.*.resnets.*.conv1",
-    58989440
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "controlnet: down_blocks.*.attentions.*.transformer_blocks.*.ff.net.*.proj",
-    34442240
-   ],
-   [
-    "T1",
-    "unused_weight_module_ran",
-    "REAL",
-    "controlnet: mid_block.resnets.*.conv1",
-    29493760
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "controlnet: controlnet_down_blocks.N",
-    12
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "controlnet: down_blocks.N.attentions.N.transformer_blocks.N.ff.net.N",
-    12
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "controlnet: down_blocks.N.resnets.N",
-    8
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "controlnet: down_blocks.N.resnets.N.conv1",
-    8
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "controlnet: None vs None",
-    0
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
     "qformer: visual_encoder.encoder.layers.*.mlp.fc1",
     96563200
    ],
@@ -4515,139 +4495,6 @@
     "input_dependent",
     "REAL",
     "qformer: None vs None",
-    0
-   ],
-   [
-    "T1",
-    "unused_weight_module_ran",
-    "REAL",
-    "text_encoder: text_model.embeddings.token_embedding",
-    37945344
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "text_encoder: text_model.encoder.layers.*.mlp.fc1",
-    28348416
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "text_encoder: text_model.encoder.layers.*.mlp.fc2",
-    28320768
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "text_encoder: text_model.encoder.layers.*.self_attn.k_proj",
-    7087104
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "text_encoder: text_model.encoder.layers.N",
-    12
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "text_encoder: text_model.encoder.layers.N.layer_norm1",
-    12
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "text_encoder: text_model.encoder.layers.N.layer_norm2",
-    12
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "text_encoder: text_model.encoder.layers.N.mlp",
-    12
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "text_encoder: None vs None",
-    0
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "unet: up_blocks.*.resnets.*.conv1",
-    199997760
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "unet: up_blocks.*.resnets.*.conv2",
-    102308160
-   ],
-   [
-    "T1",
-    "unused_weight_module_ran",
-    "REAL",
-    "unet: down_blocks.*.resnets.*.conv2",
-    68205440
-   ],
-   [
-    "T1",
-    "unused_weight_module_ran",
-    "REAL",
-    "unet: down_blocks.*.resnets.*.conv1",
-    58989440
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "unet: up_blocks.N.attentions.N.transformer_blocks.N.ff.net.N",
-    18
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "unet: down_blocks.N.attentions.N.transformer_blocks.N.ff.net.N",
-    12
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "unet: up_blocks.N.resnets.N",
-    12
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "unet: up_blocks.N.resnets.N.conv1",
-    12
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "unet: None vs None",
-    0
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "vae: None vs None",
     0
    ]
   ],
@@ -4725,243 +4572,6 @@
   "repo": "alibaba-pai/EasyAnimateV5.1-12b-zh-Control-Camera",
   "category": "image_diffusion",
   "class": "EasyAnimateControlPipeline",
-  "causes": [
-   [
-    "T1",
-    "unused_weight_module_ran",
-    "REAL",
-    "text_encoder: model.layers.*.mlp.down_proj",
-    1901068288
-   ],
-   [
-    "T1",
-    "unused_weight_module_ran",
-    "REAL",
-    "text_encoder: model.layers.*.mlp.gate_proj",
-    1901068288
-   ],
-   [
-    "T1",
-    "unused_weight_module_ran",
-    "REAL",
-    "text_encoder: model.layers.*.mlp.up_proj",
-    1901068288
-   ],
-   [
-    "T1",
-    "unused_weight_module_ran",
-    "REAL",
-    "text_encoder: model.embed_tokens",
-    544997376
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "text_encoder: model.visual.blocks.N",
-    32
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "text_encoder: model.visual.blocks.N.attn",
-    32
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "text_encoder: model.visual.blocks.N.attn.proj",
-    32
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "text_encoder: model.visual.blocks.N.attn.qkv",
-    32
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "text_encoder: None vs None",
-    0
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "transformer: transformer_blocks.*.ff.net.*.proj",
-    1812529152
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "transformer: transformer_blocks.*.txt_ff.net.*.proj",
-    1812529152
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "transformer: transformer_blocks.*.ff.net.*",
-    1812086784
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "transformer: transformer_blocks.*.txt_ff.net.*",
-    1812086784
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "transformer: transformer_blocks.N.ff.net.N",
-    96
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "transformer: transformer_blocks.N.txt_ff.net.N",
-    96
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "transformer: transformer_blocks.N",
-    48
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "transformer: transformer_blocks.N.attn1",
-    48
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "transformer: None vs None",
-    0
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "vae: None vs None",
-    0
-   ]
-  ],
-  "failed_passes": {},
-  "input_notes": [],
-  "level": "UNCLEAR"
- },
- {
-  "repo": "diffusers/stable-diffusion-2-1-unclip-t2i-h",
-  "category": "image_diffusion",
-  "class": "StableUnCLIPPipeline",
-  "causes": [
-   [
-    "T1",
-    "unused_weight_module_ran",
-    "REAL",
-    "image_normalizer: (root)",
-    2048
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "image_normalizer: None vs None",
-    0
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "unet: up_blocks.*.resnets.*.conv1",
-    199997760
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "unet: up_blocks.*.resnets.*.conv2",
-    102308160
-   ],
-   [
-    "T1",
-    "unused_weight_module_ran",
-    "REAL",
-    "unet: down_blocks.*.resnets.*.conv2",
-    68205440
-   ],
-   [
-    "T1",
-    "unused_weight_module_ran",
-    "REAL",
-    "unet: down_blocks.*.resnets.*.conv1",
-    58989440
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "unet: up_blocks.N.attentions.N.transformer_blocks.N.ff.net.N",
-    18
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "unet: down_blocks.N.attentions.N.transformer_blocks.N.ff.net.N",
-    12
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "unet: up_blocks.N.resnets.N",
-    12
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "unet: up_blocks.N.resnets.N.conv1",
-    12
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "unet: None vs None",
-    0
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "vae: None vs None",
-    0
-   ]
-  ],
-  "failed_passes": {},
-  "input_notes": [],
-  "level": "UNCLEAR"
- },
- {
-  "repo": "alibaba-pai/EasyAnimateV5.1-12b-zh",
-  "category": "image_diffusion",
-  "class": "EasyAnimatePipeline",
   "causes": [
    [
     "T1",
@@ -5081,6 +4691,79 @@
     "REAL",
     "transformer: None vs None",
     0
+   ],
+   [
+    "T5",
+    "input_dependent",
+    "REAL",
+    "vae: None vs None",
+    0
+   ]
+  ],
+  "failed_passes": {},
+  "input_notes": [],
+  "level": "UNCLEAR"
+ },
+ {
+  "repo": "alibaba-pai/EasyAnimateV5.1-12b-zh",
+  "category": "image_diffusion",
+  "class": "EasyAnimatePipeline",
+  "causes": [
+   [
+    "T1",
+    "unused_weight_module_ran",
+    "REAL",
+    "text_encoder: visual.blocks.*.mlp.fc1",
+    209879040
+   ],
+   [
+    "T1",
+    "unused_weight_module_ran",
+    "REAL",
+    "text_encoder: visual.blocks.*.mlp.fc2",
+    209756160
+   ],
+   [
+    "T1",
+    "unused_weight_module_ran",
+    "REAL",
+    "text_encoder: visual.blocks.*.attn.qkv",
+    157409280
+   ],
+   [
+    "T1",
+    "unused_weight_module_ran",
+    "REAL",
+    "text_encoder: visual.blocks.*.attn.proj",
+    52469760
+   ],
+   [
+    "T2",
+    "path_not_run",
+    "GAP?",
+    "text_encoder: model.visual.blocks.N",
+    32
+   ],
+   [
+    "T2",
+    "path_not_run",
+    "GAP?",
+    "text_encoder: model.visual.blocks.N.attn",
+    32
+   ],
+   [
+    "T2",
+    "path_not_run",
+    "GAP?",
+    "text_encoder: model.visual.blocks.N.attn.proj",
+    32
+   ],
+   [
+    "T2",
+    "path_not_run",
+    "GAP?",
+    "text_encoder: model.visual.blocks.N.attn.qkv",
+    32
    ],
    [
     "T5",
@@ -5399,13 +5082,6 @@
     256
    ],
    [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "audio_vae: None vs None",
-    0
-   ],
-   [
     "T1",
     "unused_weight_module_ran",
     "REAL",
@@ -5472,64 +5148,57 @@
     "T1",
     "unused_weight_module_ran",
     "REAL",
-    "text_encoder: language_model.model.layers.*.mlp.down_proj",
-    2831155200
+    "text_encoder: vision_tower.vision_model.encoder.layers.*.mlp.fc1",
+    133987824
    ],
    [
     "T1",
     "unused_weight_module_ran",
     "REAL",
-    "text_encoder: language_model.model.layers.*.mlp.gate_proj",
-    2831155200
+    "text_encoder: vision_tower.vision_model.encoder.layers.*.mlp.fc2",
+    133902720
    ],
    [
     "T1",
     "unused_weight_module_ran",
     "REAL",
-    "text_encoder: language_model.model.layers.*.mlp.up_proj",
-    2831155200
+    "text_encoder: vision_tower.vision_model.encoder.layers.*.self_attn.k_proj",
+    35862912
    ],
    [
     "T1",
     "unused_weight_module_ran",
     "REAL",
-    "text_encoder: language_model.model.embed_tokens",
-    1006878720
+    "text_encoder: vision_tower.vision_model.encoder.layers.*.self_attn.out_proj",
+    35862912
    ],
    [
     "T2",
     "path_not_run",
     "GAP?",
-    "text_encoder: model.language_model.layers.N",
-    48
+    "text_encoder: model.vision_tower.encoder.layers.N",
+    27
    ],
    [
     "T2",
     "path_not_run",
     "GAP?",
-    "text_encoder: model.language_model.layers.N.input_layernorm",
-    48
+    "text_encoder: model.vision_tower.encoder.layers.N.layer_norm1",
+    27
    ],
    [
     "T2",
     "path_not_run",
     "GAP?",
-    "text_encoder: model.language_model.layers.N.mlp",
-    48
+    "text_encoder: model.vision_tower.encoder.layers.N.layer_norm2",
+    27
    ],
    [
     "T2",
     "path_not_run",
     "GAP?",
-    "text_encoder: model.language_model.layers.N.mlp.down_proj",
-    48
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "text_encoder: None vs None",
-    0
+    "text_encoder: model.vision_tower.encoder.layers.N.mlp",
+    27
    ],
    [
     "T1",
@@ -5850,136 +5519,17 @@
   "causes": [
    [
     "T1",
-    "unused_weight_module_ran",
-    "REAL",
-    "safety_checker: vision_model.vision_model.encoder.layers.*.mlp.fc1",
-    100761600
-   ],
-   [
-    "T1",
-    "unused_weight_module_ran",
-    "REAL",
-    "safety_checker: vision_model.vision_model.encoder.layers.*.mlp.fc2",
-    100687872
-   ],
-   [
-    "T1",
-    "unused_weight_module_ran",
-    "REAL",
-    "safety_checker: vision_model.vision_model.encoder.layers.*.self_attn.k_proj",
-    25190400
-   ],
-   [
-    "T1",
-    "unused_weight_module_ran",
-    "REAL",
-    "safety_checker: vision_model.vision_model.encoder.layers.*.self_attn.v_proj",
-    25190400
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "safety_checker: vision_model.encoder.layers.N",
-    24
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "safety_checker: vision_model.encoder.layers.N.layer_norm1",
-    24
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "safety_checker: vision_model.encoder.layers.N.layer_norm2",
-    24
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "safety_checker: vision_model.encoder.layers.N.mlp",
-    24
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "safety_checker: None vs None",
-    0
-   ],
-   [
-    "T1",
     "unused_path_not_run",
     "GAP?",
-    "unet: up_blocks.*.resnets.*.conv1",
-    199997760
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "unet: up_blocks.*.resnets.*.conv2",
-    102308160
-   ],
-   [
-    "T1",
-    "unused_weight_module_ran",
-    "REAL",
-    "unet: down_blocks.*.resnets.*.conv2",
-    68205440
-   ],
-   [
-    "T1",
-    "unused_weight_module_ran",
-    "REAL",
-    "unet: down_blocks.*.resnets.*.conv1",
-    58989440
+    "text_encoder: transformation",
+    1049600
    ],
    [
     "T2",
     "path_not_run",
     "GAP?",
-    "unet: up_blocks.N.attentions.N.transformer_blocks.N.ff.net.N",
-    18
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "unet: down_blocks.N.attentions.N.transformer_blocks.N.ff.net.N",
-    12
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "unet: up_blocks.N.resnets.N",
-    12
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "unet: up_blocks.N.resnets.N.conv1",
-    12
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "unet: None vs None",
-    0
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "vae: None vs None",
-    0
+    "text_encoder: transformation",
+    1
    ]
   ],
   "failed_passes": {},
@@ -6014,190 +5564,6 @@
     "REAL",
     "vocoder: (root)",
     128
-   ]
-  ],
-  "failed_passes": {},
-  "input_notes": [],
-  "level": "REAL"
- },
- {
-  "repo": "Fantasy-Studio/Paint-by-Example",
-  "category": "image_diffusion",
-  "class": "PaintByExamplePipeline",
-  "causes": [
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "unet: up_blocks.*.resnets.*.conv1",
-    199997760
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "unet: up_blocks.*.resnets.*.conv2",
-    102308160
-   ],
-   [
-    "T1",
-    "unused_weight_module_ran",
-    "REAL",
-    "unet: down_blocks.*.resnets.*.conv2",
-    68205440
-   ],
-   [
-    "T1",
-    "unused_weight_module_ran",
-    "REAL",
-    "unet: down_blocks.*.resnets.*.conv1",
-    58989440
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "unet: up_blocks.N.attentions.N.transformer_blocks.N.ff.net.N",
-    18
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "unet: down_blocks.N.attentions.N.transformer_blocks.N.ff.net.N",
-    12
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "unet: up_blocks.N.resnets.N",
-    12
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "unet: up_blocks.N.resnets.N.conv1",
-    12
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "unet: None vs None",
-    0
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "vae: None vs None",
-    0
-   ]
-  ],
-  "failed_passes": {},
-  "input_notes": [],
-  "level": "UNCLEAR"
- },
- {
-  "repo": "VisualCloze/VisualClozePipeline-384",
-  "category": "image_diffusion",
-  "class": "VisualClozePipeline",
-  "causes": [
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "transformer: single_transformer_blocks.*.proj_out",
-    1793181696
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "transformer: single_transformer_blocks.*.proj_mlp",
-    1434918912
-   ],
-   [
-    "T1",
-    "unused_weight_module_ran",
-    "REAL",
-    "transformer: transformer_blocks.*.norm1.linear",
-    1076189184
-   ],
-   [
-    "T1",
-    "unused_weight_module_ran",
-    "REAL",
-    "transformer: transformer_blocks.*.norm1_context.linear",
-    1076189184
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "transformer: single_transformer_blocks.N",
-    38
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "transformer: single_transformer_blocks.N.attn",
-    38
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "transformer: single_transformer_blocks.N.attn.norm_k",
-    38
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "transformer: single_transformer_blocks.N.attn.norm_q",
-    38
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "transformer: None vs None",
-    0
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "vae: None vs None",
-    0
-   ]
-  ],
-  "failed_passes": {},
-  "input_notes": [],
-  "level": "UNCLEAR"
- },
- {
-  "repo": "diffusers/stable-diffusion-2-1-unclip-t2i-l",
-  "category": "image_diffusion",
-  "class": "StableUnCLIPPipeline",
-  "causes": [
-   [
-    "T1",
-    "unused_weight_module_ran",
-    "REAL",
-    "image_normalizer: (root)",
-    768
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "image_normalizer: None vs None",
-    0
    ]
   ],
   "failed_passes": {},
@@ -6367,74 +5733,11 @@
     0
    ],
    [
-    "T5",
-    "input_dependent",
+    "T1",
+    "unused_weight_module_ran",
     "REAL",
-    "vae: None vs None",
-    0
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "vocoder: resblocks.*.convs1.*",
-    22007520
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "vocoder: resblocks.*.convs2.*",
-    22007520
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "vocoder: upsampler.*",
-    10789856
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "vocoder: conv_pre",
-    459776
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "vocoder: resblocks.N.convs1.N",
-    45
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "vocoder: resblocks.N.convs2.N",
-    45
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "vocoder: resblocks.N",
-    15
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "vocoder: upsampler.N",
-    5
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "vocoder: None vs None",
-    0
+    "vocoder: (root)",
+    128
    ]
   ],
   "failed_passes": {},
@@ -6508,139 +5811,6 @@
     "REAL",
     "qformer: None vs None",
     0
-   ],
-   [
-    "T1",
-    "unused_weight_module_ran",
-    "REAL",
-    "text_encoder: text_model.embeddings.token_embedding",
-    37945344
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "text_encoder: text_model.encoder.layers.*.mlp.fc1",
-    28348416
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "text_encoder: text_model.encoder.layers.*.mlp.fc2",
-    28320768
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "text_encoder: text_model.encoder.layers.*.self_attn.k_proj",
-    7087104
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "text_encoder: text_model.encoder.layers.N",
-    12
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "text_encoder: text_model.encoder.layers.N.layer_norm1",
-    12
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "text_encoder: text_model.encoder.layers.N.layer_norm2",
-    12
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "text_encoder: text_model.encoder.layers.N.mlp",
-    12
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "text_encoder: None vs None",
-    0
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "unet: up_blocks.*.resnets.*.conv1",
-    199997760
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "unet: up_blocks.*.resnets.*.conv2",
-    102308160
-   ],
-   [
-    "T1",
-    "unused_weight_module_ran",
-    "REAL",
-    "unet: down_blocks.*.resnets.*.conv2",
-    68205440
-   ],
-   [
-    "T1",
-    "unused_weight_module_ran",
-    "REAL",
-    "unet: down_blocks.*.resnets.*.conv1",
-    58989440
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "unet: up_blocks.N.attentions.N.transformer_blocks.N.ff.net.N",
-    18
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "unet: down_blocks.N.attentions.N.transformer_blocks.N.ff.net.N",
-    12
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "unet: up_blocks.N.resnets.N",
-    12
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "unet: up_blocks.N.resnets.N.conv1",
-    12
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "unet: None vs None",
-    0
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "vae: None vs None",
-    0
    ]
   ],
   "failed_passes": {},
@@ -6669,69 +5839,6 @@
   "category": "image_diffusion",
   "class": "BlipDiffusionControlNetPipeline",
   "causes": [
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "controlnet: down_blocks.*.resnets.*.conv2",
-    68205440
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "controlnet: down_blocks.*.resnets.*.conv1",
-    58989440
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "controlnet: down_blocks.*.attentions.*.transformer_blocks.*.ff.net.*.proj",
-    34442240
-   ],
-   [
-    "T1",
-    "unused_weight_module_ran",
-    "REAL",
-    "controlnet: mid_block.resnets.*.conv1",
-    29493760
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "controlnet: controlnet_down_blocks.N",
-    12
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "controlnet: down_blocks.N.attentions.N.transformer_blocks.N.ff.net.N",
-    12
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "controlnet: down_blocks.N.resnets.N",
-    8
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "controlnet: down_blocks.N.resnets.N.conv1",
-    8
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "controlnet: None vs None",
-    0
-   ],
    [
     "T1",
     "unused_path_not_run",
@@ -6793,139 +5900,6 @@
     "input_dependent",
     "REAL",
     "qformer: None vs None",
-    0
-   ],
-   [
-    "T1",
-    "unused_weight_module_ran",
-    "REAL",
-    "text_encoder: text_model.embeddings.token_embedding",
-    37945344
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "text_encoder: text_model.encoder.layers.*.mlp.fc1",
-    28348416
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "text_encoder: text_model.encoder.layers.*.mlp.fc2",
-    28320768
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "text_encoder: text_model.encoder.layers.*.self_attn.k_proj",
-    7087104
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "text_encoder: text_model.encoder.layers.N",
-    12
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "text_encoder: text_model.encoder.layers.N.layer_norm1",
-    12
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "text_encoder: text_model.encoder.layers.N.layer_norm2",
-    12
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "text_encoder: text_model.encoder.layers.N.mlp",
-    12
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "text_encoder: None vs None",
-    0
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "unet: up_blocks.*.resnets.*.conv1",
-    199997760
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "unet: up_blocks.*.resnets.*.conv2",
-    102308160
-   ],
-   [
-    "T1",
-    "unused_weight_module_ran",
-    "REAL",
-    "unet: down_blocks.*.resnets.*.conv2",
-    68205440
-   ],
-   [
-    "T1",
-    "unused_weight_module_ran",
-    "REAL",
-    "unet: down_blocks.*.resnets.*.conv1",
-    58989440
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "unet: up_blocks.N.attentions.N.transformer_blocks.N.ff.net.N",
-    18
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "unet: down_blocks.N.attentions.N.transformer_blocks.N.ff.net.N",
-    12
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "unet: up_blocks.N.resnets.N",
-    12
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "unet: up_blocks.N.resnets.N.conv1",
-    12
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "unet: None vs None",
-    0
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "vae: None vs None",
     0
    ]
   ],
@@ -7058,74 +6032,11 @@
     0
    ],
    [
-    "T5",
-    "input_dependent",
+    "T1",
+    "unused_weight_module_ran",
     "REAL",
-    "vae: None vs None",
-    0
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "vocoder: resblocks.*.convs1.*",
-    22007520
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "vocoder: resblocks.*.convs2.*",
-    22007520
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "vocoder: upsampler.*",
-    10789856
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "vocoder: conv_pre",
-    459776
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "vocoder: resblocks.N.convs1.N",
-    45
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "vocoder: resblocks.N.convs2.N",
-    45
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "vocoder: resblocks.N",
-    15
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "vocoder: upsampler.N",
-    5
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "vocoder: None vs None",
-    0
+    "vocoder: (root)",
+    128
    ]
   ],
   "failed_passes": {},
@@ -7198,139 +6109,6 @@
     "input_dependent",
     "REAL",
     "qformer: None vs None",
-    0
-   ],
-   [
-    "T1",
-    "unused_weight_module_ran",
-    "REAL",
-    "text_encoder: text_model.embeddings.token_embedding",
-    37945344
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "text_encoder: text_model.encoder.layers.*.mlp.fc1",
-    28348416
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "text_encoder: text_model.encoder.layers.*.mlp.fc2",
-    28320768
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "text_encoder: text_model.encoder.layers.*.self_attn.k_proj",
-    7087104
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "text_encoder: text_model.encoder.layers.N",
-    12
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "text_encoder: text_model.encoder.layers.N.layer_norm1",
-    12
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "text_encoder: text_model.encoder.layers.N.layer_norm2",
-    12
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "text_encoder: text_model.encoder.layers.N.mlp",
-    12
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "text_encoder: None vs None",
-    0
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "unet: up_blocks.*.resnets.*.conv1",
-    199997760
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "unet: up_blocks.*.resnets.*.conv2",
-    102308160
-   ],
-   [
-    "T1",
-    "unused_weight_module_ran",
-    "REAL",
-    "unet: down_blocks.*.resnets.*.conv2",
-    68205440
-   ],
-   [
-    "T1",
-    "unused_weight_module_ran",
-    "REAL",
-    "unet: down_blocks.*.resnets.*.conv1",
-    58989440
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "unet: up_blocks.N.attentions.N.transformer_blocks.N.ff.net.N",
-    18
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "unet: down_blocks.N.attentions.N.transformer_blocks.N.ff.net.N",
-    12
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "unet: up_blocks.N.resnets.N",
-    12
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "unet: up_blocks.N.resnets.N.conv1",
-    12
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "unet: None vs None",
-    0
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "vae: None vs None",
     0
    ]
   ],
@@ -7502,69 +6280,6 @@
     "REAL",
     "controlnet: None vs None",
     0
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "transformer: transformer_blocks.*.norm1.linear",
-    339959808
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "transformer: transformer_blocks.*.norm1_context.linear",
-    330516480
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "transformer: transformer_blocks.*.ff.net.*.proj",
-    226639872
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "transformer: transformer_blocks.*.ff.net.*",
-    226529280
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "transformer: transformer_blocks.N.ff.net.N",
-    48
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "transformer: transformer_blocks.N.ff_context.net.N",
-    46
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "transformer: transformer_blocks.N",
-    24
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "transformer: transformer_blocks.N.attn",
-    24
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "transformer: None vs None",
-    0
    ]
   ],
   "failed_passes": {},
@@ -7644,69 +6359,6 @@
     "input_dependent",
     "REAL",
     "controlnet: None vs None",
-    0
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "transformer: transformer_blocks.*.norm1.linear",
-    339959808
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "transformer: transformer_blocks.*.norm1_context.linear",
-    330516480
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "transformer: transformer_blocks.*.ff.net.*.proj",
-    226639872
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "transformer: transformer_blocks.*.ff.net.*",
-    226529280
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "transformer: transformer_blocks.N.ff.net.N",
-    48
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "transformer: transformer_blocks.N.ff_context.net.N",
-    46
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "transformer: transformer_blocks.N",
-    24
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "transformer: transformer_blocks.N.attn",
-    24
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "transformer: None vs None",
     0
    ]
   ],
@@ -8341,69 +6993,6 @@
     "GAP?",
     "text_encoder: model.visual.blocks.N.attn.qkv",
     32
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "text_encoder_2: encoder.block.*.layer.*.DenseReluDense.wi_0",
-    63307776
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "text_encoder_2: encoder.block.*.layer.*.DenseReluDense.wi_1",
-    63307776
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "text_encoder_2: encoder.block.*.layer.*.DenseReluDense.wo",
-    63307776
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "text_encoder_2: encoder.block.*.layer.*.SelfAttention.k",
-    6782976
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "text_encoder_2: encoder.block.N.layer.N",
-    24
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "text_encoder_2: encoder.block.N.layer.N.layer_norm",
-    24
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "text_encoder_2: encoder.block.N",
-    12
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "text_encoder_2: encoder.block.N.layer.N.SelfAttention",
-    12
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "text_encoder_2: None vs None",
-    0
    ]
   ],
   "failed_passes": {},
@@ -8554,13 +7143,6 @@
     "GAP?",
     "transformer: visual_transformer_blocks.N.cross_attention.out_layer",
     50
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "vae: None vs None",
-    0
    ]
   ],
   "failed_passes": {},
@@ -8843,64 +7425,22 @@
     "T1",
     "unused_path_not_run",
     "GAP?",
-    "decoder: up_blocks.*.*.channelwise.*",
-    476169600
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "decoder: down_blocks.*.*.channelwise.*",
-    467568000
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "decoder: down_blocks.*.*.attention.to_k",
-    55749120
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "decoder: down_blocks.*.*.attention.to_out.*",
-    55749120
+    "decoder: effnet_mapper.*",
+    431680
    ],
    [
     "T2",
     "path_not_run",
     "GAP?",
-    "decoder: down_blocks.N.N.channelwise.N",
-    126
+    "decoder: effnet_mapper.N",
+    2
    ],
    [
     "T2",
     "path_not_run",
     "GAP?",
-    "decoder: up_blocks.N.N.channelwise.N",
-    126
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "decoder: down_blocks.N.N",
-    118
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "decoder: up_blocks.N.N",
-    118
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "decoder: None vs None",
-    0
+    "decoder: effnet_mapper",
+    1
    ],
    [
     "T1",
@@ -9030,69 +7570,6 @@
     "GAP?",
     "controlnet: down_blocks.N.resnets.N.conv1",
     8
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "unet: up_blocks.*.resnets.*.conv1",
-    199997760
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "unet: up_blocks.*.resnets.*.conv2",
-    102308160
-   ],
-   [
-    "T1",
-    "unused_weight_module_ran",
-    "REAL",
-    "unet: down_blocks.*.resnets.*.conv2",
-    68205440
-   ],
-   [
-    "T1",
-    "unused_weight_module_ran",
-    "REAL",
-    "unet: down_blocks.*.resnets.*.conv1",
-    58989440
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "unet: up_blocks.N.attentions.N.transformer_blocks.N.ff.net.N",
-    18
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "unet: down_blocks.N.attentions.N.transformer_blocks.N.ff.net.N",
-    12
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "unet: up_blocks.N.resnets.N",
-    12
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "unet: up_blocks.N.resnets.N.conv1",
-    12
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "unet: None vs None",
-    0
    ]
   ],
   "failed_passes": {},
@@ -9170,69 +7647,6 @@
   "category": "image_diffusion",
   "class": "UniDiffuserPipeline",
   "causes": [
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "image_encoder: vision_model.encoder.layers.*.mlp.fc1",
-    28348416
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "image_encoder: vision_model.encoder.layers.*.mlp.fc2",
-    28320768
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "image_encoder: vision_model.encoder.layers.*.self_attn.k_proj",
-    7087104
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "image_encoder: vision_model.encoder.layers.*.self_attn.v_proj",
-    7087104
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "image_encoder: vision_model.encoder.layers.N",
-    12
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "image_encoder: vision_model.encoder.layers.N.layer_norm1",
-    12
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "image_encoder: vision_model.encoder.layers.N.layer_norm2",
-    12
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "image_encoder: vision_model.encoder.layers.N.mlp",
-    12
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "image_encoder: None vs None",
-    0
-   ],
    [
     "T1",
     "unused_weight_module_ran",
@@ -9344,13 +7758,6 @@
     "GAP?",
     "unet: transformer.transformer_in_blocks.N.attn1",
     15
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "vae: None vs None",
-    0
    ]
   ],
   "failed_passes": {},
@@ -9393,69 +7800,6 @@
   "category": "image_diffusion",
   "class": "GlmImagePipeline",
   "causes": [
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "text_encoder: encoder.block.*.layer.*.DenseReluDense.wi_0",
-    63307776
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "text_encoder: encoder.block.*.layer.*.DenseReluDense.wi_1",
-    63307776
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "text_encoder: encoder.block.*.layer.*.DenseReluDense.wo",
-    63307776
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "text_encoder: encoder.block.*.layer.*.SelfAttention.k",
-    6782976
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "text_encoder: encoder.block.N.layer.N",
-    24
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "text_encoder: encoder.block.N.layer.N.layer_norm",
-    24
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "text_encoder: encoder.block.N",
-    12
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "text_encoder: encoder.block.N.layer.N.SelfAttention",
-    12
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "text_encoder: None vs None",
-    0
-   ],
    [
     "T1",
     "unused_path_not_run",
@@ -9531,13 +7875,6 @@
     "input_dependent",
     "REAL",
     "transformer: None vs None",
-    0
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "vae: None vs None",
     0
    ]
   ],
@@ -9748,141 +8085,15 @@
   "causes": [
    [
     "T1",
-    "unused_weight_module_ran",
+    "mtp_or_declared_unbuilt",
     "REAL",
-    "safety_checker: vision_model.vision_model.encoder.layers.*.mlp.fc1",
-    100761600
-   ],
-   [
-    "T1",
-    "unused_weight_module_ran",
-    "REAL",
-    "safety_checker: vision_model.vision_model.encoder.layers.*.mlp.fc2",
-    100687872
-   ],
-   [
-    "T1",
-    "unused_weight_module_ran",
-    "REAL",
-    "safety_checker: vision_model.vision_model.encoder.layers.*.self_attn.k_proj",
-    25190400
-   ],
-   [
-    "T1",
-    "unused_weight_module_ran",
-    "REAL",
-    "safety_checker: vision_model.vision_model.encoder.layers.*.self_attn.v_proj",
-    25190400
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "safety_checker: vision_model.encoder.layers.N",
-    24
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "safety_checker: vision_model.encoder.layers.N.layer_norm1",
-    24
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "safety_checker: vision_model.encoder.layers.N.layer_norm2",
-    24
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "safety_checker: vision_model.encoder.layers.N.mlp",
-    24
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "safety_checker: None vs None",
-    0
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "unet: up_blocks.*.resnets.*.conv1",
-    199997760
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "unet: up_blocks.*.resnets.*.conv2",
-    102308160
-   ],
-   [
-    "T1",
-    "unused_weight_module_ran",
-    "REAL",
-    "unet: down_blocks.*.resnets.*.conv2",
-    68205440
-   ],
-   [
-    "T1",
-    "unused_weight_module_ran",
-    "REAL",
-    "unet: down_blocks.*.resnets.*.conv1",
-    58989440
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "unet: up_blocks.N.attentions.N.transformer_blocks.N.ff.net.N",
-    18
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "unet: down_blocks.N.attentions.N.transformer_blocks.N.ff.net.N",
-    12
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "unet: up_blocks.N.resnets.N",
-    12
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "unet: up_blocks.N.resnets.N.conv1",
-    12
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "unet: None vs None",
-    0
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "vae: None vs None",
+    "text_encoder: ",
     0
    ]
   ],
   "failed_passes": {},
   "input_notes": [],
-  "level": "UNCLEAR"
+  "level": "REAL"
  },
  {
   "repo": "kandinskylab/Kandinsky-5.0-I2V-Lite-5s-Diffusers",
@@ -10038,142 +8249,6 @@
     "GAP?",
     "controlnet: down_blocks.N.resnets.N.conv1",
     8
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "unet: up_blocks.*.resnets.*.conv1",
-    199997760
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "unet: up_blocks.*.resnets.*.conv2",
-    102308160
-   ],
-   [
-    "T1",
-    "unused_weight_module_ran",
-    "REAL",
-    "unet: down_blocks.*.resnets.*.conv2",
-    68205440
-   ],
-   [
-    "T1",
-    "unused_weight_module_ran",
-    "REAL",
-    "unet: down_blocks.*.resnets.*.conv1",
-    58989440
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "unet: up_blocks.N.attentions.N.transformer_blocks.N.ff.net.N",
-    18
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "unet: down_blocks.N.attentions.N.transformer_blocks.N.ff.net.N",
-    12
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "unet: up_blocks.N.resnets.N",
-    12
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "unet: up_blocks.N.resnets.N.conv1",
-    12
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "unet: None vs None",
-    0
-   ]
-  ],
-  "failed_passes": {},
-  "input_notes": [],
-  "level": "UNCLEAR"
- },
- {
-  "repo": "Intel/ldm3d",
-  "category": "image_diffusion",
-  "class": "StableDiffusionLDM3DPipeline",
-  "causes": [
-   [
-    "T1",
-    "unused_weight_module_ran",
-    "REAL",
-    "safety_checker: vision_model.vision_model.encoder.layers.*.mlp.fc1",
-    100761600
-   ],
-   [
-    "T1",
-    "unused_weight_module_ran",
-    "REAL",
-    "safety_checker: vision_model.vision_model.encoder.layers.*.mlp.fc2",
-    100687872
-   ],
-   [
-    "T1",
-    "unused_weight_module_ran",
-    "REAL",
-    "safety_checker: vision_model.vision_model.encoder.layers.*.self_attn.k_proj",
-    25190400
-   ],
-   [
-    "T1",
-    "unused_weight_module_ran",
-    "REAL",
-    "safety_checker: vision_model.vision_model.encoder.layers.*.self_attn.out_proj",
-    25190400
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "safety_checker: vision_model.encoder.layers.N",
-    24
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "safety_checker: vision_model.encoder.layers.N.layer_norm1",
-    24
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "safety_checker: vision_model.encoder.layers.N.layer_norm2",
-    24
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "safety_checker: vision_model.encoder.layers.N.mlp",
-    24
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "safety_checker: None vs None",
-    0
    ]
   ],
   "failed_passes": {},
@@ -10216,69 +8291,6 @@
   "category": "image_diffusion",
   "class": "GlmImagePipeline",
   "causes": [
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "text_encoder: encoder.block.*.layer.*.DenseReluDense.wo",
-    63307776
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "text_encoder: encoder.block.*.layer.*.DenseReluDense.wi_0",
-    63307776
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "text_encoder: encoder.block.*.layer.*.DenseReluDense.wi_1",
-    63307776
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "text_encoder: encoder.block.*.layer.*.SelfAttention.k",
-    6782976
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "text_encoder: encoder.block.N.layer.N",
-    24
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "text_encoder: encoder.block.N.layer.N.layer_norm",
-    24
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "text_encoder: encoder.block.N",
-    12
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "text_encoder: encoder.block.N.layer.N.SelfAttention",
-    12
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "text_encoder: None vs None",
-    0
-   ],
    [
     "T1",
     "unused_path_not_run",
@@ -10343,13 +8355,6 @@
     0
    ],
    [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "vae: None vs None",
-    0
-   ],
-   [
     "T1",
     "unused_path_not_run",
     "GAP?",
@@ -10373,195 +8378,6 @@
   "category": "image_diffusion",
   "class": "VersatileDiffusionPipeline",
   "causes": [
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "image_encoder: vision_model.encoder.layers.*.mlp.fc1",
-    100761600
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "image_encoder: vision_model.encoder.layers.*.mlp.fc2",
-    100687872
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "image_encoder: vision_model.encoder.layers.*.self_attn.k_proj",
-    25190400
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "image_encoder: vision_model.encoder.layers.*.self_attn.v_proj",
-    25190400
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "image_encoder: vision_model.encoder.layers.N",
-    24
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "image_encoder: vision_model.encoder.layers.N.layer_norm1",
-    24
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "image_encoder: vision_model.encoder.layers.N.layer_norm2",
-    24
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "image_encoder: vision_model.encoder.layers.N.mlp",
-    24
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "image_encoder: None vs None",
-    0
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "image_unet: up_blocks.*.resnets.*.conv1",
-    199997760
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "image_unet: up_blocks.*.resnets.*.conv2",
-    102308160
-   ],
-   [
-    "T1",
-    "unused_weight_module_ran",
-    "REAL",
-    "image_unet: down_blocks.*.resnets.*.conv2",
-    68205440
-   ],
-   [
-    "T1",
-    "unused_weight_module_ran",
-    "REAL",
-    "image_unet: down_blocks.*.resnets.*.conv1",
-    58989440
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "image_unet: up_blocks.N.attentions.N.transformer_blocks.N.ff.net.N",
-    18
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "image_unet: down_blocks.N.attentions.N.transformer_blocks.N.ff.net.N",
-    12
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "image_unet: up_blocks.N.resnets.N",
-    12
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "image_unet: up_blocks.N.resnets.N.conv1",
-    12
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "image_unet: None vs None",
-    0
-   ],
-   [
-    "T1",
-    "unused_weight_module_ran",
-    "REAL",
-    "text_encoder: text_model.embeddings.token_embedding",
-    37945344
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "text_encoder: text_model.encoder.layers.*.mlp.fc1",
-    28348416
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "text_encoder: text_model.encoder.layers.*.mlp.fc2",
-    28320768
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "text_encoder: text_model.encoder.layers.*.self_attn.k_proj",
-    7087104
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "text_encoder: text_model.encoder.layers.N",
-    12
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "text_encoder: text_model.encoder.layers.N.layer_norm1",
-    12
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "text_encoder: text_model.encoder.layers.N.layer_norm2",
-    12
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "text_encoder: text_model.encoder.layers.N.mlp",
-    12
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "text_encoder: None vs None",
-    0
-   ],
    [
     "T1",
     "unused_path_not_run",
@@ -10624,13 +8440,6 @@
     "REAL",
     "text_unet: None vs None",
     0
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "vae: None vs None",
-    0
    ]
   ],
   "failed_passes": {},
@@ -10653,79 +8462,6 @@
   "failed_passes": {},
   "input_notes": [],
   "level": "REAL"
- },
- {
-  "repo": "kandinsky-community/kandinsky-2-1-inpaint",
-  "category": "image_diffusion",
-  "class": "KandinskyPipeline",
-  "causes": [
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "movq: encoder.down_blocks.*.resnets.*.conv2",
-    7375104
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "movq: encoder.down_blocks.*.resnets.*.conv1",
-    5900544
-   ],
-   [
-    "T1",
-    "unused_weight_module_ran",
-    "REAL",
-    "movq: encoder.mid_block.resnets.*.conv1",
-    4719616
-   ],
-   [
-    "T1",
-    "unused_weight_module_ran",
-    "REAL",
-    "movq: encoder.mid_block.resnets.*.conv2",
-    4719616
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "movq: encoder.down_blocks.N.resnets.N",
-    8
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "movq: encoder.down_blocks.N.resnets.N.conv1",
-    8
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "movq: encoder.down_blocks.N.resnets.N.conv2",
-    8
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "movq: encoder.down_blocks.N.resnets.N.norm1",
-    8
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "movq: None vs None",
-    0
-   ]
-  ],
-  "failed_passes": {},
-  "input_notes": [],
-  "level": "UNCLEAR"
  },
  {
   "repo": "NucleusAI/Nucleus-Image",
@@ -10843,13 +8579,6 @@
     "GAP?",
     "transformer: transformer_blocks.N.img_mlp.shared_expert",
     29
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "vae: None vs None",
-    0
    ]
   ],
   "failed_passes": {},
@@ -11044,69 +8773,6 @@
     "REAL",
     "unet: None vs None",
     0
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "movq: encoder.down_blocks.*.resnets.*.conv2",
-    7375104
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "movq: encoder.down_blocks.*.resnets.*.conv1",
-    5900544
-   ],
-   [
-    "T1",
-    "unused_weight_module_ran",
-    "REAL",
-    "movq: encoder.mid_block.resnets.*.conv1",
-    4719616
-   ],
-   [
-    "T1",
-    "unused_weight_module_ran",
-    "REAL",
-    "movq: encoder.mid_block.resnets.*.conv2",
-    4719616
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "movq: encoder.down_blocks.N.resnets.N",
-    8
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "movq: encoder.down_blocks.N.resnets.N.conv1",
-    8
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "movq: encoder.down_blocks.N.resnets.N.conv2",
-    8
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "movq: encoder.down_blocks.N.resnets.N.norm1",
-    8
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "movq: None vs None",
-    0
    ]
   ],
   "failed_passes": {},
@@ -11173,142 +8839,6 @@
     "GAP?",
     "text_encoder: model.visual.blocks.N.attn.qkv",
     32
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "text_encoder_2: encoder.block.*.layer.*.DenseReluDense.wi_0",
-    63307776
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "text_encoder_2: encoder.block.*.layer.*.DenseReluDense.wi_1",
-    63307776
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "text_encoder_2: encoder.block.*.layer.*.DenseReluDense.wo",
-    63307776
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "text_encoder_2: encoder.block.*.layer.*.SelfAttention.k",
-    6782976
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "text_encoder_2: encoder.block.N.layer.N",
-    24
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "text_encoder_2: encoder.block.N.layer.N.layer_norm",
-    24
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "text_encoder_2: encoder.block.N",
-    12
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "text_encoder_2: encoder.block.N.layer.N.SelfAttention",
-    12
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "text_encoder_2: None vs None",
-    0
-   ]
-  ],
-  "failed_passes": {},
-  "input_notes": [],
-  "level": "UNCLEAR"
- },
- {
-  "repo": "Disty0/sotediffusion-wuerstchen3",
-  "category": "image_diffusion",
-  "class": "StableCascadePriorPipeline",
-  "causes": [
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "image_encoder: vision_model.encoder.layers.*.mlp.fc1",
-    100761600
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "image_encoder: vision_model.encoder.layers.*.mlp.fc2",
-    100687872
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "image_encoder: vision_model.encoder.layers.*.self_attn.k_proj",
-    25190400
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "image_encoder: vision_model.encoder.layers.*.self_attn.out_proj",
-    25190400
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "image_encoder: vision_model.encoder.layers.N",
-    24
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "image_encoder: vision_model.encoder.layers.N.layer_norm1",
-    24
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "image_encoder: vision_model.encoder.layers.N.layer_norm2",
-    24
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "image_encoder: vision_model.encoder.layers.N.mlp",
-    24
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "image_encoder: None vs None",
-    0
    ]
   ],
   "failed_passes": {},
@@ -11320,69 +8850,6 @@
   "category": "image_diffusion",
   "class": "UniDiffuserPipeline",
   "causes": [
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "image_encoder: vision_model.encoder.layers.*.mlp.fc1",
-    28348416
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "image_encoder: vision_model.encoder.layers.*.mlp.fc2",
-    28320768
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "image_encoder: vision_model.encoder.layers.*.self_attn.k_proj",
-    7087104
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "image_encoder: vision_model.encoder.layers.*.self_attn.v_proj",
-    7087104
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "image_encoder: vision_model.encoder.layers.N",
-    12
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "image_encoder: vision_model.encoder.layers.N.layer_norm1",
-    12
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "image_encoder: vision_model.encoder.layers.N.layer_norm2",
-    12
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "image_encoder: vision_model.encoder.layers.N.mlp",
-    12
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "image_encoder: None vs None",
-    0
-   ],
    [
     "T1",
     "unused_weight_module_ran",
@@ -11494,13 +8961,6 @@
     "GAP?",
     "unet: transformer.transformer_in_blocks.N.attn1",
     15
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "vae: None vs None",
-    0
    ]
   ],
   "failed_passes": {},
@@ -11516,64 +8976,22 @@
     "T1",
     "unused_path_not_run",
     "GAP?",
-    "decoder: up_blocks.*.*.channelwise.*",
-    476169600
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "decoder: down_blocks.*.*.channelwise.*",
-    467568000
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "decoder: down_blocks.*.*.attention.to_k",
-    55749120
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "decoder: down_blocks.*.*.attention.to_out.*",
-    55749120
+    "decoder: effnet_mapper.*",
+    431680
    ],
    [
     "T2",
     "path_not_run",
     "GAP?",
-    "decoder: down_blocks.N.N.channelwise.N",
-    126
+    "decoder: effnet_mapper.N",
+    2
    ],
    [
     "T2",
     "path_not_run",
     "GAP?",
-    "decoder: up_blocks.N.N.channelwise.N",
-    126
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "decoder: down_blocks.N.N",
-    118
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "decoder: up_blocks.N.N",
-    118
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "decoder: None vs None",
-    0
+    "decoder: effnet_mapper",
+    1
    ],
    [
     "T1",
@@ -11644,79 +9062,6 @@
   "level": "UNCLEAR"
  },
  {
-  "repo": "Intel/ldm3d-4c",
-  "category": "image_diffusion",
-  "class": "StableDiffusionLDM3DPipeline",
-  "causes": [
-   [
-    "T1",
-    "unused_weight_module_ran",
-    "REAL",
-    "safety_checker: vision_model.vision_model.encoder.layers.*.mlp.fc1",
-    100761600
-   ],
-   [
-    "T1",
-    "unused_weight_module_ran",
-    "REAL",
-    "safety_checker: vision_model.vision_model.encoder.layers.*.mlp.fc2",
-    100687872
-   ],
-   [
-    "T1",
-    "unused_weight_module_ran",
-    "REAL",
-    "safety_checker: vision_model.vision_model.encoder.layers.*.self_attn.k_proj",
-    25190400
-   ],
-   [
-    "T1",
-    "unused_weight_module_ran",
-    "REAL",
-    "safety_checker: vision_model.vision_model.encoder.layers.*.self_attn.out_proj",
-    25190400
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "safety_checker: vision_model.encoder.layers.N",
-    24
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "safety_checker: vision_model.encoder.layers.N.layer_norm1",
-    24
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "safety_checker: vision_model.encoder.layers.N.layer_norm2",
-    24
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "safety_checker: vision_model.encoder.layers.N.mlp",
-    24
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "safety_checker: None vs None",
-    0
-   ]
-  ],
-  "failed_passes": {},
-  "input_notes": [],
-  "level": "UNCLEAR"
- },
- {
   "repo": "ayushtues/test-kandinsky-img2img",
   "category": "image_diffusion",
   "class": "KandinskyImg2ImgPipeline",
@@ -11741,142 +9086,6 @@
     "GAP?",
     "movq: quantize.embedding",
     1
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "unet: up_blocks.*.resnets.*.conv1",
-    314539008
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "unet: up_blocks.*.resnets.*.conv2",
-    159267840
-   ],
-   [
-    "T1",
-    "unused_weight_module_ran",
-    "REAL",
-    "unet: down_blocks.*.resnets.*.conv2",
-    119450880
-   ],
-   [
-    "T1",
-    "unused_weight_module_ran",
-    "REAL",
-    "unet: down_blocks.*.resnets.*.conv1",
-    107506944
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "unet: up_blocks.N.resnets.N",
-    16
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "unet: up_blocks.N.resnets.N.conv1",
-    16
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "unet: up_blocks.N.resnets.N.conv2",
-    16
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "unet: up_blocks.N.resnets.N.conv_shortcut",
-    16
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "unet: None vs None",
-    0
-   ]
-  ],
-  "failed_passes": {},
-  "input_notes": [],
-  "level": "UNCLEAR"
- },
- {
-  "repo": "stabilityai/stable-cascade-prior",
-  "category": "image_diffusion",
-  "class": "StableCascadePriorPipeline",
-  "causes": [
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "image_encoder: vision_model.encoder.layers.*.mlp.fc1",
-    100761600
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "image_encoder: vision_model.encoder.layers.*.mlp.fc2",
-    100687872
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "image_encoder: vision_model.encoder.layers.*.self_attn.k_proj",
-    25190400
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "image_encoder: vision_model.encoder.layers.*.self_attn.out_proj",
-    25190400
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "image_encoder: vision_model.encoder.layers.N",
-    24
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "image_encoder: vision_model.encoder.layers.N.layer_norm1",
-    24
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "image_encoder: vision_model.encoder.layers.N.layer_norm2",
-    24
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "image_encoder: vision_model.encoder.layers.N.mlp",
-    24
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "image_encoder: None vs None",
-    0
    ]
   ],
   "failed_passes": {},
@@ -12211,13 +9420,6 @@
     "GAP?",
     "transformer: transformer_blocks.N.img_mlp.shared_expert",
     29
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "vae: None vs None",
-    0
    ]
   ],
   "failed_passes": {},
@@ -12405,69 +9607,6 @@
    ],
    [
     "T1",
-    "unused_weight_module_ran",
-    "REAL",
-    "safety_checker: vision_model.vision_model.encoder.layers.*.mlp.fc1",
-    100761600
-   ],
-   [
-    "T1",
-    "unused_weight_module_ran",
-    "REAL",
-    "safety_checker: vision_model.vision_model.encoder.layers.*.mlp.fc2",
-    100687872
-   ],
-   [
-    "T1",
-    "unused_weight_module_ran",
-    "REAL",
-    "safety_checker: vision_model.vision_model.encoder.layers.*.self_attn.k_proj",
-    25190400
-   ],
-   [
-    "T1",
-    "unused_weight_module_ran",
-    "REAL",
-    "safety_checker: vision_model.vision_model.encoder.layers.*.self_attn.v_proj",
-    25190400
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "safety_checker: vision_model.encoder.layers.N",
-    24
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "safety_checker: vision_model.encoder.layers.N.layer_norm1",
-    24
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "safety_checker: vision_model.encoder.layers.N.layer_norm2",
-    24
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "safety_checker: vision_model.encoder.layers.N.mlp",
-    24
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "safety_checker: None vs None",
-    0
-   ],
-   [
-    "T1",
     "unused_path_not_run",
     "GAP?",
     "unet: up_blocks.*.resnets.*.conv1",
@@ -12521,13 +9660,6 @@
     "GAP?",
     "unet: up_blocks.N.resnets.N.conv1",
     12
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "vae: None vs None",
-    0
    ]
   ],
   "failed_passes": {},
@@ -14548,6 +11680,93 @@
   "level": "GAP"
  },
  {
+  "repo": "hf-tiny-v2/tiny-random-ColModernVBertForRetrieval",
+  "category": "uncategorized",
+  "class": "ColModernVBertForRetrieval",
+  "causes": [
+   [
+    "T1",
+    "unused_path_not_run",
+    "GAP",
+    "vlm.vision_model.encoder.layers.*.self_attn.k_proj",
+    8320
+   ],
+   [
+    "T1",
+    "unused_path_not_run",
+    "GAP",
+    "vlm.vision_model.encoder.layers.*.self_attn.out_proj",
+    8320
+   ],
+   [
+    "T1",
+    "unused_path_not_run",
+    "GAP",
+    "vlm.vision_model.encoder.layers.*.self_attn.q_proj",
+    8320
+   ],
+   [
+    "T1",
+    "unused_path_not_run",
+    "GAP",
+    "vlm.vision_model.encoder.layers.*.self_attn.v_proj",
+    8320
+   ],
+   [
+    "T1",
+    "unused_modality_input_failed",
+    "GAP",
+    "vlm.connector.modality_projection",
+    8192
+   ],
+   [
+    "T2",
+    "path_not_run",
+    "GAP",
+    "vlm.vision_model.encoder.layers.N",
+    2
+   ],
+   [
+    "T2",
+    "path_not_run",
+    "GAP",
+    "vlm.vision_model.encoder.layers.N.layer_norm1",
+    2
+   ],
+   [
+    "T2",
+    "path_not_run",
+    "GAP",
+    "vlm.vision_model.encoder.layers.N.layer_norm2",
+    2
+   ],
+   [
+    "T2",
+    "path_not_run",
+    "GAP",
+    "vlm.vision_model.encoder.layers.N.mlp",
+    2
+   ],
+   [
+    "input",
+    "modality_pass_failed",
+    "GAP",
+    "image: IndexError: index out of range in self; image:large: IndexError: index out of range in self",
+    0
+   ]
+  ],
+  "failed_passes": {
+   "text": "IndexError: index out of range in self",
+   "image": "IndexError: index out of range in self",
+   "image:large": "IndexError: index out of range in self"
+  },
+  "input_notes": [
+   "image input via processor+text",
+   "inputs synthesized by argument name (latent=image,text=None); processor-built passes all failed"
+  ],
+  "level": "GAP"
+ },
+ {
   "repo": "hf-tiny-v2/tiny-random-Sam3TrackerModel",
   "category": "uncategorized",
   "class": "Sam3TrackerModel",
@@ -15540,6 +12759,43 @@
   "level": "REAL"
  },
  {
+  "repo": "hf-tiny-v2/tiny-random-ClvpModelForConditionalGeneration",
+  "category": "uncategorized",
+  "class": "ClvpModelForConditionalGeneration",
+  "causes": [
+   [
+    "T1",
+    "unused_path_not_run",
+    "GAP",
+    "speech_decoder_model.model.decoder.input_embeds_layer",
+    6400
+   ],
+   [
+    "T2",
+    "path_not_run",
+    "GAP",
+    "speech_decoder_model.model.decoder.input_embeds_layer",
+    1
+   ],
+   [
+    "input",
+    "modality_pass_failed",
+    "GAP",
+    "audio: TypeError: conv1d() received an invalid combination of arguments - got",
+    0
+   ]
+  ],
+  "failed_passes": {
+   "text": "IndexError: index out of range in self",
+   "audio": "TypeError: conv1d() received an invalid combination of arguments - got (NoneType, Paramete",
+   "generate": "RuntimeError: The size of tensor a (9) must match the size of tensor b (49) at non-singlet"
+  },
+  "input_notes": [
+   "inputs synthesized by argument name (latent=image,text=None); processor-built passes all failed"
+  ],
+  "level": "GAP"
+ },
+ {
   "repo": "hf-tiny-v2/tiny-random-Gemma4UnifiedTextModel",
   "category": "uncategorized",
   "class": "Gemma4UnifiedTextModel",
@@ -15583,6 +12839,42 @@
   "failed_passes": {},
   "input_notes": [],
   "level": "REAL"
+ },
+ {
+  "repo": "hf-tiny-v2/tiny-random-PPLCNetV3Backbone",
+  "category": "uncategorized",
+  "class": "PPLCNetV3Backbone",
+  "causes": [
+   [
+    "T1",
+    "unused_path_not_run",
+    "GAP?",
+    "encoder.blocks.*.layers.*.depthwise_convolution.act.lab",
+    8
+   ],
+   [
+    "T2",
+    "path_not_run",
+    "GAP?",
+    "encoder.blocks.N.layers.N.depthwise_convolution.act",
+    4
+   ],
+   [
+    "T2",
+    "path_not_run",
+    "GAP?",
+    "encoder.blocks.N.layers.N.depthwise_convolution.act.lab",
+    4
+   ]
+  ],
+  "failed_passes": {
+   "dummy_inputs": "TypeError: PPLCNetV3Backbone.forward() missing 1 required positional argument: 'pixel_valu"
+  },
+  "input_notes": [
+   "used model.dummy_inputs",
+   "inputs synthesized by argument name (latent=image,text=None); processor-built passes all failed"
+  ],
+  "level": "UNCLEAR"
  },
  {
   "repo": "hf-tiny-v2/tiny-random-AudioFlamingo3ForConditionalGeneration",
@@ -17286,13 +14578,6 @@
     256
    ],
    [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "audio_vae: None vs None",
-    0
-   ],
-   [
     "T1",
     "unused_weight_module_ran",
     "REAL",
@@ -17387,64 +14672,57 @@
     "T1",
     "unused_weight_module_ran",
     "REAL",
-    "text_encoder: language_model.model.layers.*.mlp.down_proj",
-    2831155200
+    "text_encoder: vision_tower.vision_model.encoder.layers.*.mlp.fc1",
+    133987824
    ],
    [
     "T1",
     "unused_weight_module_ran",
     "REAL",
-    "text_encoder: language_model.model.layers.*.mlp.gate_proj",
-    2831155200
+    "text_encoder: vision_tower.vision_model.encoder.layers.*.mlp.fc2",
+    133902720
    ],
    [
     "T1",
     "unused_weight_module_ran",
     "REAL",
-    "text_encoder: language_model.model.layers.*.mlp.up_proj",
-    2831155200
+    "text_encoder: vision_tower.vision_model.encoder.layers.*.self_attn.k_proj",
+    35862912
    ],
    [
     "T1",
     "unused_weight_module_ran",
     "REAL",
-    "text_encoder: language_model.model.embed_tokens",
-    1006878720
+    "text_encoder: vision_tower.vision_model.encoder.layers.*.self_attn.out_proj",
+    35862912
    ],
    [
     "T2",
     "path_not_run",
     "GAP?",
-    "text_encoder: model.language_model.layers.N",
-    48
+    "text_encoder: model.vision_tower.encoder.layers.N",
+    27
    ],
    [
     "T2",
     "path_not_run",
     "GAP?",
-    "text_encoder: model.language_model.layers.N.input_layernorm",
-    48
+    "text_encoder: model.vision_tower.encoder.layers.N.layer_norm1",
+    27
    ],
    [
     "T2",
     "path_not_run",
     "GAP?",
-    "text_encoder: model.language_model.layers.N.mlp",
-    48
+    "text_encoder: model.vision_tower.encoder.layers.N.layer_norm2",
+    27
    ],
    [
     "T2",
     "path_not_run",
     "GAP?",
-    "text_encoder: model.language_model.layers.N.mlp.down_proj",
-    48
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "text_encoder: None vs None",
-    0
+    "text_encoder: model.vision_tower.encoder.layers.N.mlp",
+    27
    ],
    [
     "T1",
@@ -17592,309 +14870,10 @@
   "level": "UNCLEAR"
  },
  {
-  "repo": "hunyuanvideo-community/HunyuanVideo-1.5-Diffusers-480p_t2v",
-  "category": "video_diffusion",
-  "class": "HunyuanVideo15Pipeline",
-  "causes": [
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "text_encoder_2: encoder.block.*.layer.*.DenseReluDense.wi_0",
-    63307776
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "text_encoder_2: encoder.block.*.layer.*.DenseReluDense.wi_1",
-    63307776
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "text_encoder_2: encoder.block.*.layer.*.DenseReluDense.wo",
-    63307776
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "text_encoder_2: encoder.block.*.layer.*.SelfAttention.k",
-    6782976
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "text_encoder_2: encoder.block.N.layer.N",
-    24
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "text_encoder_2: encoder.block.N.layer.N.layer_norm",
-    24
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "text_encoder_2: encoder.block.N",
-    12
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "text_encoder_2: encoder.block.N.layer.N.SelfAttention",
-    12
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "text_encoder_2: None vs None",
-    0
-   ]
-  ],
-  "failed_passes": {},
-  "input_notes": [],
-  "level": "UNCLEAR"
- },
- {
-  "repo": "hunyuanvideo-community/HunyuanVideo-1.5-Diffusers-480p_i2v_step_distilled",
-  "category": "video_diffusion",
-  "class": "HunyuanVideo15ImageToVideoPipeline",
-  "causes": [
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "text_encoder_2: encoder.block.*.layer.*.DenseReluDense.wi_0",
-    63307776
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "text_encoder_2: encoder.block.*.layer.*.DenseReluDense.wi_1",
-    63307776
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "text_encoder_2: encoder.block.*.layer.*.DenseReluDense.wo",
-    63307776
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "text_encoder_2: encoder.block.*.layer.*.SelfAttention.k",
-    6782976
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "text_encoder_2: encoder.block.N.layer.N",
-    24
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "text_encoder_2: encoder.block.N.layer.N.layer_norm",
-    24
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "text_encoder_2: encoder.block.N",
-    12
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "text_encoder_2: encoder.block.N.layer.N.SelfAttention",
-    12
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "text_encoder_2: None vs None",
-    0
-   ]
-  ],
-  "failed_passes": {},
-  "input_notes": [],
-  "level": "UNCLEAR"
- },
- {
-  "repo": "hunyuanvideo-community/HunyuanVideo-1.5-Diffusers-480p_i2v",
-  "category": "video_diffusion",
-  "class": "HunyuanVideo15ImageToVideoPipeline",
-  "causes": [
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "text_encoder_2: encoder.block.*.layer.*.DenseReluDense.wi_0",
-    63307776
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "text_encoder_2: encoder.block.*.layer.*.DenseReluDense.wi_1",
-    63307776
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "text_encoder_2: encoder.block.*.layer.*.DenseReluDense.wo",
-    63307776
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "text_encoder_2: encoder.block.*.layer.*.SelfAttention.k",
-    6782976
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "text_encoder_2: encoder.block.N.layer.N",
-    24
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "text_encoder_2: encoder.block.N.layer.N.layer_norm",
-    24
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "text_encoder_2: encoder.block.N",
-    12
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "text_encoder_2: encoder.block.N.layer.N.SelfAttention",
-    12
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "text_encoder_2: None vs None",
-    0
-   ]
-  ],
-  "failed_passes": {},
-  "input_notes": [],
-  "level": "UNCLEAR"
- },
- {
-  "repo": "Skywork/SkyReels-V2-DF-1.3B-540P-Diffusers",
-  "category": "video_diffusion",
-  "class": "SkyReelsV2DiffusionForcingPipeline",
-  "causes": [
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "vae: None vs None",
-    0
-   ]
-  ],
-  "failed_passes": {},
-  "input_notes": [],
-  "level": "REAL"
- },
- {
   "repo": "isfs/i2vgen-xl-fp16",
   "category": "video_diffusion",
   "class": "I2VGenXLPipeline",
   "causes": [
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "image_encoder: vision_model.encoder.layers.*.mlp.fc1",
-    209879040
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "image_encoder: vision_model.encoder.layers.*.mlp.fc2",
-    209756160
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "image_encoder: vision_model.encoder.layers.*.self_attn.k_proj",
-    52469760
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "image_encoder: vision_model.encoder.layers.*.self_attn.out_proj",
-    52469760
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "image_encoder: vision_model.encoder.layers.N",
-    32
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "image_encoder: vision_model.encoder.layers.N.layer_norm1",
-    32
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "image_encoder: vision_model.encoder.layers.N.layer_norm2",
-    32
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "image_encoder: vision_model.encoder.layers.N.mlp",
-    32
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "image_encoder: None vs None",
-    0
-   ],
    [
     "T1",
     "unused_weight_module_ran",
@@ -17956,13 +14935,6 @@
     "input_dependent",
     "REAL",
     "unet: None vs None",
-    0
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "vae: None vs None",
     0
    ]
   ],
@@ -17977,69 +14949,6 @@
   "causes": [
    [
     "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "image_encoder: vision_model.encoder.layers.*.mlp.fc1",
-    209879040
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "image_encoder: vision_model.encoder.layers.*.mlp.fc2",
-    209756160
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "image_encoder: vision_model.encoder.layers.*.self_attn.k_proj",
-    52469760
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "image_encoder: vision_model.encoder.layers.*.self_attn.out_proj",
-    52469760
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "image_encoder: vision_model.encoder.layers.N",
-    32
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "image_encoder: vision_model.encoder.layers.N.layer_norm1",
-    32
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "image_encoder: vision_model.encoder.layers.N.layer_norm2",
-    32
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "image_encoder: vision_model.encoder.layers.N.mlp",
-    32
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "image_encoder: None vs None",
-    0
-   ],
-   [
-    "T1",
     "unused_weight_module_ran",
     "REAL",
     "unet: up_blocks.*.resnets.*.conv1",
@@ -18100,35 +15009,11 @@
     "REAL",
     "unet: None vs None",
     0
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "vae: None vs None",
-    0
    ]
   ],
   "failed_passes": {},
   "input_notes": [],
   "level": "UNCLEAR"
- },
- {
-  "repo": "Skywork/SkyReels-V2-DF-14B-540P-Diffusers",
-  "category": "video_diffusion",
-  "class": "SkyReelsV2DiffusionForcingPipeline",
-  "causes": [
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "vae: None vs None",
-    0
-   ]
-  ],
-  "failed_passes": {},
-  "input_notes": [],
-  "level": "REAL"
  },
  {
   "repo": "BestWishYsh/ConsisID-preview",
@@ -18214,13 +15099,6 @@
     "REAL",
     "transformer: caption_projection",
     491520
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "vae: None vs None",
-    0
    ]
   ],
   "failed_passes": {},
@@ -18245,146 +15123,10 @@
   "level": "REAL"
  },
  {
-  "repo": "magespace/Wan2.2-I2V-A14B-Lightning-Diffusers",
-  "category": "video_diffusion",
-  "class": "WanImageToVideoPipeline",
-  "causes": [
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "transformer_2: blocks.*.ffn.net.*.proj",
-    2831708160
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "transformer_2: blocks.*.ffn.net.*",
-    2831360000
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "transformer_2: blocks.*.attn1.to_k",
-    1048780800
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "transformer_2: blocks.*.attn1.to_out.*",
-    1048780800
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "transformer_2: blocks.N.ffn.net.N",
-    80
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "transformer_2: blocks.N",
-    40
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "transformer_2: blocks.N.attn1",
-    40
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "transformer_2: blocks.N.attn1.norm_k",
-    40
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "transformer_2: None vs None",
-    0
-   ]
-  ],
-  "failed_passes": {},
-  "input_notes": [],
-  "level": "UNCLEAR"
- },
- {
   "repo": "Wan-AI/Wan2.1-VACE-14B-diffusers",
   "category": "video_diffusion",
   "class": "WanVACEPipeline",
   "causes": [
-   [
-    "T1",
-    "unused_weight_module_ran",
-    "REAL",
-    "text_encoder: shared",
-    1050148864
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "text_encoder: encoder.block.*.layer.*.DenseReluDense.wi_0",
-    1006632960
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "text_encoder: encoder.block.*.layer.*.DenseReluDense.wi_1",
-    1006632960
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "text_encoder: encoder.block.*.layer.*.DenseReluDense.wo",
-    1006632960
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "text_encoder: encoder.block.N.layer.N",
-    48
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "text_encoder: encoder.block.N.layer.N.layer_norm",
-    48
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "text_encoder: encoder.block.N",
-    24
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "text_encoder: encoder.block.N.layer.N.SelfAttention",
-    24
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "text_encoder: None vs None",
-    0
-   ],
    [
     "T1",
     "unused_path_not_run",
@@ -18446,86 +15188,6 @@
     "input_dependent",
     "REAL",
     "transformer: None vs None",
-    0
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "vae: None vs None",
-    0
-   ]
-  ],
-  "failed_passes": {},
-  "input_notes": [],
-  "level": "UNCLEAR"
- },
- {
-  "repo": "Wan-AI/Wan2.2-I2V-A14B-Diffusers",
-  "category": "video_diffusion",
-  "class": "WanImageToVideoPipeline",
-  "causes": [
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "transformer_2: blocks.*.ffn.net.*.proj",
-    2831708160
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "transformer_2: blocks.*.ffn.net.*",
-    2831360000
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "transformer_2: blocks.*.attn1.to_k",
-    1048780800
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "transformer_2: blocks.*.attn1.to_out.*",
-    1048780800
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "transformer_2: blocks.N.ffn.net.N",
-    80
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "transformer_2: blocks.N",
-    40
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "transformer_2: blocks.N.attn1",
-    40
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "transformer_2: blocks.N.attn1.norm_k",
-    40
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "transformer_2: None vs None",
     0
    ]
   ],
@@ -18600,146 +15262,10 @@
   "level": "UNCLEAR"
  },
  {
-  "repo": "Wan-AI/Wan2.2-T2V-A14B-Diffusers",
-  "category": "video_diffusion",
-  "class": "WanPipeline",
-  "causes": [
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "transformer_2: blocks.*.ffn.net.*.proj",
-    2831708160
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "transformer_2: blocks.*.ffn.net.*",
-    2831360000
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "transformer_2: blocks.*.attn1.to_k",
-    1048780800
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "transformer_2: blocks.*.attn1.to_out.*",
-    1048780800
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "transformer_2: blocks.N.ffn.net.N",
-    80
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "transformer_2: blocks.N",
-    40
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "transformer_2: blocks.N.attn1",
-    40
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "transformer_2: blocks.N.attn1.norm_k",
-    40
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "transformer_2: None vs None",
-    0
-   ]
-  ],
-  "failed_passes": {},
-  "input_notes": [],
-  "level": "UNCLEAR"
- },
- {
   "repo": "IRMChen/Wan2.1-Fun-1.3B-Control-Diffusers",
   "category": "video_diffusion",
   "class": "WanVideoToVideoPipeline",
   "causes": [
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "image_encoder: vision_model.encoder.layers.*.mlp.fc1",
-    209879040
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "image_encoder: vision_model.encoder.layers.*.mlp.fc2",
-    209756160
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "image_encoder: vision_model.encoder.layers.*.self_attn.k_proj",
-    52469760
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "image_encoder: vision_model.encoder.layers.*.self_attn.out_proj",
-    52469760
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "image_encoder: vision_model.encoder.layers.N",
-    32
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "image_encoder: vision_model.encoder.layers.N.layer_norm1",
-    32
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "image_encoder: vision_model.encoder.layers.N.layer_norm2",
-    32
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "image_encoder: vision_model.encoder.layers.N.mlp",
-    32
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "image_encoder: None vs None",
-    0
-   ],
    [
     "T1",
     "ckpt_part_class_lacks",
@@ -18843,210 +15369,21 @@
    ],
    [
     "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "transformer: blocks.*.ffn.net.*.proj",
-    2831708160
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "transformer: blocks.*.ffn.net.*",
-    2831360000
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "transformer: blocks.*.attn1.to_k",
-    1048780800
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "transformer: blocks.*.attn1.to_out.*",
-    1048780800
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "transformer: blocks.N.ffn.net.N",
-    80
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "transformer: blocks.N",
-    40
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "transformer: blocks.N.attn1",
-    40
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "transformer: blocks.N.attn1.norm_k",
-    40
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "transformer: None vs None",
-    0
-   ],
-   [
-    "T1",
     "ckpt_part_class_lacks",
     "REAL",
     "transformer_2: ref_conv",
     332800
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "transformer_2: blocks.*.ffn.net.*.proj",
-    2831708160
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "transformer_2: blocks.*.ffn.net.*",
-    2831360000
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "transformer_2: blocks.*.attn1.to_k",
-    1048780800
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "transformer_2: blocks.*.attn1.to_out.*",
-    1048780800
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "transformer_2: blocks.N.ffn.net.N",
-    80
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "transformer_2: blocks.N",
-    40
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "transformer_2: blocks.N.attn1",
-    40
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "transformer_2: blocks.N.attn1.norm_k",
-    40
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "transformer_2: None vs None",
-    0
    ]
   ],
   "failed_passes": {},
   "input_notes": [],
-  "level": "UNCLEAR"
+  "level": "REAL"
  },
  {
   "repo": "Wan-AI/Wan2.1-VACE-1.3B-diffusers",
   "category": "video_diffusion",
   "class": "WanVACEPipeline",
   "causes": [
-   [
-    "T1",
-    "unused_weight_module_ran",
-    "REAL",
-    "text_encoder: shared",
-    1050148864
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "text_encoder: encoder.block.*.layer.*.DenseReluDense.wi_0",
-    1006632960
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "text_encoder: encoder.block.*.layer.*.DenseReluDense.wi_1",
-    1006632960
-   ],
-   [
-    "T1",
-    "unused_path_not_run",
-    "GAP?",
-    "text_encoder: encoder.block.*.layer.*.DenseReluDense.wo",
-    1006632960
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "text_encoder: encoder.block.N.layer.N",
-    48
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "text_encoder: encoder.block.N.layer.N.layer_norm",
-    48
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "text_encoder: encoder.block.N",
-    24
-   ],
-   [
-    "T2",
-    "path_not_run",
-    "GAP?",
-    "text_encoder: encoder.block.N.layer.N.SelfAttention",
-    24
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "text_encoder: None vs None",
-    0
-   ],
    [
     "T1",
     "unused_path_not_run",
@@ -19108,13 +15445,6 @@
     "input_dependent",
     "REAL",
     "transformer: None vs None",
-    0
-   ],
-   [
-    "T5",
-    "input_dependent",
-    "REAL",
-    "vae: None vs None",
     0
    ]
   ],
