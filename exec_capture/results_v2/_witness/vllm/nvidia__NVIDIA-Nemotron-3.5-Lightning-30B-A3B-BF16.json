@@ -1,0 +1,10 @@
+{
+ "repo": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16",
+ "closed": false,
+ "failed_stage": "config",
+ "vllm_mtp_arch": "NemotronHMTPModel",
+ "error": "NotImplementedError: is_act_and_mul=False is supported only for CUDA, XPU and ROCm for now",
+ "where": "vllm/model_executor/layers/fused_moe/config.py:1388",
+ "secs": 8.0,
+ "peak_rss_gb": 0.51
+}

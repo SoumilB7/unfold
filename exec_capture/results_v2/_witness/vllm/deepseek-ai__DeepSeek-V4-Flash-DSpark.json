@@ -1,0 +1,10 @@
+{
+ "repo": "deepseek-ai/DeepSeek-V4-Flash-DSpark",
+ "closed": false,
+ "failed_stage": "config",
+ "vllm_mtp_arch": "DeepSeekV4MTPModel",
+ "error": "ValidationError: 1 validation error for VllmConfig\n  Value error, Model Runner V1 does not support: dspark speculative decoding [type=value_error, input_value=ArgsKwargs((), {'model_co... 'shutdown_timeout': 0}), input_type=ArgsKwargs]\n    For further information visit https://errors.pydantic.dev/2.13/v/value_error",
+ "where": "/Users/soumil/Code/Projects/Understand/llmvisualizer/model-benchmark/.venv_vllm/lib/python3.12/site-packages/pydantic/_internal/_dataclasses.py:121",
+ "secs": 23.6,
+ "peak_rss_gb": 0.5
+}

@@ -1,0 +1,10 @@
+{
+ "repo": "deepseek-ai/DeepSeek-V4-Flash-0731",
+ "closed": false,
+ "failed_stage": "config",
+ "vllm_mtp_arch": "DeepSeekV4MTPModel",
+ "error": "NotImplementedError: DeepSeek-V4 speculative decoding (MTP) is not implemented on CPU.",
+ "where": "vllm/models/deepseek_v4/cpu/mtp.py:17",
+ "secs": 21.7,
+ "peak_rss_gb": 0.46
+}

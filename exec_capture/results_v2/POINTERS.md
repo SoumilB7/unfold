@@ -1,0 +1,80 @@
+# Pointer repos (GGUF / MLX / LoRA copies) resolved to their base model
+
+Counts: base measured: FULL: 27, base measured: OUT: 19, no base declared: 15, base measured: PARTIAL: 6, base measured: FULL_LEFTOVERS: 4, base measured: not in results: 2, base measured: FAIL: 1
+
+| copy | base model | base verdict | GGUF/base elements |
+|---|---|---|---|
+| Abiray/Sulphur-2-base-GGUF | SulphurAI/Sulphur-2-base | OUT |  |
+| AdamCodd/vit-base-nsfw-detector | google/vit-base-patch16-384 | FULL |  |
+| CaptainArni/audio.cpp-gguf | ACE-Step/acestep-v15-xl-turbo | OUT |  |
+| ChrisColeTech/LTX-2.3-uncensored-v1.4-FP8 | TenStrip/LTX2.3-10Eros | OUT |  |
+| ChrisColeTech/LTX-2.5-uncensored-v1.1-FP8 | TenStrip/LTX2.3-10Eros | OUT |  |
+| FastFlowLM/GPT-OSS-20B-NPU2 | ['openai/gpt-oss-20b'] | None |  |
+| OBLITERATUS/Qwen3.8-27B-OBLITERATED | Qwen/Qwen3.8-27B | FULL | 0.983 |
+| Qdrant/all-MiniLM-L6-v2-onnx | None | None |  |
+| Qdrant/bge-small-en-v1.5-onnx-Q | None | None |  |
+| QuantStack/Qwen-Image-Edit-2509-GGUF | Qwen/Qwen-Image-Edit-2509 | PARTIAL |  |
+| QuantStack/Wan2.1_14B_VACE-GGUF | Wan-AI/Wan2.1-VACE-14B | OUT |  |
+| QuantStack/Wan2.2-I2V-A14B-GGUF | Wan-AI/Wan2.2-I2V-A14B | OUT |  |
+| QuantStack/Wan2.2-T2V-A14B-GGUF | Wan-AI/Wan2.2-T2V-A14B | OUT |  |
+| QuantStack/Wan2.2-TI2V-5B-GGUF | Wan-AI/Wan2.2-TI2V-5B | OUT |  |
+| Xenova/all-MiniLM-L6-v2 | sentence-transformers/all-MiniLM-L6-v2 | FULL |  |
+| Xenova/bge-base-en-v1.5 | BAAI/bge-base-en-v1.5 | FULL |  |
+| Xenova/bge-small-en-v1.5 | BAAI/bge-small-en-v1.5 | FULL |  |
+| Xenova/blenderbot_small-90M | facebook/blenderbot_small-90M | FULL |  |
+| Xenova/modnet | None | None |  |
+| Xenova/paraphrase-multilingual-MiniLM-L12-v2 | sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2 | FULL |  |
+| Xenova/segformer-b0-finetuned-ade-512-512 | nvidia/segformer-b0-finetuned-ade-512-512 | FULL |  |
+| Xenova/slimsam-77-uniform | nielsr/slimsam-77-uniform | PARTIAL |  |
+| Xenova/whisper-tiny | openai/whisper-tiny | FULL |  |
+| abenzerps/Qwen-Image-2.1-Uncensored-GGUF | Qwen/Qwen-Image-2.1 | OUT |  |
+| city96/FLUX.1-dev-gguf | black-forest-labs/FLUX.1-dev | FULL |  |
+| city96/FLUX.1-schnell-gguf | black-forest-labs/FLUX.1-schnell | FULL |  |
+| city96/Wan2.1-FLF2V-14B-720P-gguf | Wan-AI/Wan2.1-FLF2V-14B-720P | OUT |  |
+| city96/Wan2.1-I2V-14B-480P-gguf | Wan-AI/Wan2.1-I2V-14B-480P | OUT |  |
+| fredcallagan/uvdoc-grid-onnx | None | None |  |
+| joeygambino/MiniMax-H3-encoder-GGUF | MiniMaxAI/MiniMax-H3 | OUT |  |
+| katuni4ka/phi-4-multimodal-ov | None | None |  |
+| lmstudio-community/Qwen3.8-27B-MLX-4bit | Qwen/Qwen3.8-27B | FULL |  |
+| lmstudio-community/Qwen3.8-27B-MLX-5bit | Qwen/Qwen3.8-27B | FULL |  |
+| lmstudio-community/Qwen3.8-27B-MLX-6bit | Qwen/Qwen3.8-27B | FULL |  |
+| lmstudio-community/Qwen3.8-27B-MLX-8bit | Qwen/Qwen3.8-27B | FULL |  |
+| lmstudio-community/gemma-4-E4B-it-MLX-4bit | google/gemma-4-E4B-it | FULL_LEFTOVERS |  |
+| lmstudio-community/gemma-4-E4B-it-MLX-5bit | google/gemma-4-E4B-it | FULL_LEFTOVERS |  |
+| lmstudio-community/gemma-4-E4B-it-MLX-6bit | google/gemma-4-E4B-it | FULL_LEFTOVERS |  |
+| lmstudio-community/gemma-4-E4B-it-MLX-8bit | google/gemma-4-E4B-it | FULL_LEFTOVERS |  |
+| mikoy92/PP-OCRv6-medium-det-mlx | PaddlePaddle/PP-OCRv6_medium_det_safetensors | FULL |  |
+| mikoy92/PP-OCRv6-small-det-mlx | PaddlePaddle/PP-OCRv6_small_det_safetensors | FULL |  |
+| mikoy92/PP-OCRv6-small-rec-mlx | PaddlePaddle/PP-OCRv6_small_rec_safetensors | FULL |  |
+| mikoy92/PP-OCRv6-tiny-rec-mlx | PaddlePaddle/PP-OCRv6_tiny_rec_safetensors | FULL |  |
+| mlx-community/GLM-OCR-4bit | None | None |  |
+| mlx-community/Llama-3.1-8B-Instruct-4bit | meta-llama/Llama-3.1-8B-Instruct | FULL |  |
+| mlx-community/LongCat-Flash-Chat-bf16 | meituan-longcat/LongCat-Flash-Chat | OUT |  |
+| mlx-community/granite-4.0-3b-vision-4bit | ibm-granite/granite-4.0-3b-vision | FAIL |  |
+| mlx-community/openai-privacy-filter-4bit | openai/privacy-filter | FULL |  |
+| mlx-community/parakeet-tdt-0.6b-v3 | nvidia/parakeet-tdt-0.6b-v3 | FULL |  |
+| mlx-community/pixtral-12b-4bit | None | None |  |
+| mzbac/voxtral-mini-3b-4bit-mixed | None | None |  |
+| onnx-community/DepthPro-ONNX | apple/DepthPro | OUT |  |
+| onnx-community/EdgeTAM-ONNX | ['yonigozlan/EdgeTAM-hf'] | None |  |
+| onnx-community/Kokoro-82M-v1.0-ONNX | hexgrad/Kokoro-82M | OUT |  |
+| onnx-community/dinov3-vitl16-chmv2-dpt-head-ONNX | facebook/dinov3-vitl16-chmv2-dpt-head | OUT |  |
+| onnx-community/moonshine-base-ONNX | UsefulSensors/moonshine-base | FULL |  |
+| onnx-community/sam2.1-hiera-small-ONNX | None | None |  |
+| onnx-community/sam2.1-hiera-tiny-ONNX | None | None |  |
+| onnx-community/sam3-tracker-ONNX | facebook/sam3 | OUT |  |
+| onnx-community/tiny-random-MgpstrForSceneTextRecognition | None | None |  |
+| onnx-internal-testing/tiny-random-SiglipVisionModel-ONNX | None | None |  |
+| ornith-ai/Ornith-1.5-35B-A3B-MLX | None | None |  |
+| ornith-ai/Ornith-1.5-9B-MLX | None | None |  |
+| ornith-ai/Ornith-1.5-9B-MLX-8bit | None | None |  |
+| prism-ml/Bonsai-27B-mlx-1bit | Qwen/Qwen3.6-27B | FULL |  |
+| prism-ml/Ternary-Bonsai-27B-mlx-2bit | Qwen/Qwen3.6-27B | FULL |  |
+| unsloth/ERNIE-Image-Turbo-GGUF | baidu/ERNIE-Image-Turbo | PARTIAL |  |
+| unsloth/FLUX.2-dev-GGUF | black-forest-labs/FLUX.2-dev | PARTIAL |  |
+| unsloth/FLUX.2-klein-4B-GGUF | black-forest-labs/FLUX.2-klein-4B | FULL |  |
+| unsloth/FLUX.2-klein-9B-GGUF | black-forest-labs/FLUX.2-klein-9B | FULL |  |
+| unsloth/LTX-2.3-GGUF | Lightricks/LTX-2.3 | OUT |  |
+| unsloth/Wan2.2-TI2V-5B-GGUF | Wan-AI/Wan2.2-TI2V-5B | OUT |  |
+| unsloth/Z-Image-GGUF | Tongyi-MAI/Z-Image | PARTIAL |  |
+| unsloth/Z-Image-Turbo-GGUF | Tongyi-MAI/Z-Image-Turbo | PARTIAL |  |
