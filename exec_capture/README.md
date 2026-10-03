@@ -106,12 +106,14 @@ Library bugs found by these modes: NLLB-MoE expert dispatch calls one_hot on the
 - job_secs far above the runner timeout (Qwen3-Omni 3,299 s vs 1,800 s) = the Mac slept (on battery); subprocess timeouts use a monotonic clock that pauses in sleep. Runs are wrapped in `caffeinate -i -w <runner pid>`; keep the machine on power.
 - The runner skips jobs when free disk < --min-free-gb (SKIPPED(low disk)); grep for it after every run. Swap (~17–19 GB here) lives on the same disk.
 
-## 8. Live state / how to resume
-- 2026-09-29: re-run of all 355 non-FULL transformers results with the §6 modes → scratchpad modes_out (log modes.log); FULL regression sample 40/40 still FULL. Workers re-read worker_v2.py per job, so jobs finished before the last edit (timestamp in scratchpad last_edit_ts) are re-run once more. Queued: the 38 text GGUF repos (gguf_all.txt).
-- Merge: `python3 harness_v2/merge_rerun.py <tag> <dirs…>` (old → results_v2/_superseded_<tag>/); compare: `python3 harness_v2/compare_rerun.py <dir>`; then `aggregate.py; resolve_pointers.py; partials.py; bulk_roots.py`.
-- Re-run a set: `python3 harness_v2/run_batch.py --repos-file <list> --out <dir> --workers 3 --min-free-gb 2` from model-benchmark/.
-- Watch `sysctl vm.swapusage` and free disk (runner skips jobs below --min-free-gb).
-- Never run pytest concurrently in unfold-pkg. model-benchmark/ and this folder are not committed.
+## 8. Live state / how to resume (2026-10-03)
+- Nothing running. All results merged into model-benchmark/results_v2 (FULL 1,083 · FULL_LEFTOVERS 17 · PARTIAL 270 · FAIL 104 · OUT 470).
+- Version control: PR #15 https://github.com/SoumilB7/unfold/pull/15, branch exec-capture/benchmark, folder exec_capture/ (mirrors model-benchmark: harness_v2/, catalog/, results_v2/ summaries + _witness/vllm/, README = this file). Worktree /Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-exec-capture. unfold-pkg (audio-composite-support, ~130 uncommitted paths) is never touched.
+- Workflow per change: edit in model-benchmark/harness_v2 → test on a few witnesses (+ regression models) → copy changed files into the worktree → one commit per change (what + why) → push.
+- Re-run a set: `python3 harness_v2/run_batch.py --repos-file <list> --out <scratch dir> --workers 2 --min-free-gb 3 --max-worker-gb 4 --solo-worker-gb 8` (wrap in `caffeinate -i`); then `compare_rerun.py <dirs>` (must show no verdict got worse), hold back memory/crash/network FAILs, `merge_rerun.py <tag> <dirs>`, then `aggregate.py; resolve_pointers.py; partials.py; bulk_roots.py`.
+- vLLM witness: `.venv_vllm/bin/python harness_v2/mtp_witness_run.py <repo>` with PYTHONPATH=<vllm-0.30.0 source>:harness_v2 (source tarball in the session scratchpad; re-download from PyPI if gone).
+- Watch `sysctl vm.swapusage`, free disk, and Mac sleep (timeouts pause while asleep; kill hung jobs).
+- Never run pytest concurrently in unfold-pkg.
 
 ## 9. Decisions pending (Soumil)
 - Adopt execution as primary truth (reverses B2 "execution only as second witness").
