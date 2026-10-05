@@ -95,6 +95,56 @@ def norm_kind(R, ops):
     return None
 
 
+def verify_cache(rec_c, out_c, model, wk, wv, layer_prefix):
+    """Observed K/V cache behaviour: which op produced the tensors stored in the returned cache, and whether this
+    layer's attention read its keys/values from them. Returns {} if no cache was returned."""
+    pkv = getattr(out_c, "past_key_values", None)
+    if pkv is None:
+        return {}
+    found, seen = [], set()
+    def walk(o, depth=0):
+        if depth > 6 or id(o) in seen: return
+        seen.add(id(o))
+        if isinstance(o, torch.Tensor):
+            if o.dim() == 4: found.append(o)
+            return
+        if isinstance(o, (list, tuple)):
+            for x in o: walk(x, depth + 1)
+        elif isinstance(o, dict):
+            for x in o.values(): walk(x, depth + 1)
+        elif hasattr(o, "__dict__"):
+            for x in vars(o).values(): walk(x, depth + 1)
+    walk(pkv)
+    R = Rec(rec_c, model); N = R.n
+    is_w = lambda j: N[j].func in MATMULS and bool(R.weights(j))
+    write = {}
+    for t in found:
+        p = rec_c.producer.get(id(t))
+        if p is None or not N[p].module.startswith(layer_prefix): continue
+        hit, path = R.back(p, is_w)
+        if hit is None: continue
+        w_ = R.weights(hit)[0]
+        role = "key" if w_ == wk else ("value" if w_ == wv else None)
+        if role and role not in write:
+            funcs = {N[j].func for j in path}
+            after = "rope" if ("neg" in funcs and "cat" in funcs) else ("norm" if "rsqrt" in funcs else "projection")
+            write[role] = {"producer_op": p, "after": after, "stored_shape": list(t.shape)}
+    if not write:
+        return {"returned": True, "layer_written": False}
+    # read: this layer's score and weights·V matmuls take their K / V from the stored tensors
+    lops = [j for j, nd in enumerate(N) if nd.module.startswith(layer_prefix)]
+    sm = next(j for j in lops if N[j].func in SOFTMAX)
+    scores, _ = R.back(sm, lambda j: N[j].func in ("bmm", "matmul") and not R.weights(j))
+    reads = {}
+    for role, w in write.items():
+        anc = set(R.back(scores, lambda j: False, 600)[1]) | {scores}
+        later = [j for j in lops if j > sm and N[j].func in ("bmm", "matmul") and not R.weights(j)]
+        anc_v = set(R.back(later[0], lambda j: False, 600)[1]) if later else set()
+        reads[role] = w["producer_op"] in (anc if role == "key" else anc_v)
+    return {"returned": True, "layer_written": True, "write": write, "read": reads,
+            "verified": write.get("key") is not None and write.get("value") is not None and all(reads.values())}
+
+
 def build(repo):
     import transformers
     cfg = transformers.AutoConfig.from_pretrained(repo)
@@ -110,11 +160,17 @@ def build(repo):
     with torch.no_grad(), math_attention(), rec:
         model(**kw, use_cache=False)
     rec.remove_hooks()
-    return model, cfg, arch, kw, rec
+    # second pass with the cache ON: the returned cache holds the stored keys/values; their producers are looked up
+    # in this recording (the tensors stay alive inside the cache object, so the producer map still knows them)
+    rec_c = DagRecorder(model, kw)
+    with torch.no_grad(), math_attention(), rec_c:
+        out_c = model(**kw, use_cache=True)
+    rec_c.remove_hooks()
+    return model, cfg, arch, kw, rec, (rec_c, out_c)
 
 
 def recognize(repo):
-    model, cfg, arch, kw, rec = build(repo)
+    model, cfg, arch, kw, rec, (rec_c, out_c) = build(repo)
     R = Rec(rec, model)
     N = R.n
     ev = collections.defaultdict(list)                     # fact -> evidence strings
@@ -210,6 +266,8 @@ def recognize(repo):
             d = 2 * buf.numel(); raw = float(buf[1].double() ** (-d / 2))
             theta = float(f"{raw:.4g}")                 # the buffer is float32: 4 significant digits are real
             break
+    cache = verify_cache(rec_c, out_c, model, wk, wv, f"{stack}.{layer_ids[0]}")
+    ev["cache"].append(json.dumps(cache, default=str))
     o_proj = next((j for j in sorted(lset) if j > apply_v and N[j].module.startswith(attn_mod) and N[j].func in MATMULS and R.weights(j)), None)
     wo = R.weights(o_proj)[0] if o_proj is not None else None
     bias = any(N[x].func == "addmm" for x in (q_proj, k_proj, v_proj) + ((o_proj,) if o_proj else ()))
@@ -255,7 +313,7 @@ def recognize(repo):
                  qk_norm_kind=qk_norm_q, qn_extent=(R.pshape[qn_w][0] if qn_w else None), norm_before_rope=norm_before_rope,
                  rope=rope_q and rope_k, theta=theta, scale=scale, mask=mask, bias=bias, o_proj=o_proj is not None,
                  gated=gated, act=act, inter=inter, norm=n1 or n2, placement=placement, residual=residual,
-                 max_pos=getattr(cfg, "max_position_embeddings", None), total_ops=len(N), evidence=dict(ev),
+                 max_pos=getattr(cfg, "max_position_embeddings", None), total_ops=len(N), evidence=dict(ev), cache=cache,
                  seq=int(kw["input_ids"].shape[-1]) if "input_ids" in kw else None)
     return facts
 
@@ -267,6 +325,10 @@ def fmt(n):
 def to_ir(F):
     """Build unfold's ModelIR from execution facts (same fields the code parser fills)."""
     import model_unfolder.ir as I
+    C = F.get("cache") or {}
+    # the canonical graph wires K (after RoPE when RoPE exists) and V into the cache, and the cache into scores
+    # and weights·V: claim the cache only when the recording shows exactly that
+    cache_ok = bool(C.get("verified")) and C["write"]["key"]["after"] == ("rope" if F["rope"] else C["write"]["key"]["after"])
     def make(cls, **kv):
         names = {f.name for f in dataclasses.fields(cls)}
         return cls(**{k: v for k, v in kv.items() if k in names})
@@ -284,7 +346,10 @@ def to_ir(F):
                 qk_norm_placement=("after_reshape" if F["qn_extent"] == F["head_dim"] else "before_reshape") if F["qk_norm"] else None,
                 rope=F["rope"], position_kind="rope" if F["rope"] else None, position_application="qk_rotation" if F["rope"] else None,
                 bias=F["bias"], output_projection=F["o_proj"], projection_mode="fused_qkv" if F["fused"] else "split_qkv",
-                scores_scaled=F["scale"] is not None, cached=False)
+                scores_scaled=F["scale"] is not None, cached=cache_ok,
+                cache_evidence=({"payload": ["key", "value"],
+                                 "location": f"keys after {F['cache']['write']['key']['after']}, values after {F['cache']['write']['value']['after']}",
+                                 "guard": "observed in a run with use_cache=True"} if cache_ok else None))
     ffn = make(I.FFNSpec, kind="dense", activation=F["act"], intermediate_size=F["inter"], gated=F["gated"], bias=False,
                projection_mode="split" if F["gated"] else None)
     H, hd, nh, nkv = F["hidden"], F["head_dim"], F["num_heads"], F["num_kv"]
@@ -294,8 +359,8 @@ def to_ir(F):
     if not F["bias"]: attn_facts.append("bias-free projections")
     children = [
         {"id": "q_proj", "title": "Query projection", "description": "Recorded matmul producing the per-head queries.", "facts": [f"{fmt(H)} → {fmt(F['q_out'])}", f"{nh} Q heads", f"head dim {hd}"]},
-        {"id": "k_proj", "title": "Key projection", "description": "Recorded matmul producing the keys.", "facts": [f"{fmt(H)} → {fmt(F['k_out'])}", f"{nkv} KV heads"]},
-        {"id": "v_proj", "title": "Value projection", "description": "Recorded matmul producing the values.", "facts": [f"{fmt(H)} → {fmt(F['k_out'])}", f"{nkv} KV heads"]},
+        {"id": "k_proj", "title": "Key projection", "description": "Recorded matmul producing the keys.", "facts": [f"{fmt(H)} → {fmt(F['k_out'])}", f"{nkv} KV heads"] + (["cache ports: ⌃ write · ⊥ read"] if cache_ok else [])},
+        {"id": "v_proj", "title": "Value projection", "description": "Recorded matmul producing the values.", "facts": [f"{fmt(H)} → {fmt(F['k_out'])}", f"{nkv} KV heads"] + (["cache ports: ⌃ write · ⊥ read"] if cache_ok else [])},
         {"id": "q_reshape", "title": "Reshape query heads", "description": "The projected width is split into heads before the next op.", "facts": [f"head dim {hd}"]},
         {"id": "k_reshape", "title": "Reshape key heads", "description": "The projected width is split into heads before the next op.", "facts": [f"head dim {hd}"]},
     ]
@@ -314,6 +379,13 @@ def to_ir(F):
         {"id": "attn_apply_v", "title": "Matrix multiplication", "description": "Recorded weights · V — one context vector per head."},
         {"id": "concat_heads", "title": "Concatenate heads", "description": "Heads are stacked back into one width.", "facts": [f"{nh} × {hd}", f"→ {fmt(nh * hd)}"]},
     ]
+    if cache_ok:
+        kw_ = C["write"]["key"]; vw_ = C["write"]["value"]
+        children.append({"id": "kv_cache", "title": "K/V cache update and read",
+                         "description": f"Observed in a run with the cache on: the returned cache stores the keys after {kw_['after']} "
+                                        f"(shape {kw_['stored_shape']}) and the values after {vw_['after']} (shape {vw_['stored_shape']}); "
+                                        "this layer's scores and weights·V read them back from the cache.",
+                         "facts": ["stores key + value", f"keys after {kw_['after']}", "read by scores and weights·V"]})
     if F["o_proj"]:
         children.append({"id": "o_proj", "title": "Output projection", "description": "Recorded matmul back to the residual width.", "facts": [f"{fmt(F['o_shape'][1])} → {fmt(F['o_shape'][0])}"]})
     attn_block = {"id": "attn", "role": "attention", "kind": "attention",
