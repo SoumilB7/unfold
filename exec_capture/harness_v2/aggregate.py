@@ -67,5 +67,6 @@ if sec:
     lines += ["", f"Cost per repo: median {sec[len(sec)//2]:.0f}s, p90 {sec[int(len(sec)*.9)]:.0f}s; peak RAM median {gb[len(gb)//2] if gb else 0:.2f} GB, max {max(gb) if gb else 0:.2f} GB"]
 os.makedirs(RES, exist_ok=True)
 open(os.path.join(RES, "SUMMARY.md"), "w").write("\n".join(lines))
-json.dump(rows, open(os.path.join(RES, "summary.json"), "w"), indent=1)
+with open(os.path.join(RES, "summary.json"), "w") as fh:                  # one row per line (same JSON content)
+    fh.write("[\n" + ",\n".join(json.dumps(r) for r in rows) + "\n]\n")
 print("\n".join(lines[:40]))

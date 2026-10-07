@@ -97,7 +97,8 @@ def level(r):
 
 for r in rows:
     r["level"] = level(r)
-json.dump(rows, open(os.path.join(RES, "partials.json"), "w"), indent=1, default=str)
+with open(os.path.join(RES, "partials.json"), "w") as fh:                 # one row per line (same JSON content)
+    fh.write("[\n" + ",\n".join(json.dumps(r, default=str) for r in rows) + "\n]\n")
 
 L = ["# PARTIAL results — precise causes (measured from result files)", "",
      f"PARTIAL models: **{len(rows)}**  |  " + "  ".join(f"**{k}** {v}" for k, v in collections.Counter(r['level'] for r in rows).most_common()), "",
