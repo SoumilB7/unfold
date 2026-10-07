@@ -152,8 +152,9 @@ show that paths are live, never to prove a path dead.
   report, the matcher still runs: its `class_lacks` keys name the library's silent drops, and `matcher_view` is
   stored for comparison. Census: 223 results with `t1_authority = library_load_report`; matcher-only rows in every
   category.
-- Matcher class selection (`_uncovered_numel` → `class_selected_by_weights`): runs when `_auth_sel` is False, i.e.
-  cases (a) and (c) above. 58 results carry `class_selected_by_weights`.
+- Matcher class selection (`_uncovered_numel` → `class_selected_by_weights`): runs when headers exist and
+  `_auth_sel` is False, i.e. cases (a) and (c) above. GGUF repos get no class selection at all (their parts list is
+  only built after the model, so `T` is empty at that point). 58 results carry `class_selected_by_weights`.
 - `fetch_bin_headers` / `_bin_index`: the .bin ground truth (134 results with `ground_truth_source =
   pytorch_bin_index`; the diffusion worker uses `_bin_index` for .bin components).
 - Env knobs read by the worker but never set by run_batch: `BENCH_STAGE_S` (150), `BENCH_LIBLOAD_S` (1200),
@@ -183,8 +184,123 @@ scripts import them exactly as they ran.
 
 See the cleanup report on the PR for the commit list; per-commit verification is recorded below.
 
-(pending)
+| commit | change | verification |
+|---|---|---|
+| 134ee217 | removed cache_probe.py / cache_probe2.py (research only, nothing imports them) | grep: no importer; research note points to commit 29ed4b6e |
+| 6a12c8fe | catalog/index.json one row per line (64,773 → 1,990 lines) | `json.load` equal before/after (1,988 rows) |
+| 96516199 | summary.json, partials.json one row per line; aggregate.py / partials.py write that form | `json.load` equal (1,944 / 270 rows) |
+| 9ce6ad9e, 6707f4db | helpers nothing calls removed from common.py, lowcost.py, libload.py | grep over the branch and model-benchmark: no live caller |
+| e0e1a2cd | unused imports / never-read locals (pyflakes) | stdlib or same-module imports only, no side effects |
+| ce212ff9 | four duplicated steps folded into one copy each | 33+3 control repos run before/after: identical except a temp-dir path in one error message (same noise between two pre-cleanup runs); outputs in model-benchmark/_reruns/cleanup/ |
+
+## 7. Bugs noticed (reported, not fixed: this is a cleanup)
+
+1. worker_v2.py header cache: on a cache hit `ground_truth_source` is never set (it is set only on a miss). So a
+   result's fields depend on cache state (993 of the live results have no `ground_truth_source`), and for a .bin-only
+   repo with cached headers the check `ground_truth_source in (None, "safetensors")` passes, so the library authority
+   runs anyway, mirrors nothing and records `library_load_report_error: "not run: no safetensors weight files"` plus a
+   `library_class_selection` block, which a cache miss would not record. Seen in the control run: facebook/opt-125m,
+   tiny-random-SwitchTransformers. The verdict goes through the matcher either way.
+2. results_v2/_witness/vllm/Qwen__Qwen3-Next-80B-A3B-Instruct.json is in an older schema: `closed: true` but no
+   `executed_checkpoint_keys` and no `vllm_mtp_arch`. worker_v2 reads `executed_checkpoint_keys or []`, so this
+   witness covers 0 keys (`executed_by_witness_partial`) and the repo cannot reach FULL_LEFTOVERS, although README
+   §6H reports Qwen3-Next 1,553/1,553 executed. Re-running mtp_witness_run.py for it would fix the record.
+3. `library_load_report_error` can carry a temp-dir path (e.g. `OSError: /var/folders/...`), so that field differs
+   from run to run for the same repo.
+4. bulk_roots.py uses `RES = "results_v2"` relative to the working directory, unlike the other report scripts
+   (relative to the script); run from anywhere else it reads nothing.
+5. README §1 and §10 cite `evidence/...`; in this folder the files are under `docs/evidence/...`.
+6. mtp_witness_run.py's comment names `apply_witness.py`, which does not exist.
+7. results_v2/fail_classes.json has no generator and counts 211 FAILs (2026-09-29); the current results have 104.
+8. aggregate.py divides by the runnable count in the headline line; with zero runnable rows it raises.
 
 ## Appendix A. Witness files
 
-(pending)
+All 84 are KEEP-INPUT + evidence (written by mtp_witness_run.py, read by worker_v2.py T1). Action for every one: keep.
+
+| file | lines | closed | executed_checkpoint_keys | vllm_mtp_arch | read by worker as |
+|---|---|---|---|---|---|
+| `CMSManhattan__JiRackDeltaNet_27b.json` | 10 | False | (absent) | Qwen3_5MTP | not closed: only vllm_mtp_arch/registry_error used (FULL_LEFTOVERS eligibility) |
+| `FacebookAI__xlm-roberta-base.json` | 10 | False | (absent) | None | not closed: only vllm_mtp_arch/registry_error used (FULL_LEFTOVERS eligibility) |
+| `Inferact__Qwen3.8-27B-NVFP4.json` | 109 | True | 17 | (absent) | covers declared-unbuilt keys |
+| `OBLITERATUS__Ornith-1.5-9B-OBLITERATED.json` | 109 | True | 17 | (absent) | covers declared-unbuilt keys |
+| `PaddlePaddle__PaddleOCR-VL-1.5.json` | 10 | False | (absent) | None | not closed: only vllm_mtp_arch/registry_error used (FULL_LEFTOVERS eligibility) |
+| `PaddlePaddle__PaddleOCR-VL-1.6.json` | 10 | False | (absent) | None | not closed: only vllm_mtp_arch/registry_error used (FULL_LEFTOVERS eligibility) |
+| `QuantTrio__Qwen3.5-9B-AWQ.json` | 110 | True | 17 | Qwen3_5MTP | covers declared-unbuilt keys |
+| `QuantTrio__Qwen3.6-35B-A3B-AWQ.json` | 1664 | True | 787 | Qwen3_5MoeMTP | covers declared-unbuilt keys |
+| `Qwen__Qwen3-Next-80B-A3B-Instruct.json` | 1641 | True | (absent) | (absent) | closed but NO executed_checkpoint_keys (older schema): covers nothing |
+| `Qwen__Qwen3.5-0.8B.json` | 108 | True | 16 | (absent) | covers declared-unbuilt keys |
+| `Qwen__Qwen3.5-122B-A10B-FP8.json` | 2440 | True | 787 | Qwen3_5MoeMTP | covers declared-unbuilt keys |
+| `Qwen__Qwen3.5-27B.json` | 110 | True | 17 | Qwen3_5MTP | covers declared-unbuilt keys |
+| `Qwen__Qwen3.5-2B.json` | 109 | True | 16 | Qwen3_5MTP | covers declared-unbuilt keys |
+| `Qwen__Qwen3.5-35B-A3B-FP8.json` | 2440 | True | 787 | Qwen3_5MoeMTP | covers declared-unbuilt keys |
+| `Qwen__Qwen3.5-35B-A3B.json` | 1663 | True | 787 | (absent) | covers declared-unbuilt keys |
+| `Qwen__Qwen3.5-397B-A17B-FP8.json` | 4744 | True | 1555 | Qwen3_5MoeMTP | covers declared-unbuilt keys |
+| `Qwen__Qwen3.5-4B.json` | 109 | True | 16 | Qwen3_5MTP | covers declared-unbuilt keys |
+| `Qwen__Qwen3.5-9B.json` | 110 | True | 17 | Qwen3_5MTP | covers declared-unbuilt keys |
+| `Qwen__Qwen3.6-27B-FP8.json` | 118 | True | 17 | Qwen3_5MTP | covers declared-unbuilt keys |
+| `Qwen__Qwen3.6-27B.json` | 110 | True | 17 | Qwen3_5MTP | covers declared-unbuilt keys |
+| `Qwen__Qwen3.6-35B-A3B-FP8.json` | 2440 | True | 787 | Qwen3_5MoeMTP | covers declared-unbuilt keys |
+| `Qwen__Qwen3.6-35B-A3B.json` | 132 | True | 21 | Qwen3_5MoeMTP | covers declared-unbuilt keys |
+| `Qwen__Qwen3.8-27B-FP8.json` | 118 | True | 17 | Qwen3_5MTP | covers declared-unbuilt keys |
+| `Qwen__Qwen3.8-27B.json` | 110 | True | 17 | Qwen3_5MTP | covers declared-unbuilt keys |
+| `RadixArk__Qwen3.8-27B-NVFP4.json` | 110 | True | 17 | Qwen3_5MTP | covers declared-unbuilt keys |
+| `RedHatAI__Qwen3.6-35B-A3B-NVFP4.json` | 132 | True | 21 | Qwen3_5MoeMTP | covers declared-unbuilt keys |
+| `apodex__Apodex-1.1-mini.json` | 1664 | True | 787 | Qwen3_5MoeMTP | covers declared-unbuilt keys |
+| `apple__DepthPro-hf.json` | 10 | False | (absent) | None | not closed: only vllm_mtp_arch/registry_error used (FULL_LEFTOVERS eligibility) |
+| `bosonai__higgs-tts-2-3b-base.json` | 10 | False | (absent) | None | not closed: only vllm_mtp_arch/registry_error used (FULL_LEFTOVERS eligibility) |
+| `cyankiwi__Qwen3.6-27B-AWQ-INT4.json` | 117 | False | 1 | Qwen3_5MTP | not closed: only vllm_mtp_arch/registry_error used (FULL_LEFTOVERS eligibility) |
+| `cyankiwi__Qwen3.8-27B-AWQ-INT4.json` | 110 | True | 17 | Qwen3_5MTP | covers declared-unbuilt keys |
+| `datalab-to__chandra-ocr-2.json` | 109 | True | 16 | Qwen3_5MTP | covers declared-unbuilt keys |
+| `datalab-to__surya-ocr-2.json` | 109 | True | 16 | Qwen3_5MTP | covers declared-unbuilt keys |
+| `deepseek-ai__DeepSeek-R1.json` | 878 | True | 789 | DeepSeekMTPModel | covers declared-unbuilt keys |
+| `deepseek-ai__DeepSeek-V3-0324.json` | 877 | True | 789 | (absent) | covers declared-unbuilt keys |
+| `deepseek-ai__DeepSeek-V3.1.json` | 878 | True | 789 | DeepSeekMTPModel | covers declared-unbuilt keys |
+| `deepseek-ai__DeepSeek-V3.2.json` | 10 | False | (absent) | DeepseekV32MTPModel | not closed: only vllm_mtp_arch/registry_error used (FULL_LEFTOVERS eligibility) |
+| `deepseek-ai__DeepSeek-V3.json` | 878 | True | 789 | DeepSeekMTPModel | covers declared-unbuilt keys |
+| `deepseek-ai__DeepSeek-V4-Flash-0731.json` | 10 | False | (absent) | DeepSeekV4MTPModel | not closed: only vllm_mtp_arch/registry_error used (FULL_LEFTOVERS eligibility) |
+| `deepseek-ai__DeepSeek-V4-Flash-DSpark.json` | 10 | False | (absent) | DeepSeekV4MTPModel | not closed: only vllm_mtp_arch/registry_error used (FULL_LEFTOVERS eligibility) |
+| `deepseek-ai__DeepSeek-V4-Flash-Vision-Exp.json` | 10 | False | (absent) | DeepSeekV4MTPModel | not closed: only vllm_mtp_arch/registry_error used (FULL_LEFTOVERS eligibility) |
+| `deepseek-ai__DeepSeek-V4-Flash.json` | 10 | False | (absent) | DeepSeekV4MTPModel | not closed: only vllm_mtp_arch/registry_error used (FULL_LEFTOVERS eligibility) |
+| `deepseek-ai__DeepSeek-V4-Pro.json` | 10 | False | (absent) | DeepSeekV4MTPModel | not closed: only vllm_mtp_arch/registry_error used (FULL_LEFTOVERS eligibility) |
+| `distilbert__distilgpt2.json` | 10 | False | (absent) | None | not closed: only vllm_mtp_arch/registry_error used (FULL_LEFTOVERS eligibility) |
+| `efwkjn__cohere-asr-ja-v0.1.json` | 10 | False | (absent) | None | not closed: only vllm_mtp_arch/registry_error used (FULL_LEFTOVERS eligibility) |
+| `efwkjn__cohere-asr-ja.json` | 10 | False | (absent) | None | not closed: only vllm_mtp_arch/registry_error used (FULL_LEFTOVERS eligibility) |
+| `empero-ai__Qwen3.8-2B.json` | 109 | True | 16 | Qwen3_5MTP | covers declared-unbuilt keys |
+| `empero-ai__Qwen3.8-4B.json` | 109 | True | 16 | Qwen3_5MTP | covers declared-unbuilt keys |
+| `empero-ai__Qwen3.8-9B.json` | 110 | True | 17 | Qwen3_5MTP | covers declared-unbuilt keys |
+| `facebook__esm2_t33_650M_UR50D.json` | 10 | False | (absent) | None | not closed: only vllm_mtp_arch/registry_error used (FULL_LEFTOVERS eligibility) |
+| `facebook__esm2_t6_8M_UR50D.json` | 10 | False | (absent) | None | not closed: only vllm_mtp_arch/registry_error used (FULL_LEFTOVERS eligibility) |
+| `facebook__sapiens2-pose-1b.json` | 10 | False | (absent) | None | not closed: only vllm_mtp_arch/registry_error used (FULL_LEFTOVERS eligibility) |
+| `facebook__sapiens2-seg-0.4b.json` | 10 | False | (absent) | None | not closed: only vllm_mtp_arch/registry_error used (FULL_LEFTOVERS eligibility) |
+| `google-t5__t5-base.json` | 10 | False | (absent) | None | not closed: only vllm_mtp_arch/registry_error used (FULL_LEFTOVERS eligibility) |
+| `google-t5__t5-large.json` | 10 | False | (absent) | None | not closed: only vllm_mtp_arch/registry_error used (FULL_LEFTOVERS eligibility) |
+| `google-t5__t5-small.json` | 10 | False | (absent) | None | not closed: only vllm_mtp_arch/registry_error used (FULL_LEFTOVERS eligibility) |
+| `google__gemma-3n-E2B-it.json` | 10 | False | (absent) | None | not closed: only vllm_mtp_arch/registry_error used (FULL_LEFTOVERS eligibility) |
+| `google__gemma-4-E2B-it.json` | 10 | False | (absent) | None | not closed: only vllm_mtp_arch/registry_error used (FULL_LEFTOVERS eligibility) |
+| `google__gemma-4-E4B-it.json` | 10 | False | (absent) | None | not closed: only vllm_mtp_arch/registry_error used (FULL_LEFTOVERS eligibility) |
+| `google__gemma-4-E4B.json` | 10 | False | (absent) | None | not closed: only vllm_mtp_arch/registry_error used (FULL_LEFTOVERS eligibility) |
+| `microsoft__deberta-v3-base.json` | 10 | False | (absent) | None | not closed: only vllm_mtp_arch/registry_error used (FULL_LEFTOVERS eligibility) |
+| `microsoft__deberta-v3-large.json` | 10 | False | (absent) | None | not closed: only vllm_mtp_arch/registry_error used (FULL_LEFTOVERS eligibility) |
+| `microsoft__deberta-v3-small.json` | 10 | False | (absent) | None | not closed: only vllm_mtp_arch/registry_error used (FULL_LEFTOVERS eligibility) |
+| `microsoft__mdeberta-v3-base.json` | 10 | False | (absent) | None | not closed: only vllm_mtp_arch/registry_error used (FULL_LEFTOVERS eligibility) |
+| `nvidia__GLM-5.2-NVFP4.json` | 10 | False | (absent) | DeepseekV32MTPModel | not closed: only vllm_mtp_arch/registry_error used (FULL_LEFTOVERS eligibility) |
+| `nvidia__NVIDIA-Nemotron-3-Super-120B-A12B-BF16.json` | 10 | False | (absent) | NemotronHMTPModel | not closed: only vllm_mtp_arch/registry_error used (FULL_LEFTOVERS eligibility) |
+| `nvidia__NVIDIA-Nemotron-3-Super-120B-A12B-NVFP4.json` | 10 | False | (absent) | NemotronHMTPModel | not closed: only vllm_mtp_arch/registry_error used (FULL_LEFTOVERS eligibility) |
+| `nvidia__NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16.json` | 10 | False | (absent) | NemotronHMTPModel | not closed: only vllm_mtp_arch/registry_error used (FULL_LEFTOVERS eligibility) |
+| `nvidia__NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4.json` | 10 | False | (absent) | NemotronHMTPModel | not closed: only vllm_mtp_arch/registry_error used (FULL_LEFTOVERS eligibility) |
+| `nvidia__Qwen3.5-122B-A10B-NVFP4.json` | 1664 | True | 787 | Qwen3_5MoeMTP | covers declared-unbuilt keys |
+| `nvidia__Qwen3.6-27B-NVFP4.json` | 110 | True | 17 | Qwen3_5MTP | covers declared-unbuilt keys |
+| `nvidia__Qwen3.6-35B-A3B-NVFP4.json` | 132 | True | 21 | Qwen3_5MoeMTP | covers declared-unbuilt keys |
+| `nvidia__Qwen3.8-27B-NVFP4.json` | 110 | True | 17 | Qwen3_5MTP | covers declared-unbuilt keys |
+| `openai-community__gpt2-large.json` | 10 | False | (absent) | None | not closed: only vllm_mtp_arch/registry_error used (FULL_LEFTOVERS eligibility) |
+| `openai-community__gpt2.json` | 10 | False | (absent) | None | not closed: only vllm_mtp_arch/registry_error used (FULL_LEFTOVERS eligibility) |
+| `ornith-ai__Ornith-1.5-35B-A3B-NVFP4.json` | 1664 | True | 787 | Qwen3_5MoeMTP | covers declared-unbuilt keys |
+| `ornith-ai__Ornith-1.5-35B-A3B.json` | 1664 | True | 787 | Qwen3_5MoeMTP | covers declared-unbuilt keys |
+| `ornith-ai__Ornith-1.5-397B-FP8.json` | 3200 | True | 1555 | Qwen3_5MoeMTP | covers declared-unbuilt keys |
+| `principled-intelligence__gemma-4-E2B-it-text-only.json` | 10 | False | (absent) | None | not closed: only vllm_mtp_arch/registry_error used (FULL_LEFTOVERS eligibility) |
+| `sshleifer__tiny-gpt2.json` | 10 | False | (absent) | None | not closed: only vllm_mtp_arch/registry_error used (FULL_LEFTOVERS eligibility) |
+| `unsloth__Qwen3.6-35B-A3B-NVFP4.json` | 132 | True | 21 | Qwen3_5MoeMTP | covers declared-unbuilt keys |
+| `unsloth__Qwen3.8-27B-NVFP4.json` | 110 | True | 17 | Qwen3_5MTP | covers declared-unbuilt keys |
+| `zai-org__GLM-4.7-Flash.json` | 10 | False | (absent) | Glm4MoeLiteMTPModel | not closed: only vllm_mtp_arch/registry_error used (FULL_LEFTOVERS eligibility) |
+| `zai-org__GLM-5.2-FP8.json` | 10 | False | (absent) | DeepseekV32MTPModel | not closed: only vllm_mtp_arch/registry_error used (FULL_LEFTOVERS eligibility) |
