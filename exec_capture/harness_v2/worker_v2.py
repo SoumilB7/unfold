@@ -21,7 +21,7 @@ import noweights; noweights.install()
 torch.set_num_threads(int(os.environ.get("BENCH_THREADS", "2")))
 import transformers
 from lowcost import zero_storage, fetch_headers, fetch_bin_headers
-from common import ckpt_split, match, library_rename, split_library_ignored, looks_like_stored_buffer, top_groups, numel
+from common import ckpt_split, match, library_rename, split_library_ignored, looks_like_stored_buffer, top_groups, numel, INT_DTYPES
 from dag import DagRecorder, analyse, tied_alias_modules, math_attention, clear_library_caches
 from inputs import build_passes
 
@@ -184,6 +184,43 @@ _cap(cfg)
 if _caps:
     R["data_size_caps"] = _caps
 
+# ---- 1d. implementation switches: CUDA-only fused kernels cannot run here. The library's own switch
+#          (use_*_kernel(s) = False) selects its pure-PyTorch path, as attn_implementation="eager" does for attention.
+if not torch.cuda.is_available():
+    import re
+    def _kern(c, path=""):
+        for k, v in list(vars(c).items()):
+            if isinstance(v, bool) and v and re.fullmatch(r"use_\w*kernels?", k):
+                setattr(c, k, False); R.setdefault("implementation_switches", []).append(f"{path}{k}=False")
+            elif hasattr(v, "to_dict") and v is not c:
+                _kern(v, f"{path}{k}.")
+    _kern(cfg)
+
+# time limits. Optional stages (3a-3d) are bounded so they can never cost the main result: each model call gets a hard
+# limit, and no new optional call starts once the job is past its optional budget (the runner kills at
+# BENCH_DEADLINE_EPOCH). The library authority (1c, T1) has its own budget, capped by that deadline.
+import signal, contextlib
+class StageTimeout(Exception):
+    pass
+ALARMS = [0]                                          # every alarm counts, even one the library swallows
+def _on_alarm(sig, frm):
+    ALARMS[0] += 1
+    raise StageTimeout("stage time limit reached")
+signal.signal(signal.SIGALRM, _on_alarm)
+STAGE_S = int(os.environ.get("BENCH_STAGE_S", "150")); LIBLOAD_S = int(os.environ.get("BENCH_LIBLOAD_S", "1200")); DEADLINE = float(os.environ.get("BENCH_DEADLINE_EPOCH", "0")); OPTIONAL_BUDGET_S = int(os.environ.get("BENCH_OPTIONAL_BUDGET_S", "600"))
+@contextlib.contextmanager
+def _limit():
+    signal.alarm(STAGE_S)
+    try:
+        yield
+    finally:
+        signal.alarm(0)
+def _optional_ok(label):
+    if time.time() - T0 < OPTIONAL_BUDGET_S:
+        return True
+    R.setdefault("optional_stages_skipped_time_budget", []).append(label)
+    return False
+
 # ---- 1c. class selection by weight evidence: if the declared class does not build every shipped tensor, try every
 #          class the library registers for this model_type and keep the one covering the most checkpoint weights.
 def _uncovered_numel(klass):
@@ -202,7 +239,106 @@ def _uncovered_numel(klass):
     _, unc0, unh0, _ = match(W0, H0, al0, packed0, rename=ren0)
     unc0 = [c for c in unc0 if not looks_like_stored_buffer(*W0[c])]
     return sum(numel(W0[c][0]) for c in unc0), len(unh0)
-if T:
+# The library authority (its own from_pretrained over sparse header stubs) decides when it can run: a class is
+# scored by what the library itself says it cannot place (unexpected / mismatched / silently dropped file tensors,
+# and parameters it leaves uninitialized). The name matcher below is the fallback when no load report is possible.
+def _pos_lengths(c):
+    out = set()
+    for sc in [c] + [getattr(c, a) for a in dir(c) if a.endswith("_config") and hasattr(getattr(c, a, None), "to_dict")]:
+        for f in ("n_positions", "max_position_embeddings", "n_ctx", "max_seq_len", "block_size"):
+            v = getattr(sc, f, None)
+            if isinstance(v, int) and v > 0: out.add(v)
+    return out
+_POS = _pos_lengths(cfg)
+def _stored_constant(x):
+    """A shipped tensor that is a stored table, not a learned weight, from its header alone: an integer/bool table,
+    or a float 1x1xNxN matrix whose N is one of the model's own position lengths (a stored attention mask)."""
+    s_, d_ = T[x]
+    return d_ in INT_DTYPES or d_ == "BOOL" or (len(s_) == 4 and s_[0] == s_[1] == 1 and s_[2] == s_[3] and s_[2] in _POS)
+AUTH, _auth_sel, _auth_mirror_failed = None, False, False
+def _lib_score(rep):
+    """(file side, model side): file tensors the library cannot place (unexpected / mismatched, not integer tables;
+    silently dropped), and parameters it leaves uninitialized. None when there is no report."""
+    if not rep or "error" in rep: return None
+    srcs = rep.get("reported_sources", {})
+    def _int_table(k):                                # integer/bool tables and counters (renamed or not)
+        ss = srcs.get(k) or [k]
+        return all(x in T and _stored_constant(x) for x in ss)
+    bad = [k for k in rep["unexpected"] + [m_[0] for m_ in rep["mismatched"]] if not _int_table(k)]
+    n_bad = sum(numel(T[x][0]) for k in bad for x in (srcs.get(k) or [k]) if x in T)
+    return (n_bad + rep.get("unaccounted_numel", 0), rep.get("missing_param_numel", 0))
+if T and R.get("ground_truth_source") in (None, "safetensors") and GGUF_RAW is None:
+    _t1c = time.time(); _sel = {"candidates": {}, "complete": False}
+    try:
+        import libload
+        AUTH = libload.Authority(repo)
+        import atexit; atexit.register(AUTH.close)
+        _A_aux = set(ckpt_split(T)[1])
+        def _rep(klass):                              # a report produced while an alarm fired is not trusted/cached
+            n0 = ALARMS[0]; r_ = AUTH.report(klass, _A_aux, config=cfg)
+            if ALARMS[0] != n0:
+                AUTH.cache.pop(klass.__name__, None); raise StageTimeout("alarm during library load")
+            return r_
+        _left = int(DEADLINE - time.time() - 900) if DEADLINE else LIBLOAD_S
+        if _left < 60:
+            raise StageTimeout("no time left for library class selection")
+        signal.setitimer(signal.ITIMER_REAL, min(LIBLOAD_S, _left), 5)
+        try:
+            try:
+                s0 = _lib_score(_rep(cls))
+            except StageTimeout:
+                _auth_mirror_failed = AUTH.n is None; raise
+            if s0 is not None:
+                _auth_sel = True
+                if s0 != (0, 0):
+                    import transformers.models.auto.modeling_auto as MA
+                    cands = set()
+                    for nm in dir(MA):
+                        mp = getattr(MA, nm)
+                        if nm.endswith("_MAPPING_NAMES") and "CONFIG" not in nm and isinstance(mp, dict):
+                            v = mp.get(cfg.model_type)
+                            for c in ([v] if isinstance(v, str) else list(v) if isinstance(v, (list, tuple)) else []):
+                                if hasattr(transformers, c) and not c.endswith("Config"): cands.add(c)
+                    scored = []
+                    for c in sorted(cands - {cls.__name__}):
+                        _n0 = ALARMS[0]
+                        try:
+                            sc = _lib_score(_rep(getattr(transformers, c)))
+                        except StageTimeout:
+                            _auth_sel = False; raise          # incomplete: fall back to the matcher's selection
+                        except Exception as e:
+                            if ALARMS[0] != _n0:              # the library turned our timeout into another error
+                                _auth_sel = False; raise StageTimeout("alarm during candidate load")
+                            _sel["candidates"][c] = f"error: {type(e).__name__}: {str(e)[:80]}"; continue
+                        if sc is not None:
+                            scored.append((sc, c)); _sel["candidates"][c] = list(sc)
+                        else:
+                            _sel["candidates"][c] = "no report"
+                    _sel["complete"] = True
+                    # switch only on FILE-side evidence: the candidate places strictly more of the shipped tensors,
+                    # or fits exactly (nothing unplaced, nothing uninitialized). Parameters missing from the file alone
+                    # never decide the class; a tie for best keeps the declared class (recorded as ambiguous).
+                    ok = [(sc, c) for sc, c in scored if sc[0] < s0[0] or sc == (0, 0)]
+                    if ok:
+                        best = min(sc for sc, _ in ok)
+                        winners = [c for sc, c in ok if sc == best]
+                        if len(winners) == 1:
+                            R["class_selected_by_library"] = {"declared": cls.__name__, "selected": winners[0],
+                                                              "score_declared": list(s0), "score_selected": list(best)}
+                            cls = getattr(transformers, winners[0]); R["class"] = cls.__name__
+                        else:
+                            _sel["ambiguous"] = winners
+                else:
+                    _sel["complete"] = True
+                _sel["declared_score"] = list(s0)
+        finally:
+            signal.setitimer(signal.ITIMER_REAL, 0)
+    except Exception as e:
+        signal.setitimer(signal.ITIMER_REAL, 0)
+        R["steps"]["library_class_selection_error"] = f"{type(e).__name__}: {str(e)[:200]}"
+    _sel["secs"] = round(time.time() - _t1c, 1)
+    R["library_class_selection"] = _sel
+if T and not _auth_sel:
     base = _uncovered_numel(cls)
     if base and base[0] > 0:
         import transformers.models.auto.modeling_auto as MA
@@ -223,18 +359,6 @@ if T:
                 R["class_selected_by_weights"] = {"declared": cls.__name__, "selected": best[2],
                                                   "uncovered_numel_declared": base[0], "uncovered_numel_selected": best[0]}
                 cls = getattr(transformers, best[2]); R["class"] = cls.__name__
-
-# ---- 1d. implementation switches: CUDA-only fused kernels cannot run here. The library's own switch
-#          (use_*_kernel(s) = False) selects its pure-PyTorch path, as attn_implementation="eager" does for attention.
-if not torch.cuda.is_available():
-    import re
-    def _kern(c, path=""):
-        for k, v in list(vars(c).items()):
-            if isinstance(v, bool) and v and re.fullmatch(r"use_\w*kernels?", k):
-                setattr(c, k, False); R.setdefault("implementation_switches", []).append(f"{path}{k}=False")
-            elif hasattr(v, "to_dict") and v is not c:
-                _kern(v, f"{path}{k}.")
-    _kern(cfg)
 
 # ---- 2. build: zero-storage weights ---------------------------------------------------------------------
 t = time.time()
@@ -379,28 +503,6 @@ for label, kw in _schedule():
     finally:
         rec.remove_hooks()
     save()
-# optional stages (3a-3d) are bounded so they can never cost the main result: each model call gets a hard limit,
-# and no new optional call starts once the job is past its optional budget (runner kills at 900 s)
-import signal, contextlib
-class StageTimeout(Exception):
-    pass
-def _on_alarm(sig, frm):
-    raise StageTimeout(f"optional stage time limit ({STAGE_S}s)")
-signal.signal(signal.SIGALRM, _on_alarm)
-STAGE_S = int(os.environ.get("BENCH_STAGE_S", "150")); OPTIONAL_BUDGET_S = int(os.environ.get("BENCH_OPTIONAL_BUDGET_S", "600"))
-@contextlib.contextmanager
-def _limit():
-    signal.alarm(STAGE_S)
-    try:
-        yield
-    finally:
-        signal.alarm(0)
-def _optional_ok(label):
-    if time.time() - T0 < OPTIONAL_BUDGET_S:
-        return True
-    R.setdefault("optional_stages_skipped_time_budget", []).append(label)
-    return False
-
 # ---- 3a. extra input variants (e.g. a second image resolution) only while weights remain unused ----------
 for label, kw in extra_passes:
     if not ({n for n, _ in m.named_parameters()} - used_params) or not _optional_ok(label):
@@ -804,15 +906,41 @@ if T:
     if R.get("ground_truth_source") in (None, "safetensors") and GGUF_RAW is None:
         try:
             import libload
-            with _limit():
-                LIB = libload.library_load_report(repo, cls, aux_keys=set(A))
+            # its own budget (sharded repos have hundreds of headers to read), not the optional-stage limit
+            # never past the runner's kill (its deadline, on its clock): leave 150 s to finish, grade and save.
+            # A repeating timer: if the library swallows one alarm (its conversion ops catch every Exception), the
+            # next one fires 5 s later, so the deadline holds.
+            _left = int(DEADLINE - time.time() - 150) if DEADLINE else LIBLOAD_S
+            if _left < 30:
+                raise StageTimeout(f"no time left for the library load report ({_left}s)")
+            signal.setitimer(signal.ITIMER_REAL, min(LIBLOAD_S, _left), 5)
+            try:
+                if _auth_mirror_failed:
+                    raise StageTimeout("library mirror already timed out in class selection")
+                if AUTH is None:
+                    AUTH = libload.Authority(repo); import atexit; atexit.register(AUTH.close)
+                _n0 = ALARMS[0]
+                LIB = AUTH.report(cls, set(A), config=cfg)       # cached when class selection already loaded it
+                if ALARMS[0] != _n0:                             # an alarm the library swallowed: report not trusted
+                    LIB = None; raise StageTimeout("alarm during library load")
+            finally:
+                signal.setitimer(signal.ITIMER_REAL, 0)
         except Exception as e:
+            signal.setitimer(signal.ITIMER_REAL, 0)        # a tick that landed inside the finally above left it armed
             R["library_load_report_error"] = f"{type(e).__name__}: {str(e)[:200]}"
+        if LIB and "error" in LIB:                 # e.g. no safetensors files: say so instead of looking like a legacy row
+            R["library_load_report_error"] = f"not run: {LIB['error']}"
+    if not LIB or "error" in LIB:
+        R["t1_authority"] = "name matcher (no library load report)"
     if LIB and "error" not in LIB:
         matcher_lacks = list(un_c)
         matcher_view = {"class_lacks": top_groups([(c, numel(W[c][0])) for c in un_c], 5), "unused": top_groups(unused, 5)}
-        lib_unexp = [k for k in LIB["unexpected"] if k not in set(unbuilt) and k not in set(bufs)]
-        lib_unexp = [k for k in lib_unexp if not (k in T and looks_like_stored_buffer(*T[k])) and k not in model_buffers]
+        # the library names reported keys after ITS renames: test each against its checkpoint source(s)
+        _srcs = LIB.get("reported_sources", {})
+        _src = lambda k: _srcs.get(k) or [k]
+        lib_unexp = [k for k in LIB["unexpected"] if not all(x in set(unbuilt) | set(bufs) for x in _src(k))]
+        lib_unexp = [k for k in lib_unexp if not all(x in T and _stored_constant(x) for x in _src(k))
+                     and k not in model_buffers]
         mism = [m_[0] for m_ in LIB["mismatched"]]
         loaded = {n for n, _ in m.named_parameters()} - set(LIB["missing"])
         used_n = set(used)
@@ -929,7 +1057,8 @@ if failed == ["T1_weights"] and _t1.get("leftovers_eligible"):
     R["leftovers"] = {"library_declared_unbuilt": _t1.get("library_declared_unbuilt_prefixes"),
                       "not_in_library_class": _t1.get("shipped_but_not_built_by_model"),
                       "silently_dropped": R.get("library_silent_drops"),
-                      "certification": "transformers load report / declared-ignore list; vLLM MTP registry: none"}
+                      "certification": ("transformers load report" if R.get("t1_authority") == "library_load_report" else "no load report")
+                                       + " / declared-ignore list" + ("; vLLM MTP registry: none" if _t1.get("library_declared_unbuilt_numel") else "")}
 R["failed_checks"] = failed
 R["structure"] = {l: {k: v.get(k) for k in ("layer_patterns", "cross_layer_edges", "non_layer_into_layers", "activation_like_ops", "ops", "zero_skipped")}
                   for l, v in pass_res.items() if v["ok"] and not l.startswith("stability:")}

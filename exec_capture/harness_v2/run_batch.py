@@ -25,9 +25,11 @@ k, n = map(int, a.shard.split("/"))
 rows = json.load(open(a.catalog))
 cats = {c for c in a.categories.split(",") if c}
 rows = [r for r in rows if not cats or r.get("category") in cats]
-if a.repos_file:
-    wanted = {l.strip() for l in open(a.repos_file) if l.strip()}
-    rows = [r for r in rows if r["repo"] in wanted]
+wanted = {l.strip() for l in open(a.repos_file) if l.strip()} if a.repos_file else None
+if wanted is not None:   # keep catalog rows that are wanted OR whose base model is wanted (base models run as their own job)
+    def _base(r):
+        b = r.get("base_model"); return (b[0] if b else None) if isinstance(b, list) else b
+    rows = [r for r in rows if r["repo"] in wanted or _base(r) in wanted]
 rows = sorted(rows, key=lambda r: r["repo"])
 rows = [r for i, r in enumerate(rows) if i % n == k - 1]
 known = {r["repo"] for r in json.load(open(a.catalog))}
@@ -53,6 +55,8 @@ for r in rows:
             known.add(b)
     else:
         jobs.append(("run", r))
+if wanted is not None:
+    jobs = [j for j in jobs if j[1]["repo"] in wanted]
 if a.limit:
     jobs = jobs[: a.limit]
 
@@ -124,6 +128,8 @@ def run(job, solo=False):
         env["BENCH_OPTIONAL_BUDGET_S"] = str(job_timeout - 400)
         while _free_mem_pct() < a.min_free_mem_pct:          # start gate: do not start a job into memory pressure
             time.sleep(5)
+        # the runner's own kill time, on the runner's clock: the worker keeps every stage inside it (saves before the kill)
+        env["BENCH_DEADLINE_EPOCH"] = str(time.time() + job_timeout)
         proc = subprocess.Popen([a.python, worker, r["repo"], p], env=env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         RUNNING[proc.pid] = r["repo"]
         t_start, last_sys = time.monotonic(), 0.0

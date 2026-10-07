@@ -267,7 +267,12 @@ def split_library_ignored(model, W, rename=None):
     for mod_name, mod in model.named_modules():
         for bname in getattr(mod, "_non_persistent_buffers_set", set()):
             buf_names.add(f"{mod_name}.{bname}" if mod_name else bname)
-    ignored = [k for k in W if any(p.search(k) for p in pats)]
+    # the library applies these patterns only to keys it could NOT place (it silences their "unexpected" report);
+    # a key the built model has a slot for is loaded whatever the pattern says (patterns are merged from child
+    # models unprefixed, e.g. T5's "decoder" or GPT-2's "attn.bias", so they can match loaded keys).
+    slots = set(model.state_dict().keys())
+    ignored = [k for k in W if any(p.search(k) for p in pats)
+               and k not in slots and not (rename and rename(k) in slots)]
     buffers, unbuilt = [], []
     for k in ignored:
         t = rename(k) if rename else k
