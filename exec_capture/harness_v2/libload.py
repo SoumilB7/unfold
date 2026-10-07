@@ -72,15 +72,6 @@ class Authority:
         shutil.rmtree(self.d, ignore_errors=True)
 
 
-def library_load_report(repo, cls, aux_keys=(), config=None):
-    """-> dict(unexpected, missing, mismatched, loaded_param_names) exactly as the library reports them."""
-    A = Authority(repo)
-    try:
-        return A.report(cls, aux_keys, config=config)
-    finally:
-        A.close()
-
-
 def _report(A, cls, aux_keys=(), **kw):
     import torch
     import transformers.modeling_utils as MU

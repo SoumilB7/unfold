@@ -1,11 +1,9 @@
 """Low-cost version of the winning mechanism.
 - zero-storage weights (registry of zero storages); small tensors are real zeros (deterministic)
-- ZeroSkip: any heavy op with a zero-weight operand returns its exact result (zeros, or the bias) without arithmetic;
-  the op and the weights it touched are still recorded
-- headers fetched in parallel, concurrently with config"""
+- HEAVY / BIAS_FIRST: the op sets dag.DagRecorder zero-skips (a heavy op with a zero-weight operand returns its exact
+  result, zeros or the bias, without arithmetic; the op and the weights it touched are still recorded)
+- checkpoint headers (safetensors in parallel; legacy .bin through a restricted unpickler)"""
 import contextlib, torch, concurrent.futures as cf
-from torch.utils._python_dispatch import TorchDispatchMode
-from torch.utils._pytree import tree_flatten, tree_map
 aten = torch.ops.aten
 ZERO_PTRS = set()
 _SHARED = {}
@@ -66,34 +64,8 @@ HEAVY = {aten.mm.default, aten.addmm.default, aten.bmm.default, aten.baddbmm.def
 BIAS_FIRST = {aten.addmm.default, aten.baddbmm.default}
 
 
-class Recorder(TorchDispatchMode):
-    """Records every op and every parameter it touches; skips arithmetic that is known to be exactly zero."""
-    def __init__(self, ids, skip=True):
-        super().__init__(); self.ids = ids; self.used = set(); self.ops = 0; self.skipped = 0; self.skip = skip
-    def __torch_dispatch__(self, func, types, args=(), kwargs=None):
-        kwargs = kwargs or {}
-        flat = tree_flatten((args, kwargs))[0]
-        zero_operand = False
-        for a in flat:
-            if isinstance(a, torch.Tensor):
-                n = self.ids.get(id(a))
-                if n is not None: self.used.add(n)
-                if a.numel() > 1 and a.untyped_storage().data_ptr() in ZERO_PTRS: zero_operand = True
-        self.ops += 1
-        if self.skip and zero_operand and func in HEAVY:
-            self.skipped += 1
-            m = tree_map(lambda x: x.to("meta") if isinstance(x, torch.Tensor) else x, (args, kwargs))
-            out = func(*m[0], **m[1])
-            if func in BIAS_FIRST and not (args[0].numel() > 1 and args[0].untyped_storage().data_ptr() in ZERO_PTRS):
-                beta = kwargs.get("beta", 1)
-                return (args[0] * beta).expand(out.shape).contiguous()
-            return tree_map(lambda o: torch.zeros(o.shape, dtype=o.dtype) if isinstance(o, torch.Tensor) else o, out)
-        return func(*args, **kwargs)
-
-
 def fetch_headers(repo, workers=8):
     """All safetensors headers of a repo, fetched in parallel (range requests; nothing cached on disk)."""
-    import json
     from huggingface_hub import HfApi
     api = HfApi()
     files = [f for f in api.list_repo_files(repo) if f.endswith(".safetensors") and "/" not in f]
@@ -102,23 +74,6 @@ def fetch_headers(repo, workers=8):
         for md in ex.map(lambda f: api.parse_safetensors_file_metadata(repo, f), files):
             for n, i in md.tensors.items(): T[n] = (tuple(i.shape), i.dtype)
     return T, len(files)
-
-
-def fetch_cached(repo, cache_dir="hdrcache"):
-    """Config + header table cached per repo revision (tiny JSON). Returns (config_dict, tensors, source)."""
-    import os, json
-    from huggingface_hub import HfApi, hf_hub_download
-    os.makedirs(cache_dir, exist_ok=True)
-    sha = HfApi().model_info(repo).sha
-    p = os.path.join(cache_dir, repo.replace("/", "__") + f"@{sha[:12]}.json")
-    if os.path.exists(p):
-        d = json.load(open(p)); return d["config"], {k: (tuple(v[0]), v[1]) for k, v in d["tensors"].items()}, "cache"
-    with cf.ThreadPoolExecutor(2) as ex:
-        fc = ex.submit(lambda: json.load(open(hf_hub_download(repo, "config.json", revision=sha))))
-        fh = ex.submit(fetch_headers, repo)
-        cfgd = fc.result(); T, _ = fh.result()
-    json.dump({"config": cfgd, "tensors": {k: [list(s), d] for k, (s, d) in T.items()}}, open(p, "w"))
-    return cfgd, T, "network"
 
 
 # ---------------------------------------------------------------------------------------------------------------
