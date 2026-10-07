@@ -21,9 +21,9 @@ import noweights; noweights.install()
 torch.set_num_threads(int(os.environ.get("BENCH_THREADS", "2")))
 import transformers
 from lowcost import zero_storage, fetch_headers, fetch_bin_headers
-from common import ckpt_split, match, library_rename, split_library_ignored, looks_like_stored_buffer, top_groups, numel, INT_DTYPES
+from common import ckpt_split, match, library_rename, split_library_ignored, looks_like_stored_buffer, top_groups, numel, INT_DTYPES, buffer_names
 from dag import DagRecorder, analyse, tied_alias_modules, math_attention, clear_library_caches
-from inputs import build_passes
+from inputs import build_passes, mask_positions
 
 repo, out_path = sys.argv[1], sys.argv[2]
 HDR_CACHE = os.environ.get("BENCH_HEADER_CACHE", os.path.join(HERE, "..", "cache_v2", "headers"))
@@ -361,14 +361,16 @@ if T and not _auth_sel:
                 cls = getattr(transformers, best[2]); R["class"] = cls.__name__
 
 # ---- 2. build: zero-storage weights ---------------------------------------------------------------------
-t = time.time()
-try:
+def _fresh():
     with zero_storage():
         try:
-            m = cls._from_config(cfg, attn_implementation="eager", dtype=torch.float32)
+            mm = cls._from_config(cfg, attn_implementation="eager", dtype=torch.float32)
         except (TypeError, ValueError):
-            m = cls._from_config(cfg, dtype=torch.float32)
-    m.eval()
+            mm = cls._from_config(cfg, dtype=torch.float32)
+    return mm.eval()
+t = time.time()
+try:
+    m = _fresh()
 except Exception as e:
     tb = traceback.extract_tb(e.__traceback__)
     fail("FAIL", f"build: {type(e).__name__}: {str(e)[:250]}", f"{tb[-1].filename.split('site-packages/')[-1]}:{tb[-1].lineno}" if tb else "")
@@ -422,13 +424,6 @@ def _schedule():
     first_ok = next((l for l, _ in passes if pass_res.get(l, {}).get("ok")), None)   # T5 on the first pass that ran
     if first_ok and first_ok in variants:
         yield "stability:" + first_ok, variants[first_ok]
-def _fresh():
-    with zero_storage():
-        try:
-            mm = cls._from_config(cfg, attn_implementation="eager", dtype=torch.float32)
-        except (TypeError, ValueError):
-            mm = cls._from_config(cfg, dtype=torch.float32)
-    return mm.eval()
 for label, kw in _schedule():
     model_for_pass = _fresh() if label.startswith("stability:") else m
     clear_library_caches()
@@ -618,10 +613,7 @@ if base and _unused_now() and S_.get("router_params"):
     for h in hooks: h.remove()
 
 # ---- 3b. generate(): parts that only run inside the generation loop (codecs, multi-stage generators) ------
-def _unused_params():
-    P = {n for n, _ in m.named_parameters()}
-    return P - used_params
-if hasattr(m, "generate") and (not any(v["ok"] for l, v in pass_res.items() if not l.startswith("stability:")) or _unused_params()) and _optional_ok("generate"):
+if hasattr(m, "generate") and (not any(v["ok"] for l, v in pass_res.items() if not l.startswith("stability:")) or _unused_now()) and _optional_ok("generate"):
     ok_kws = [kw for l, kw in passes if pass_res.get(l, {}).get("ok")] or [kw for _, kw in passes]
     gkw = dict(max(ok_kws, key=len)) if ok_kws else {}      # the pass that already combines the most modalities
     gkw = {k: v for k, v in gkw.items() if k not in ("decoder_input_ids", "labels")}
@@ -754,13 +746,7 @@ if ((P_names - used_params) or (persist_bufs - used_buffers)) and any(v["ok"] fo
     extras = [{}]
     pv = base_kw.get("pixel_values")
     if "bool_masked_pos" in sig_f:
-        ps = _cfg_first = getattr(getattr(cfg, "vision_config", cfg), "patch_size", None) or getattr(cfg, "patch_size", 16)
-        ps = ps[0] if isinstance(ps, (list, tuple)) else ps
-        if pv is not None and pv.dim() >= 4:
-            n = (pv.shape[-1] // ps) * (pv.shape[-2] // ps) * (pv.shape[1] // getattr(cfg, "tubelet_size", 1) if pv.dim() == 5 else 1)
-        else:
-            n = next((v.shape[-1] for v in base_kw.values() if isinstance(v, torch.Tensor) and v.dim() == 2), 16)
-        extras = [{"bool_masked_pos": (torch.arange(n) % 2 == 0).unsqueeze(0)}]
+        extras = [{"bool_masked_pos": mask_positions(base_kw, cfg)}]
     label_cands = [None]
     if "labels" in sig_f:
         H_, W_ = (pv.shape[-2], pv.shape[-1]) if pv is not None and pv.dim() >= 4 else (64, 64)
@@ -861,10 +847,7 @@ if T:
     for k, v in m.state_dict(keep_vars=True).items():
         alias[id(v)].append(k)
     matched, un_c, _, _ = match(W, H, alias, packed, rename=ren)
-    model_buffers = {n for n, _ in m.named_buffers()}
-    for mn, mod in m.named_modules():                       # include non-persistent buffers (recomputed tables)
-        for bn in getattr(mod, "_non_persistent_buffers_set", set()):
-            model_buffers.add(f"{mn}.{bn}" if mn else bn)
+    model_buffers = buffer_names(m)                         # includes non-persistent buffers (recomputed tables)
     masks = [c for c in un_c if looks_like_stored_buffer(*W[c]) or c in model_buffers or (ren and ren(c) in model_buffers)]
     un_c = [c for c in un_c if c not in set(masks)]
     used = set(used_params) | set(used_buffers)

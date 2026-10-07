@@ -165,15 +165,21 @@ def looks_like_stored_buffer(shape, dtype):
             or (len(shape) == 4 and shape[0] == shape[1] == 1 and shape[2] == shape[3]))
 
 
+def buffer_names(model):
+    """Every buffer path of the built model: registered buffers plus non-persistent ones."""
+    names = {n for n, _ in model.named_buffers()}
+    for mod_name, mod in model.named_modules():
+        for bname in getattr(mod, "_non_persistent_buffers_set", set()):
+            names.add(f"{mod_name}.{bname}" if mod_name else bname)
+    return names
+
+
 def split_library_ignored(model, W, rename=None):
     """Checkpoint keys the library declares it will not load, split into
     (a) stored buffers (the model has a buffer at that path, e.g. causal masks) and
     (b) learned weights the library does not build (e.g. multi-token-prediction layers)."""
     pats = library_ignored(model)
-    buf_names = {n for n, _ in model.named_buffers()}
-    for mod_name, mod in model.named_modules():
-        for bname in getattr(mod, "_non_persistent_buffers_set", set()):
-            buf_names.add(f"{mod_name}.{bname}" if mod_name else bname)
+    buf_names = buffer_names(model)
     # the library applies these patterns only to keys it could NOT place (it silences their "unexpected" report);
     # a key the built model has a slot for is loaded whatever the pattern says (patterns are merged from child
     # models unprefixed, e.g. T5's "decoder" or GPT-2's "attn.bias", so they can match loaded keys).
