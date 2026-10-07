@@ -3,7 +3,9 @@
 Question (Soumil): "will this open cache for every one of them". Research only, no exec_to_ir change yet.
 
 ## Method
-32 families (smallest runnable repo per family from results_v2), two tools in harness_v2/:
+32 families (smallest runnable repo per family from results_v2), two tools in harness_v2/ (research only, not on any
+grading path; removed from the tree in the cleanup branch; last present in commit 9364a97b, read them with
+`git show 9364a97b:exec_capture/harness_v2/cache_probe.py` and `...cache_probe2.py`):
 - `cache_probe.py`: one run with use_cache=True; what is stored, who produced it.
 - `cache_probe2.py`: two-step decode. Step 1 prefill → cache. Step 2 = one new token with that cache fed
   back; every stored tensor is a named input, and each step-2 attention lists which stored slots reach its
