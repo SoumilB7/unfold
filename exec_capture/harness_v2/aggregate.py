@@ -1,5 +1,5 @@
 """Summarise results_v2/**.json into results_v2/SUMMARY.md (+ summary.json). Every number is counted from result files."""
-import json, glob, os, re, collections
+import json, glob, os, collections
 HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(HERE)
 RES = os.path.join(ROOT, "results_v2")
 rows = []

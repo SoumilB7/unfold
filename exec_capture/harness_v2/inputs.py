@@ -125,7 +125,6 @@ def build_passes(repo, model, cfg, dtype=torch.float32, text_len_variant=False):
                 if val is not None:
                     try: setattr(proc, attr, val); notes.append(f"processor.{attr} taken from config ({val})")
                     except Exception: pass
-    encdec = bool(getattr(cfg, "is_encoder_decoder", False))
     dec = None
     if "decoder_input_ids" in sig:                 # the forward takes a decoder: give it a start token
         start = getattr(cfg, "decoder_start_token_id", None)
@@ -309,7 +308,6 @@ def build_passes(repo, model, cfg, dtype=torch.float32, text_len_variant=False):
                 for name2, fn2 in attempts:
                     if name2 != next(n for n in notes[::-1] if n.startswith("image input via")).split("via ", 1)[1].split(" (")[0]:
                         continue
-                    import types
                     cand2 = None
                     if name2.startswith("processor+text"):
                         for p in _prompts(proc, "image"):

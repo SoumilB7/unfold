@@ -11,7 +11,7 @@ Verdict ladder
   FAIL    : could not build or run (reason recorded)
   OUT     : excluded by policy (remote code only, gated, no config, class not in installed library)
 """
-import sys, os, json, time, math, resource, traceback, collections, warnings, inspect
+import sys, os, json, time, resource, traceback, collections, warnings, inspect
 warnings.filterwarnings("ignore")
 os.environ.setdefault("TRANSFORMERS_VERBOSITY", "error")
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -447,7 +447,7 @@ for label, kw in _schedule():
         with torch.no_grad(), math_attention(), rec:
             try:
                 out = _call(kw)
-            except (ValueError, RuntimeError) as shape_err:
+            except (ValueError, RuntimeError):
                 squeezed = {k: (v.squeeze(1) if isinstance(v, torch.Tensor) and k.startswith("pixel_values") and v.dim() == 5 and v.shape[1] == 1 else v)
                             for k, v in kw.items()}
                 if all(squeezed[k] is kw[k] for k in kw): raise

@@ -148,7 +148,6 @@ def run(job, solo=False):
                 if over:
                     proc.kill(); proc.wait()
                     status = "memcap" if solo else "deferred"
-                    R_mem = round(fp, 2)
                     break
                 time.sleep(2)
         finally:

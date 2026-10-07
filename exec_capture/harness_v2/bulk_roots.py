@@ -1,5 +1,5 @@
 """Bulk root-cause mining over every non-FULL result: one feature vector per model, clustered by mechanism."""
-import json, glob, os, re, collections
+import json, glob, re, collections
 RES = "results_v2"
 rows = []
 for f in glob.glob(f"{RES}/**/*.json", recursive=True):

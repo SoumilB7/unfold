@@ -5,7 +5,7 @@ short ladder of candidates (image latent / video latent / packed token sequence;
 Each candidate is a real forward call: a wrong guess fails loudly and the next one is tried. Nothing about the
 structure is assumed; only input values and shapes are chosen.
 """
-import inspect, itertools
+import inspect
 import torch
 
 S = 16            # spatial size of a latent (small: architecture does not depend on it)
@@ -103,7 +103,7 @@ def candidates(module, fn=None, limit=16, seed=0):
         seq = lshape[1] if lk == "tokens" else (lshape[-1] * lshape[-2] // 4 if lk.startswith(("image", "video")) else 8)
         for p in names:
             if p in ("self", "kwargs", "return_dict"): continue
-            q = p.lower(); prm = sig[p]; required = p in req
+            q = p.lower(); required = p in req
             if q.endswith("input_ids") and (required or not any(x in sig for x in LATENT)):
                 kw[p] = torch.randint(0, max(2, min(1000, _first(c, "vocab_size", default=1000))), (1, L), generator=g)
             elif q == "clip_input":
