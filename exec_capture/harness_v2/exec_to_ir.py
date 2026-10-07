@@ -442,7 +442,11 @@ def to_ir(F):
 
 if __name__ == "__main__":
     repo, out = sys.argv[1], sys.argv[2]
-    pkg = sys.argv[sys.argv.index("--unfold-pkg") + 1] if "--unfold-pkg" in sys.argv else os.path.join(HERE, "..", "..", "unfold-pkg")
+    # default: the frozen renderer copy (model-benchmark/renderer_snapshot, see its SNAPSHOT.txt) so renders do not
+    # move while unfold-pkg is being changed; --unfold-pkg PATH renders against any other tree
+    _snap = os.path.join(HERE, "..", "renderer_snapshot")
+    pkg = (sys.argv[sys.argv.index("--unfold-pkg") + 1] if "--unfold-pkg" in sys.argv
+           else _snap if os.path.isdir(os.path.join(_snap, "model_unfolder")) else os.path.join(HERE, "..", "..", "unfold-pkg"))
     sys.path.insert(0, os.path.abspath(pkg))
     F = recognize(repo)
     print(json.dumps({k: v for k, v in F.items() if k != "evidence"}, default=str, indent=1))
