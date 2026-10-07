@@ -5,46 +5,10 @@ A mechanism "loses architecture" for every checkpoint weight it never accounts f
 Matching is generic: exact name, else unique same-shape suffix match, else
 per-expert tensors summed into a fused tensor with the same prefix. No model names.
 """
-import re, math, signal, time, collections, traceback, contextlib
+import re, math, collections
 
 AUX = re.compile(r"(\.biases|inv_freq|position_ids|num_batches_tracked|_scales|weight_global_scale|input_global_scale|_scale_inv|weight_scale(_2)?|input_scale|output_scale|k_scale|v_scale|zero_point|\.g_idx|\.qzeros|\.scales|\.SCB|absmax|quant_map|quant_state|nested_|_blocks_scale)$")
 INT_DTYPES = {"I8", "U8", "I16", "U16", "I32", "U32", "I64", "U64"}
-
-
-class StepTimeout(Exception):
-    pass
-
-
-@contextlib.contextmanager
-def time_limit(seconds):
-    def handler(signum, frame):
-        raise StepTimeout(f"timed out after {seconds}s")
-    old = signal.signal(signal.SIGALRM, handler)
-    signal.alarm(seconds)
-    try:
-        yield
-    finally:
-        signal.alarm(0)
-        signal.signal(signal.SIGALRM, old)
-
-
-def run_step(result, key, seconds, fn):
-    t = time.time()
-    try:
-        with time_limit(seconds):
-            out = fn()
-        result[key] = {"ok": True, "secs": round(time.time() - t, 2), **(out or {})}
-    except BaseException as e:  # noqa: BLE001 - we record every failure kind
-        if isinstance(e, KeyboardInterrupt):
-            raise
-        tb = traceback.extract_tb(e.__traceback__)
-        where = f"{tb[-1].filename.split('site-packages/')[-1]}:{tb[-1].lineno}" if tb else ""
-        lib = [f for f in tb if "site-packages/transformers/" in f.filename or "site-packages/diffusers/" in f.filename]
-        if lib:
-            where = f"{lib[-1].filename.split('site-packages/')[-1]}:{lib[-1].lineno} ({lib[-1].line.strip()[:120] if lib[-1].line else ''}) | {where}"
-        result[key] = {"ok": False, "secs": round(time.time() - t, 2),
-                       "error": f"{type(e).__name__}: {str(e)[:300]}", "where": where}
-    return result[key]
 
 
 def module_pattern(name):
@@ -78,16 +42,6 @@ def ckpt_split(T):
             k = re.sub(r"_blocks$", "", k)
         weights[k] = (tuple(s), d)
     return weights, aux, packed
-
-
-def husk_tensors(model):
-    """state_dict names -> shape, with tied aliases grouped (one physical tensor)."""
-    sd = model.state_dict(keep_vars=True)
-    alias = collections.defaultdict(list)
-    for k, v in sd.items():
-        alias[id(v)].append(k)
-    H = {k: tuple(v.shape) for k, v in sd.items()}
-    return H, alias, sd
 
 
 def library_rename(model):
@@ -205,53 +159,6 @@ def numel(shape):
     return math.prod(shape) if shape else 1
 
 
-@contextlib.contextmanager
-def skip_weight_init():
-    """Allocate real CPU tensors without running random initialisers (values are irrelevant to structure)."""
-    import torch
-    names = ["uniform_", "normal_", "trunc_normal_", "kaiming_uniform_", "kaiming_normal_", "xavier_uniform_",
-             "xavier_normal_", "orthogonal_", "sparse_", "constant_", "ones_", "zeros_", "eye_", "dirac_"]
-    saved = {n: getattr(torch.nn.init, n) for n in names if hasattr(torch.nn.init, n)}
-    noop = lambda t, *a, **k: t
-    try:
-        for n in saved: setattr(torch.nn.init, n, noop)
-        tsaved = {n: getattr(torch.Tensor, n) for n in ("uniform_", "normal_")}
-        for n in tsaved: setattr(torch.Tensor, n, lambda self, *a, **k: self)
-        yield
-    finally:
-        for n, f in saved.items(): setattr(torch.nn.init, n, f)
-        for n, f in tsaved.items(): setattr(torch.Tensor, n, f)
-
-
-DEPTH_FIELDS = ("num_hidden_layers", "num_layers", "num_single_layers", "depth", "n_layers", "num_decoder_layers", "num_encoder_layers")
-
-
-def truncate_depth(cfg_obj):
-    """Set every depth-like integer field (> 1) to 1 and cut per-layer lists of that length. Returns changed fields.
-    Works on transformers configs (attributes) and diffusers configs (FrozenDict -> returns a new dict)."""
-    import copy
-    changed = []
-    if isinstance(cfg_obj, dict):
-        c = dict(cfg_obj)
-        for f in DEPTH_FIELDS:
-            n = c.get(f)
-            if isinstance(n, int) and n > 1:
-                for k, v in list(c.items()):
-                    if isinstance(v, list) and len(v) == n: c[k] = v[:1]
-                c[f] = 1; changed.append(f)
-        return c, changed
-    c = copy.deepcopy(cfg_obj)
-    subs = [c] + [getattr(c, a) for a in dir(c) if a.endswith("_config") and hasattr(getattr(c, a, None), "to_dict")]
-    for sc in subs:
-        for f in DEPTH_FIELDS:
-            n = getattr(sc, f, None)
-            if isinstance(n, int) and n > 1:
-                for k, v in list(vars(sc).items()):
-                    if isinstance(v, list) and len(v) == n: setattr(sc, k, v[:1])
-                setattr(sc, f, 1); changed.append(f"{type(sc).__name__}.{f}")
-    return c, changed
-
-
 def looks_like_stored_buffer(shape, dtype):
     """Masks and counters shipped in old checkpoints: integer/bool, scalars, or 1x1xNxN matrices."""
     return (dtype in INT_DTYPES or dtype == "BOOL" or len(shape) == 0
@@ -281,59 +188,3 @@ def split_library_ignored(model, W, rename=None):
                          or len(shape) == 0 or (len(shape) == 4 and shape[0] == shape[1] == 1 and shape[2] == shape[3]))
         (buffers if stored_buffer else unbuilt).append(k)
     return buffers, unbuilt
-
-
-_SHARED_ZERO = {}
-
-
-@contextlib.contextmanager
-def zero_storage(min_numel=4096):
-    """Allocate large CPU tensors as zero-stride views (2-D and below) or a shared zero matrix expanded over
-    leading dims (3-D and up, so batched matmuls see a valid layout). No initialisers run."""
-    import torch
-    real_empty = torch.empty
-    def fake_empty(*size, **kw):
-        shape = size[0] if len(size) == 1 and isinstance(size[0], (tuple, list, torch.Size)) else size
-        n = 1
-        for s in shape:
-            n *= int(s)
-        if n >= min_numel and kw.get("device") in (None, "cpu", torch.device("cpu")) and not kw.get("out"):
-            dt = kw.get("dtype") or torch.get_default_dtype()
-            if len(shape) >= 3:
-                key = (int(shape[-2]), int(shape[-1]), dt)
-                if key not in _SHARED_ZERO:
-                    _SHARED_ZERO[key] = torch.zeros(key[0], key[1], dtype=dt)
-                return _SHARED_ZERO[key].expand(*shape)
-            return torch.zeros((), dtype=dt).expand(*shape)
-        return real_empty(*size, **kw)
-    def _is_zero_view(t):
-        return t.dim() > 0 and t.numel() > 1 and any(s == 0 for s in t.stride())
-    saved = {n: getattr(torch.Tensor, n) for n in ("copy_", "fill_", "zero_", "mul_", "add_", "sub_", "div_", "clamp_",
-                                                   "erfinv_", "exp_", "log_", "sqrt_", "masked_fill_", "index_fill_",
-                                                   "scatter_", "__setitem__")}
-    try:
-        import transformers.initialization as _ti
-        _ti_saved = dict(getattr(_ti, "TORCH_INIT_FUNCTIONS", {}))
-        for _k in _ti_saved:
-            _ti.TORCH_INIT_FUNCTIONS[_k] = (lambda t, *a, **k: t)
-    except Exception:
-        _ti, _ti_saved = None, {}
-    def guard(name):
-        orig = saved[name]
-        def f(self, *a, **k):
-            if _is_zero_view(self):
-                return self
-            return orig(self, *a, **k)
-        return f
-    torch.empty = fake_empty
-    for n in saved:
-        setattr(torch.Tensor, n, guard(n))
-    try:
-        with skip_weight_init():
-            yield
-    finally:
-        torch.empty = real_empty
-        for n, f in saved.items():
-            setattr(torch.Tensor, n, f)
-        if _ti is not None:
-            _ti.TORCH_INIT_FUNCTIONS.update(_ti_saved)
