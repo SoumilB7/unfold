@@ -39,7 +39,10 @@ def _emit():
     try:
         import capture
         g = globals()
-        CAP["path"] = capture.write(EMIT, repo, R, CAP, g.get("m"), g.get("cfg"), BUILD_ATTN)
+        # the checkpoint's own tensor names, also under the library's renames: which tie-group members it ships
+        _T, _ren = g.get("T") or {}, g.get("ren")
+        shipped = set(_T) | ({_ren(k) for k in _T} if _ren else set())
+        CAP["path"] = capture.write(EMIT, repo, R, CAP, g.get("m"), g.get("cfg"), BUILD_ATTN, shipped)
     except Exception as e:
         sys.stderr.write(f"capture bundle not written: {type(e).__name__}: {e}\n")
 

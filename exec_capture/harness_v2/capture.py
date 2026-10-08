@@ -158,7 +158,7 @@ def path_for(out_dir, repo):
     return os.path.join(out_dir, repo.replace("/", "__") + ".capture.json.gz")
 
 
-def write(out_dir, repo, R, cap, model, cfg, build_attn):
+def write(out_dir, repo, R, cap, model, cfg, build_attn, shipped=None):
     """The bundle: the first pass that ran and the pass with the most inputs (if another one), the cache-on run,
     model facts, decisions and verdict."""
     passes = cap.get("passes", {})          # the worker keeps the first pass and the one with the most inputs
@@ -167,6 +167,11 @@ def write(out_dir, repo, R, cap, model, cfg, build_attn):
     except Exception as e:
         config = {"error": f"{type(e).__name__}: {e}"}
     import transformers
+    facts = cap.get("model") or (model_facts(model) if model is not None else None)
+    if facts is not None and shipped is not None:
+        # per tie group, the names the checkpoint itself ships: two or more = the model built from config ties them,
+        # but the library ties them only if their values are equal (which a zero-weight run cannot check)
+        facts = dict(facts, tie_groups_shipped=[[n for n in g if n in shipped] for g in facts["tie_groups"]])
     bundle = {
         "format": FORMAT, "repo": repo, "transformers": transformers.__version__, "torch": torch.__version__,
         "verdict": R.get("verdict"), "reason": R.get("reason"), "failed_checks": R.get("failed_checks"),
@@ -178,7 +183,7 @@ def write(out_dir, repo, R, cap, model, cfg, build_attn):
                                             "data_size_caps")},
         "build_attn_implementation": build_attn, "config": config,
         "max_position_embeddings": cap.get("max_position_embeddings"),
-        "model": cap.get("model") or (model_facts(model) if model is not None else None),
+        "model": facts,
         "passes": passes, "pass_order": cap.get("pass_order", list(passes)), "pass_stacks": cap.get("pass_stacks"),
         "cache_run": cap.get("cache_run"), "capture_errors": cap.get("errors"),
     }

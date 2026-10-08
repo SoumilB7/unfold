@@ -221,7 +221,8 @@ def _recognize(bundle):
     def normseq(ops):
         nm = lambda x: re.sub(rf"^{re.escape(stack)}\.\d+", "L", x)
         return [(nm(N[j].module), N[j].func, tuple(N[j].consts),
-                 tuple(sorted(nm(e[1]) for e in N[j].ins if e[0] in ("param", "buffer")))) for j in ops]
+                 tuple(sorted(nm(e[1]) for e in N[j].ins if e[0] in ("param", "buffer"))),
+                 N[j].shape, tuple(sorted(tuple(R.pshape.get(e[1], ())) for e in N[j].ins if e[0] == "param"))) for j in ops]
     ref = normseq(L[layer_ids[0]])
     identical = [i for i in layer_ids if normseq(L[i]) == ref]
     if len(identical) < len(layer_ids):
@@ -242,7 +243,14 @@ def _recognize(bundle):
 
     # ---- embedding / LM head / final norm
     emb = next(j for j, nd in enumerate(N) if nd.func == "embedding")
-    emb_w = R.weights(emb)[0]
+    def _own_name(w, module):
+        """A tied tensor has several names; the recorder keeps one. Prefer the name inside the reading module."""
+        grp = next((g for g in bundle["model"]["tie_groups"] if w in g), None)
+        if grp:
+            own = [n_ for n_ in grp if module and n_.startswith(module + ".")]
+            if own: return own[0]
+        return w
+    emb_w = _own_name(R.weights(emb)[0], N[emb].module)
     vocab, hidden = R.pshape[emb_w]
     ev["embedding"].append(f"op {emb} embedding reads {emb_w} {list(R.pshape[emb_w])}")
     # the hidden-state path: every op downstream of the token embedding (positions / masks are side inputs)
@@ -391,8 +399,25 @@ def _recognize(bundle):
         raise NotDrawn("no output projection runs after the layers (an encoder / embedding model): only models "
                        "ending in an output head are drawn yet")
     head_w = R.weights(head)[0]
-    tied = head_w == emb_w or any(head_w in g and emb_w in g for g in bundle["model"]["tie_groups"])
-    ev["tied"].append(f"LM head op {head} reads {head_w}; same tensor as {emb_w}: {tied}")
+    head_w = _own_name(head_w, N[head].module)
+    ties = bundle["model"]["tie_groups"]
+    grp = next((g for g in ties if head_w in g and emb_w in g), None)
+    shipped_groups = bundle["model"].get("tie_groups_shipped")
+    shipped = (None if shipped_groups is None else
+               next((sg for g_, sg in zip(ties, shipped_groups) if g_ == grp), []) if grp else [])
+    if grp is None:
+        tied = False
+        ev["tied"].append(f"LM head op {head} reads {head_w}, a different tensor from {emb_w}: not tied")
+    elif shipped is not None and len(shipped) < 2:
+        tied = True
+        ev["tied"].append(f"LM head op {head} reads the embedding's tensor ({emb_w}); the checkpoint ships only "
+                          f"{shipped or 'neither name'}, so the head is the embedding")
+    else:
+        # the model built from the config ties them, but the checkpoint ships both: the library ties them only if
+        # their values are equal, which a run without the weights cannot check
+        tied = None
+        ev["tied"].append(f"the built model ties {head_w} to {emb_w} (config); the checkpoint ships "
+                          f"{'both' if shipped else 'an unrecorded set of'} tensors, equality not checked")
     fin_ops = [j for j in range(last + 1, head)]
     final_norm = _norm_match(_region(head, last) & set(fin_ops))[0]
 
@@ -420,7 +445,7 @@ def _recognize(bundle):
     # score scale: a constant multiplying/dividing the scores or the query
     scale = None
     for j in sorted(set(pre_sm) | set(R.back(scores, lambda j: R.weights(j) != [])[1])):
-        if N[j].func in ("mul", "div") and N[j].consts and not [e for e in N[j].ins if e[0] == "op"][1:]:
+        if j in hid and N[j].func in ("mul", "div") and N[j].consts and not [e for e in N[j].ins if e[0] == "op"][1:]:
             c = N[j].consts[0]; f = c if N[j].func == "mul" else 1 / c
             scale = f if scale is None else scale * f
     # mask: the score addend from off the hidden-state path, as captured; causal if its upper triangle is -inf-like
@@ -549,7 +574,12 @@ def _recognize(bundle):
     ev["cache"].append(json.dumps(cache, default=str))
     o_proj = next((j for j in sorted(lset) if j > apply_v and N[j].module.startswith(attn_mod) and N[j].func in MATMULS and R.weights(j)), None)
     wo = R.weights(o_proj)[0] if o_proj is not None else None
-    bias = any(N[x].func == "addmm" for x in (q_proj, k_proj, v_proj) + ((o_proj,) if o_proj else ()))
+    v_out = R.pshape[wv][0]
+    if v_out != k_out:
+        raise NotDrawn(f"the value projection is {v_out} wide and the key projection {k_out}: different K/V widths "
+                       "are not drawn yet")
+    bias = any(N[x].func == "addmm" for x in (q_proj, k_proj, v_proj))          # Q/K/V projection bias
+    o_bias = o_proj is not None and N[o_proj].func == "addmm"
     # ---- MLP: weight matmuls of the layer outside the attention module
     mlp_mm = [j for j in lops if N[j].func in MATMULS and R.weights(j) and not N[j].module.startswith(attn_mod)]
     gate = up = down = None; act = None; gated = False
@@ -673,6 +703,9 @@ def _recognize(bundle):
         raise NotDrawn(f"the layer is not pre-norm sequential (observed: attention-input norm {d1}, MLP-input norm "
                        f"{d2}, {len(adds)} residual add(s) combining two hidden values): only pre-norm sequential "
                        "layers are drawn yet")
+    if n1 != n2:
+        raise NotDrawn(f"the attention-input norm is {n1} and the MLP-input norm {n2}: a layer is drawn with one norm "
+                       "kind, so mixed kinds are not drawn yet")
     if final_norm is None:
         raise NotDrawn("no final norm observed before the output head: that model ending is not drawn yet")
     win = cfg.get("sliding_window")
@@ -688,7 +721,8 @@ def _recognize(bundle):
                  q_out=q_out, k_out=k_out, o_shape=R.pshape.get(wo), fused=fused, qk_norm=bool(qk_norm_q and qk_norm_k),
                  qk_norm_kind=qk_norm_q, qn_extent=(R.pshape[qn_w][0] if qn_w else None), norm_before_rope=norm_before_rope,
                  rope=rope_q and rope_k, theta=theta, scale=scale, mask=mask, bias=bias, ffn_bias=ffn_bias, o_proj=o_proj is not None,
-                 gated=gated, act=act, inter=inter, norm=n1 or n2, placement=placement, residual=residual,
+                 gated=gated, act=act, inter=inter, norm=n1, placement=placement, residual=residual, v_out=v_out,
+                 o_bias=o_bias,
                  max_pos=(bundle.get("max_position_embeddings") if bundle.get("max_position_embeddings") is not None else cfg.get("max_position_embeddings")), total_ops=len(N), evidence=dict(ev), cache=cache,
                  seq=P["inputs"]["input_ids"][-1] if isinstance(P["inputs"].get("input_ids"), list) else None,
                  graded={k: bundle.get(k) for k in ("verdict", "failed_checks", "reason", "checks", "decisions", "leftovers")},
@@ -718,13 +752,21 @@ def _scorecard(F):
     theta_cfg = C.get("rope_theta") if C.get("rope_theta") is not None else C.get("rope_theta_params")
     hd_cfg = C.get("head_dim") or ((C["hidden_size"] // C["num_attention_heads"])
                                    if C.get("hidden_size") and C.get("num_attention_heads") else None)
+    ACT_CFG = {"silu": "silu", "swish": "silu", "gelu": "gelu", "relu": "relu", "gelu_pytorch_tanh": "gelu_pytorch_tanh",
+               "gelu_new": "gelu_pytorch_tanh", "gelu_fast": "gelu_pytorch_tanh", "sigmoid": "sigmoid", "tanh": "tanh"}
+    act_cfg = ACT_CFG.get(C.get("hidden_act"))                 # config names outside the map are not compared
+    cache = F.get("cache") or {}
     rows = [  # owner, fact, label, value, status, evidence, config value (None: nothing to check against)
         ("model", "vocab_size", "vocabulary", F["vocab"], "execution_observed", first("embedding"), C.get("vocab_size")),
         ("model", "hidden_size", "hidden width", F["hidden"], "execution_observed", first("embedding"), C.get("hidden_size")),
         ("model", "num_hidden_layers", "layers", F["layers"], "execution_observed", first("layers"), C.get("num_hidden_layers")),
-        ("model", "tie_word_embeddings", "tied output head", F["tied"], "execution_observed", first("tied"), C.get("tie_word_embeddings")),
+        (("model", "tie_word_embeddings", "tied output head", F["tied"], "execution_observed", first("tied"),
+          C.get("tie_word_embeddings")) if F["tied"] is not None else
+         ("model", "tie_word_embeddings", "tied output head", "config ties; checkpoint ships both (unchecked)",
+          "config_declared", first("tied"), None)),
         ("model", "final_norm_kind", "final norm", F["final_norm"], "execution_observed",
          "norm ops between the last layer and the head", None),
+        ("decoder.attention", "bias", "Q/K/V bias", F["bias"], "execution_observed", "addmm on the Q/K/V projections", None),
         ("decoder.attention", "num_heads", "query heads", F["num_heads"], "execution_observed", first("attention"), C.get("num_attention_heads")),
         ("decoder.attention", "num_kv_heads", "K/V heads", F["num_kv"], "execution_observed", first("attention"), C.get("num_key_value_heads")),
         ("decoder.attention", "head_dim", "head width", F["head_dim"], "execution_observed", "query reshape shape", hd_cfg),
@@ -734,10 +776,14 @@ def _scorecard(F):
         ("decoder.attention", "rope_theta", "RoPE base", F["theta"], "execution_observed" if F["theta"] else "unknown",
          first("rope") or "no measurable rotation buffer", theta_cfg),
         ("decoder.attention", "qk_norm", "QK-norm", F["qk_norm"], "execution_observed", "norm ops on the query/key paths", None),
-        ("decoder.attention", "cached", "K/V cache", bool((F.get("cache") or {}).get("verified")), "execution_observed",
-         "cache-on run: stored K/V produced by this layer's projections and read by its scores", None),
+        (("decoder.attention", "cached", "K/V cache", bool(cache.get("verified")), "execution_observed",
+          "separate cache-on run of the drawn pass: stored K/V produced by this layer's projections and read by its "
+          "scores", None) if cache else
+         ("decoder.attention", "cached", "K/V cache", None, "unknown", "the cache-on run is missing or failed", None)),
+        ("decoder.attention", "o_bias", "output projection bias", F.get("o_bias"), "execution_observed",
+         "addmm on the output projection", None),
         ("decoder.ffn", "intermediate_size", "FFN width", F["inter"], "execution_observed", first("mlp"), C.get("intermediate_size")),
-        ("decoder.ffn", "activation", "activation", F["act"], "execution_observed", first("mlp"), C.get("hidden_act")),
+        ("decoder.ffn", "activation", "activation", F["act"], "execution_observed", first("mlp"), act_cfg),
         ("decoder.ffn", "gated", "gated FFN", F["gated"], "execution_observed", first("mlp"), None),
         ("decoder.layer", "norm_kind", "layer norms", F["norm"], "execution_observed", first("residual"), None),
         ("decoder.layer", "residual_topology", "residual", F["residual"], "execution_observed", first("residual"), None),
@@ -795,11 +841,13 @@ def to_ir(F):
     attn_facts = [f"{nh} Q heads", f"{nkv} KV heads", f"head dim {hd}"]
     if F["theta"]: attn_facts.append(f"RoPE θ {fmt(round(F['theta']))}")
     if F["qk_norm"]: attn_facts.append("QK-Norm")
-    if not F["bias"]: attn_facts.append("bias-free projections")
+    if not F["bias"] and not F.get("o_bias"): attn_facts.append("bias-free projections")
+    elif F["bias"] and not F.get("o_bias"): attn_facts.append("bias on Q/K/V, none on the output projection")
+    elif F.get("o_bias") and not F["bias"]: attn_facts.append("bias on the output projection only")
     children = [
         {"id": "q_proj", "title": "Query projection", "description": "Recorded matmul producing the per-head queries.", "facts": [f"{fmt(H)} → {fmt(F['q_out'])}", f"{nh} Q heads", f"head dim {hd}"]},
         {"id": "k_proj", "title": "Key projection", "description": "Recorded matmul producing the keys.", "facts": [f"{fmt(H)} → {fmt(F['k_out'])}", f"{nkv} KV heads"] + (["cache ports: ⌃ write · ⊥ read"] if cache_ok else [])},
-        {"id": "v_proj", "title": "Value projection", "description": "Recorded matmul producing the values.", "facts": [f"{fmt(H)} → {fmt(F['k_out'])}", f"{nkv} KV heads"] + (["cache ports: ⌃ write · ⊥ read"] if cache_ok else [])},
+        {"id": "v_proj", "title": "Value projection", "description": "Recorded matmul producing the values.", "facts": [f"{fmt(H)} → {fmt(F['v_out'])}", f"{nkv} KV heads"] + (["cache ports: ⌃ write · ⊥ read"] if cache_ok else [])},
         {"id": "q_reshape", "title": "Reshape query heads", "description": "The projected width is split into heads before the next op.", "facts": [f"head dim {hd}"]},
         {"id": "k_reshape", "title": "Reshape key heads", "description": "The projected width is split into heads before the next op.", "facts": [f"head dim {hd}"]},
     ]
@@ -859,7 +907,11 @@ def to_ir(F):
     ]
     layers = [make(I.LayerSpec, index=i, attention=attn, ffn=ffn, norm_kind=F["norm"], norm_placement=F["placement"],
                    residual_topology=F["residual"], blocks=blocks) for i in range(F["layers"])]
-    tie_txt = " — weights tied with the output head (same tensor read)." if F["tied"] else "."
+    tie_txt = (" — weights tied with the output head (same tensor read; the checkpoint ships one of them)."
+               if F["tied"] is True else
+               " — tied to the output head in the model built from the config, but the checkpoint ships both "
+               "tensors: the library ties them only if their values are equal, which was not checked."
+               if F["tied"] is None else ".")
     fn = NK.get(F["final_norm"], "Norm")
     model_blocks = [
         {"id": "tok_text", "role": "input", "kind": "source", "label": "Tokenized text", "title": "Tokenized text", "description": "Input token IDs.", "facts": [f"shape [1, {F['seq']}] in the recorded run"]},
