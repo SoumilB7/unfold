@@ -749,7 +749,10 @@ def _scorecard(F):
     """Per-fact provenance for the IR's fact ledger (status execution_observed / config_declared) and the visible
     EXECUTION EVIDENCE section: graded verdict and checks, op accounting, every drawn fact with its evidence and its
     agreement with the config (the config is only checked against, never the source of an observed fact)."""
-    from model_unfolder.evidence.context import FactLedger
+    from model_unfolder.evidence.context import FactLedger, FACT_STATUSES
+    if "execution_observed" not in FACT_STATUSES:
+        raise RuntimeError("this renderer's IR has no 'execution_observed' fact status: render against "
+                           "model-benchmark/renderer_snapshot (see its SNAPSHOT_PATCHES.md) or apply that patch")
     E, C, G = F.get("evidence") or {}, F.get("config_view") or {}, F.get("graded") or {}
     first = lambda k: (E.get(k) or [""])[0]
     theta_cfg = C.get("rope_theta") if C.get("rope_theta") is not None else C.get("rope_theta_params")

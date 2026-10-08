@@ -100,7 +100,10 @@ One execution, one truth: the diagram is drawn from the run harness v2 graded, n
   after the worker's switches, and the verdict. No weight values. Emission never changes a graded result (64 rows off vs
   on: identical except a temp-dir name; 2 rows first differed only because the Mac slept, see §7).
 - `exec_to_ir.py <repo> <out.html> --bundle <path>` (or `--captures DIR`) builds unfold's ModelIR from the bundle and
-  renders with the frozen renderer copy (`model-benchmark/renderer_snapshot`). Non-FULL verdicts are drawn with a visible
+  renders with the frozen renderer copy (`model-benchmark/renderer_snapshot`). That copy carries one IR change (not in
+  git, listed in its SNAPSHOT_PATCHES.md): the fact status `execution_observed` and an EXECUTION EVIDENCE section that
+  shows the scorecard (graded verdict and checks, hidden-path op accounting, every drawn fact as observed / declared with
+  its evidence and its agreement with the config). Bundles are format /2; older ones are refused. Non-FULL verdicts are drawn with a visible
   warning; FULL_LEFTOVERS with a note.
 - It draws only what it can show truthfully and otherwise writes `<out>.not_drawn.json` with the evidence. The core
   gate is op accounting: every op on the hidden-state path (forward closure of the token embedding) must belong to a
