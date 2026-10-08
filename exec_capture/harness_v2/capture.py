@@ -13,7 +13,7 @@ import base64, collections, gzip, hashlib, json, os
 import torch
 from dag import DagRecorder, Node
 
-FORMAT = "exec-capture-bundle/1"
+FORMAT = "exec-capture-bundle/2"      # /2: records which tie-group members the checkpoint ships
 SQUARE_MAX = 1 << 16          # numel limit of a square activation kept from an add (as exec_to_ir's MaskCapture)
 SQUARE_SIDE_MAX = 256         # stored slice is [S, S]; larger sides are not kept
 BUF_MAX = 4096                # non-persistent buffers up to this size are stored with their values
@@ -199,5 +199,6 @@ def load(path):
     with gzip.open(path, "rt") as fh:
         b = json.load(fh)
     if b.get("format") != FORMAT:
-        raise ValueError(f"not a capture bundle ({b.get('format')})")
+        raise ValueError(f"stale or foreign capture bundle (format {b.get('format')}, expected {FORMAT}): re-capture "
+                         "it with the current worker (older bundles cannot say which tied tensors the checkpoint ships)")
     return b

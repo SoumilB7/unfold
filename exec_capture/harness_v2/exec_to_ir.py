@@ -408,7 +408,7 @@ def _recognize(bundle):
     if grp is None:
         tied = False
         ev["tied"].append(f"LM head op {head} reads {head_w}, a different tensor from {emb_w}: not tied")
-    elif shipped is not None and len(shipped) < 2:
+    elif shipped is not None and len(shipped) == 1:
         tied = True
         ev["tied"].append(f"LM head op {head} reads the embedding's tensor ({emb_w}); the checkpoint ships only "
                           f"{shipped or 'neither name'}, so the head is the embedding")
@@ -416,8 +416,11 @@ def _recognize(bundle):
         # the model built from the config ties them, but the checkpoint ships both: the library ties them only if
         # their values are equal, which a run without the weights cannot check
         tied = None
-        ev["tied"].append(f"the built model ties {head_w} to {emb_w} (config); the checkpoint ships "
-                          f"{'both' if shipped else 'an unrecorded set of'} tensors, equality not checked")
+        both = bool(shipped) and len(shipped) >= 2
+        ev["tied"].append(f"the built model ties {head_w} to {emb_w} (config); " +
+                          ("the checkpoint ships both tensors, equality not checked" if both else
+                           "the checkpoint's tensor list is not recorded, so whether it ships one or both is unknown"))
+    tie_both_shipped = bool(grp) and bool(shipped) and len(shipped) >= 2
     fin_ops = [j for j in range(last + 1, head)]
     final_norm = _norm_match(_region(head, last) & set(fin_ops))[0]
 
@@ -726,7 +729,7 @@ def _recognize(bundle):
                  max_pos=(bundle.get("max_position_embeddings") if bundle.get("max_position_embeddings") is not None else cfg.get("max_position_embeddings")), total_ops=len(N), evidence=dict(ev), cache=cache,
                  seq=P["inputs"]["input_ids"][-1] if isinstance(P["inputs"].get("input_ids"), list) else None,
                  graded={k: bundle.get(k) for k in ("verdict", "failed_checks", "reason", "checks", "decisions", "leftovers")},
-                 pass_label=label, accounting=accounting,
+                 pass_label=label, accounting=accounting, tie_both_shipped=tie_both_shipped,
                  config_view={k: cfg.get(k) for k in ("hidden_size", "vocab_size", "num_hidden_layers",
                               "num_attention_heads", "num_key_value_heads", "head_dim", "intermediate_size",
                               "tie_word_embeddings", "hidden_act", "rope_theta")}
@@ -762,8 +765,9 @@ def _scorecard(F):
         ("model", "num_hidden_layers", "layers", F["layers"], "execution_observed", first("layers"), C.get("num_hidden_layers")),
         (("model", "tie_word_embeddings", "tied output head", F["tied"], "execution_observed", first("tied"),
           C.get("tie_word_embeddings")) if F["tied"] is not None else
-         ("model", "tie_word_embeddings", "tied output head", "config ties; checkpoint ships both (unchecked)",
-          "config_declared", first("tied"), None)),
+         ("model", "tie_word_embeddings", "tied output head",
+          "config ties; checkpoint ships both (unchecked)" if F.get("tie_both_shipped") else
+          "config ties; shipped tensors not recorded (unverified)", "config_declared", first("tied"), None)),
         ("model", "final_norm_kind", "final norm", F["final_norm"], "execution_observed",
          "norm ops between the last layer and the head", None),
         ("decoder.attention", "bias", "Q/K/V bias", F["bias"], "execution_observed", "addmm on the Q/K/V projections", None),
@@ -831,7 +835,7 @@ def to_ir(F):
                 qk_norm_placement=("after_reshape" if F["qn_extent"] == F["head_dim"] else "before_reshape") if F["qk_norm"] else None,
                 rope=F["rope"], position_kind="rope" if F["rope"] else None, position_application="qk_rotation" if F["rope"] else None,
                 bias=F["bias"], output_projection=F["o_proj"], projection_mode="fused_qkv" if F["fused"] else "split_qkv",
-                scores_scaled=F["scale"] is not None, cached=cache_ok,
+                scores_scaled=F["scale"] is not None, cached=(cache_ok if C else None),    # no cache run: unresolved
                 cache_evidence=({"payload": ["key", "value"],
                                  "location": f"keys after {F['cache']['write']['key']['after']}, values after {F['cache']['write']['value']['after']}",
                                  "guard": "observed in a run with use_cache=True"} if cache_ok else None))
@@ -909,8 +913,11 @@ def to_ir(F):
                    residual_topology=F["residual"], blocks=blocks) for i in range(F["layers"])]
     tie_txt = (" — weights tied with the output head (same tensor read; the checkpoint ships one of them)."
                if F["tied"] is True else
-               " — tied to the output head in the model built from the config, but the checkpoint ships both "
-               "tensors: the library ties them only if their values are equal, which was not checked."
+               (" — tied to the output head in the model built from the config, but the checkpoint ships both "
+                "tensors: the library ties them only if their values are equal, which was not checked."
+                if F.get("tie_both_shipped") else
+                " — tied to the output head in the model built from the config; whether the checkpoint ships one "
+                "or both tensors is not recorded, so the tie is unverified.")
                if F["tied"] is None else ".")
     fn = NK.get(F["final_norm"], "Norm")
     model_blocks = [
@@ -950,11 +957,14 @@ if __name__ == "__main__":
     pkg = (sys.argv[sys.argv.index("--unfold-pkg") + 1] if "--unfold-pkg" in sys.argv
            else _snap if os.path.isdir(os.path.join(_snap, "model_unfolder")) else os.path.join(HERE, "..", "..", "unfold-pkg"))
     sys.path.insert(0, os.path.abspath(pkg))
-    if "--bundle" in sys.argv:
-        B = capture.load(sys.argv[sys.argv.index("--bundle") + 1])
-    else:
-        B = bundle_for(repo, sys.argv[sys.argv.index("--captures") + 1] if "--captures" in sys.argv else CAPTURES,
-                       refresh="--refresh" in sys.argv)
+    try:
+        if "--bundle" in sys.argv:
+            B = capture.load(sys.argv[sys.argv.index("--bundle") + 1])
+        else:
+            B = bundle_for(repo, sys.argv[sys.argv.index("--captures") + 1] if "--captures" in sys.argv else CAPTURES,
+                           refresh="--refresh" in sys.argv)
+    except ValueError as e:                      # a stale or foreign bundle: say so, never draw from it
+        print("NOT DRAWN:", e); sys.exit(2)
     try:
         F = recognize(B)
     except NotDrawn as e:

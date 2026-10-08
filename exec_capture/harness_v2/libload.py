@@ -97,7 +97,7 @@ def _report(A, cls, aux_keys=(), **kw):
     def meta_equal(a, b, *args, **kwargs):
         if getattr(a, "is_meta", False) or getattr(b, "is_meta", False):
             tie_unchecked.append([list(a.shape), list(b.shape)])
-            return True
+            return tuple(a.shape) == tuple(b.shape)        # values unknowable on meta; different shapes are never equal
         return orig_equal(a, b, *args, **kwargs)
     torch.equal = meta_equal
     try:
@@ -177,10 +177,12 @@ def _report(A, cls, aux_keys=(), **kw):
     # equal duplicate (discarded) or the real separate weight — named here, never counted as an unidentified drop
     tie_dups = []
     if tie_unchecked:
-        targets = set((getattr(model, "all_tied_weights_keys", None) or {}).keys())
-        for k in list(rest_read):
-            if k in targets or any(n_ in targets for n_ in renamed_to.get(k, ())):
-                tie_dups.append(k); del rest_read[k]
+        sizes = {n_: t.numel() for n_, t in model.named_parameters(remove_duplicate=False)}
+        free = {t_: sizes.get(t_) for t_ in (getattr(model, "all_tied_weights_keys", None) or {}).keys()}
+        for k in sorted(rest_read):
+            hit = next((t_ for t_ in ([k] + sorted(renamed_to.get(k, ()))) if t_ in free), None)
+            if hit is not None and free[hit] == rest_read[k]:       # exactly the target's size, one key per target
+                tie_dups.append(k); del rest_read[k]; free.pop(hit)
     rest_state = {k: n for k, n in state.items() if k not in read}
     state_numel = sum(state.values())
     du = int(os.popen(f"du -sk '{d}'").read().split()[0])
