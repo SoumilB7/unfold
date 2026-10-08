@@ -90,6 +90,31 @@ H. MTP execution witness (Soumil approved 2026-10-01): vLLM 0.30.0 from source i
 F. Next product step (not started): op-pattern recognizer (recorded ops → concepts, ~77 ops) → canonical graph → renderer; every diagram checked against headers + recording.
 Library bugs found by these modes: NLLB-MoE expert dispatch calls one_hot on the router's 0/1 mask, so only expert_0 and expert_1 ever run whatever the router picks. Measured: router chose 21 experts in a layer, 2 ran. Present in transformers 5.12.1 and 5.17.0. NLLB-MoE stays PARTIAL (REAL).
 
+## 6A. Drawing what was graded: capture bundle → unfold renderer (2026-10-08)
+One execution, one truth: the diagram is drawn from the run harness v2 graded, never from a second run.
+- `worker_v2.py` with `BENCH_EMIT_CAPTURE=<dir>` (run_batch `--emit-captures DIR`) writes `<repo>.capture.json.gz`
+  (`capture.py`): the op graph of the first main pass and of the pass with the most inputs, each pass's layer stacks,
+  every square operand added to the scores (mask values, per operand), string op arguments (e.g. gelu approximate), a
+  cache-on run of the drawn pass (after the result is saved, time-limited, fresh model) with every stored K/V tensor's
+  producer, parameter shapes and tie groups, non-persistent buffers (e.g. inv_freq), the executed class, the config
+  after the worker's switches, and the verdict. No weight values. Emission never changes a graded result (64 rows off vs
+  on: identical except a temp-dir name; 2 rows first differed only because the Mac slept, see §7).
+- `exec_to_ir.py <repo> <out.html> --bundle <path>` (or `--captures DIR`) builds unfold's ModelIR from the bundle and
+  renders with the frozen renderer copy (`model-benchmark/renderer_snapshot`). Non-FULL verdicts are drawn with a visible
+  warning; FULL_LEFTOVERS with a note.
+- It draws only what it can show truthfully and otherwise writes `<out>.not_drawn.json` with the evidence. The core
+  gate is op accounting: every op on the hidden-state path (forward closure of the token embedding) must belong to a
+  drawn block, matched exactly (a norm is statistic → scaling → at most one weight and one bias, in order; RoPE is
+  exactly x·cos + rot(x)·sin with rot from halves of the same x; before softmax only scalar scales and the one captured
+  mask add; residual adds combine two hidden values). Plus: layers identical in ops, constants, weights, masks and
+  rotation tables; no routing ops; one layer stack in every graded pass; causal mask captured; RoPE table geometric
+  from 1 (llama3 scaling allowed, noted); no declared sliding window longer than the run; QK-norm before RoPE.
+- Cross-examined in six rounds by an independent agent (74 probe models built from library default configs + 59 real
+  bundles): every probe that would have drawn a false fact is refused with a true reason. In scope today: pre-norm
+  sequential dense decoders (Llama 2/3, Mistral without window, Qwen2/3, OLMo-1, Granite, Helium, SeedOss, SmolLM3,
+  StarCoder2, Ernie 4.5 …). MoE, sliding window, multi-tower, encoders, post/parallel norms, fused QKV, partial /
+  complex / interleaved RoPE are refused with their reason (each is a next coverage item).
+
 ## 7. Mistakes made on this track (so they are not repeated)
 - zsh does not split `$var` into words (for-loops over "repo domain" strings failed); pass arrays or use bash.
 - First no-weights guard also blocked tokenizer downloads (snapshot_download); fixed by filtering weight patterns.
@@ -104,6 +129,12 @@ Library bugs found by these modes: NLLB-MoE expert dispatch calls one_hot on the
 - Emu3's main image pass alone takes ~575 s (thousands of image tokens, causal-mask attention is real compute), so the 900 s runner killed it. Optional stages are now time-bounded and the runner timeout is 1800 s.
 - RAM blow-ups (2026-09-30): the per-worker cap read ps RSS, which stays low while macOS compresses/swaps the process, so it never fired; two Emu3 jobs together exploded. Now: (1) cap on phys_footprint via libproc proc_pid_rusage (= Activity Monitor), 4 GB in parallel; (2) system guard: below 15% free memory the biggest running job is stopped and DEFERRED (no verdict); (3) solo phase at the end runs deferred jobs one at a time with an 8 GB cap; (4) token budget (inputs.py TOKEN_BUDGET=1024): when the processor's own min/max_pixels / size limits make the image sequence longer, those limits are lowered (same code path, smaller picture; attention memory ~L²); the second-resolution pass = 2× the main pass's pixels, skipped above 3× budget; long_input capped at 2048. Emu3: 4,180 → 292 image tokens, second size 12,405 → 533; peak >8 GB → 1.4 GB; FAIL → PARTIAL (VQ decoder not reached).
 - job_secs far above the runner timeout (Qwen3-Omni 3,299 s vs 1,800 s) = the Mac slept (on battery); subprocess timeouts use a monotonic clock that pauses in sleep. Runs are wrapped in `caffeinate -i -w <runner pid>`; keep the machine on power.
+- The worker's stage deadline and optional budget were wall-clock (time.time): across a Mac sleep they expired while the
+  runner's monotonic kill timer did not, so the library check and optional stages were skipped ("no time left
+  (-18708s)"). Both now use time.monotonic from the worker's start with the runner's BENCH_JOB_TIMEOUT_S. On battery
+  macOS ignores caffeinate's system-sleep assertion: keep the machine on power with the lid open for long runs.
+- Long-run outputs live in model-benchmark/_reruns/<tag>/, never only in /tmp (an OS-update reboot wiped a day of
+  reruns on 2026-10-07).
 - The runner skips jobs when free disk < --min-free-gb (SKIPPED(low disk)); grep for it after every run. Swap (~17–19 GB here) lives on the same disk.
 
 ## 8. Live state / how to resume (2026-10-03)

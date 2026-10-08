@@ -30,6 +30,18 @@ repo, out_path = sys.argv[1], sys.argv[2]
 HDR_CACHE = os.environ.get("BENCH_HEADER_CACHE", os.path.join(HERE, "..", "cache_v2", "headers"))
 R = {"repo": repo, "transformers": transformers.__version__, "torch": torch.__version__, "steps": {}}
 T0 = time.time()
+# capture bundle for the renderer (capture.py): opt-in, never part of the graded result
+EMIT = os.environ.get("BENCH_EMIT_CAPTURE")
+CAP, BUILD_ATTN = {"passes": {}, "exec_kw": {}, "pass_order": []}, None
+def _emit():
+    if not EMIT or CAP.get("written"): return
+    CAP["written"] = True
+    try:
+        import capture
+        g = globals()
+        CAP["path"] = capture.write(EMIT, repo, R, CAP, g.get("m"), g.get("cfg"), BUILD_ATTN)
+    except Exception as e:
+        sys.stderr.write(f"capture bundle not written: {type(e).__name__}: {e}\n")
 
 
 def _last_resort(etype, e, tb):
@@ -53,7 +65,7 @@ def save():
 
 
 def fail(verdict, reason, where=""):
-    R["verdict"] = verdict; R["reason"] = reason[:400]; R["where"] = where; save(); sys.exit(0)
+    R["verdict"] = verdict; R["reason"] = reason[:400]; R["where"] = where; save(); _emit(); sys.exit(0)
 
 
 def classify_load_error(e):
@@ -363,11 +375,12 @@ if T and not _auth_sel:
 
 # ---- 2. build: zero-storage weights ---------------------------------------------------------------------
 def _fresh():
+    global BUILD_ATTN
     with zero_storage():
         try:
-            mm = cls._from_config(cfg, attn_implementation="eager", dtype=torch.float32)
+            mm = cls._from_config(cfg, attn_implementation="eager", dtype=torch.float32); BUILD_ATTN = "eager"
         except (TypeError, ValueError):
-            mm = cls._from_config(cfg, dtype=torch.float32)
+            mm = cls._from_config(cfg, dtype=torch.float32); BUILD_ATTN = "library default"
     return mm.eval()
 t = time.time()
 try:
@@ -428,7 +441,11 @@ def _schedule():
 for label, kw in _schedule():
     model_for_pass = _fresh() if label.startswith("stability:") else m
     clear_library_caches()
-    rec = DagRecorder(model_for_pass, kw)
+    if EMIT and not label.startswith("stability:"):
+        import capture
+        rec = capture.CaptureRecorder(model_for_pass, kw)
+    else:
+        rec = DagRecorder(model_for_pass, kw)
     t = time.time()
     try:
         _target = model_for_pass
@@ -440,6 +457,7 @@ for label, kw in _schedule():
             except TypeError as te:
                 if "use_cache" not in str(te) and "unexpected keyword" not in str(te): raise
                 return _target(**kw)
+        _exec_kw, _retried = kw, False
         with torch.no_grad(), math_attention(), rec:
             try:
                 out = _call(kw)
@@ -449,11 +467,31 @@ for label, kw in _schedule():
                 if all(squeezed[k] is kw[k] for k in kw): raise
                 for k, v in squeezed.items():
                     if isinstance(v, torch.Tensor): rec.input_names[id(v)] = k
-                out = _call(squeezed)
+                out = _call(squeezed); _exec_kw, _retried = squeezed, True
                 R.setdefault("input_notes", []).append(f"{label}: processor gave 5-D pixel tensor with singleton group dim; retried squeezed")
         a = analyse(rec, out)
         pass_res[label] = {"ok": True, "secs": round(time.time() - t, 2), **{k: v for k, v in a.items() if k != "structure_signature"}}
         sigs[label] = (a["structure_signature"], [(n.module, n.func) for n in rec.nodes])
+        if EMIT and not label.startswith("stability:") and "sub=" not in label:
+            try:
+                _cp = CAP["passes"]
+                _first = next(iter(_cp), None)                 # always kept: the drawn pass
+                _other = [l for l in _cp if l != _first]       # at most one more: the pass with the most inputs
+                if _first is None or len(_exec_kw) > len(_cp[_other[0] if _other else _first]["inputs"]):
+                    for l in _other: _cp.pop(l); CAP["exec_kw"].pop(l, None)
+                    _cp[label] = {"graph": capture.graph(rec), "squares": capture.squares(rec),
+                                  "inputs": capture.input_shapes(_exec_kw), "squeezed_retry": _retried}
+                    CAP["exec_kw"][label] = _exec_kw
+                    if "model" not in CAP:          # model facts as they were for the drawn pass (before any mode)
+                        CAP["model"] = capture.model_facts(m)
+                        CAP["max_position_embeddings"] = getattr(cfg, "max_position_embeddings", None)
+                CAP["pass_order"].append(label)
+                # every pass's repeated stacks (cheap), so the reader can check what the drawn pass leaves out
+                import re
+                CAP.setdefault("pass_stacks", {})[label] = sorted({mm_.group(1) for n_ in rec.nodes
+                                                                   for mm_ in [re.match(r"^(.*?)\.(\d+)(?:\.|$)", n_.module)] if mm_})
+            except Exception as e:
+                CAP.setdefault("errors", []).append(f"{label}: {type(e).__name__}: {str(e)[:160]}")
         if not label.startswith("stability:") and "router_params" not in S_:
             cands, up, scales = set(), [], set()
             for i, n in enumerate(rec.nodes):
@@ -1047,3 +1085,24 @@ R["failed_checks"] = failed
 R["structure"] = {l: {k: v.get(k) for k in ("layer_patterns", "cross_layer_edges", "non_layer_into_layers", "activation_like_ops", "ops", "zero_skipped")}
                   for l, v in pass_res.items() if v["ok"] and not l.startswith("stability:")}
 save()
+# ---- capture bundle only (after the graded result is saved): the drawn pass again with the cache on, on a fresh
+#      model under a time limit; the stored K/V tensors and the ops that produced them
+if EMIT and CAP["passes"]:
+    _cl = next(iter(CAP["passes"]))
+    try:
+        import capture
+        _ckw = CAP["exec_kw"][_cl]
+        clear_library_caches()
+        with _limit():
+            _cm = _fresh()
+            _rc = capture.CaptureRecorder(_cm, _ckw)
+            try:
+                with torch.no_grad(), math_attention(), _rc:
+                    _oc = _cm(**_ckw, use_cache=True)
+                CAP["cache_run"] = {"pass": _cl, "graph": capture.graph(_rc), "cache": capture.cache_slots(_rc, _oc)}
+            finally:
+                _rc.remove_hooks()
+        del _oc, _cm
+    except Exception as e:
+        CAP["cache_run"] = {"pass": _cl, "error": f"{type(e).__name__}: {str(e)[:200]}"}
+_emit()

@@ -20,6 +20,7 @@ ap.add_argument("--out", default=os.path.join(ROOT, "results_v2"))
 ap.add_argument("--catalog", default=os.path.join(ROOT, "catalog", "index.json"))
 ap.add_argument("--python", default=sys.executable, help="interpreter for workers (e.g. an isolated newer-library venv)")
 ap.add_argument("--repos-file", default="", help="only run repos listed in this file (one per line)")
+ap.add_argument("--emit-captures", default="", help="also write each run's capture bundle (for exec_to_ir.py) into this dir")
 a = ap.parse_args()
 k, n = map(int, a.shard.split("/"))
 rows = json.load(open(a.catalog))
@@ -122,6 +123,8 @@ def run(job, solo=False):
     tmp = tempfile.mkdtemp(prefix="hfc_", dir=os.path.join(ROOT, ".tmp_hf"))
     env = dict(os.environ, HF_HUB_CACHE=tmp, BENCH_THREADS="2", TOKENIZERS_PARALLELISM="false",
                BENCH_HEADER_CACHE=os.path.join(ROOT, "cache_v2", "headers"))
+    if a.emit_captures:
+        env["BENCH_EMIT_CAPTURE"] = os.path.abspath(a.emit_captures)
     t = time.time(); status = "done"
     try:
         job_timeout = 2400 if is_diff else 1800          # optional stages stop early enough to save the result
