@@ -653,6 +653,8 @@ def _recognize(bundle):
         if j > head and nd.func in ("_to_copy", "float"):
             continue
         bad.append((where_, j))
+    accounting = {"hidden": len(hid), "explained": len(hid) - len(bad), "unexplained": len(bad),
+                  "layer0_ops": len([j for j in hid if j in lset]), "layers_covered_by_identity": len(layer_ids) - 1}
     if bad:
         def _ordinary(j):                      # a norm's own op (x^2, mean, eps add, rsqrt, scaling, weight)
             nd = N[j]; c = list(nd.consts)
@@ -690,7 +692,12 @@ def _recognize(bundle):
                  max_pos=(bundle.get("max_position_embeddings") if bundle.get("max_position_embeddings") is not None else cfg.get("max_position_embeddings")), total_ops=len(N), evidence=dict(ev), cache=cache,
                  seq=P["inputs"]["input_ids"][-1] if isinstance(P["inputs"].get("input_ids"), list) else None,
                  graded={k: bundle.get(k) for k in ("verdict", "failed_checks", "reason", "checks", "decisions", "leftovers")},
-                 pass_label=label,
+                 pass_label=label, accounting=accounting,
+                 config_view={k: cfg.get(k) for k in ("hidden_size", "vocab_size", "num_hidden_layers",
+                              "num_attention_heads", "num_key_value_heads", "head_dim", "intermediate_size",
+                              "tie_word_embeddings", "hidden_act", "rope_theta")}
+                             | {"rope_theta_params": ((cfg.get("rope_parameters") or {}).get("rope_theta")
+                                                      if isinstance(cfg.get("rope_parameters"), dict) else None)},
                  rope_note=(rope_note + ("; the drawn base comes from the unscaled high-frequency entries of the "
                                          "rotation buffer" if theta is not None else "; the base is not measurable "
                                          "from this run's rotation buffer")) if rope_note else None)
@@ -699,6 +706,58 @@ def _recognize(bundle):
 
 def fmt(n):
     return f"{n:,}"
+
+
+def _scorecard(F):
+    """Per-fact provenance for the IR's fact ledger (status execution_observed / config_declared) and the visible
+    EXECUTION EVIDENCE section: graded verdict and checks, op accounting, every drawn fact with its evidence and its
+    agreement with the config (the config is only checked against, never the source of an observed fact)."""
+    from model_unfolder.evidence.context import FactLedger
+    E, C, G = F.get("evidence") or {}, F.get("config_view") or {}, F.get("graded") or {}
+    first = lambda k: (E.get(k) or [""])[0]
+    theta_cfg = C.get("rope_theta") if C.get("rope_theta") is not None else C.get("rope_theta_params")
+    hd_cfg = C.get("head_dim") or ((C["hidden_size"] // C["num_attention_heads"])
+                                   if C.get("hidden_size") and C.get("num_attention_heads") else None)
+    rows = [  # owner, fact, label, value, status, evidence, config value (None: nothing to check against)
+        ("model", "vocab_size", "vocabulary", F["vocab"], "execution_observed", first("embedding"), C.get("vocab_size")),
+        ("model", "hidden_size", "hidden width", F["hidden"], "execution_observed", first("embedding"), C.get("hidden_size")),
+        ("model", "num_hidden_layers", "layers", F["layers"], "execution_observed", first("layers"), C.get("num_hidden_layers")),
+        ("model", "tie_word_embeddings", "tied output head", F["tied"], "execution_observed", first("tied"), C.get("tie_word_embeddings")),
+        ("model", "final_norm_kind", "final norm", F["final_norm"], "execution_observed",
+         "norm ops between the last layer and the head", None),
+        ("decoder.attention", "num_heads", "query heads", F["num_heads"], "execution_observed", first("attention"), C.get("num_attention_heads")),
+        ("decoder.attention", "num_kv_heads", "K/V heads", F["num_kv"], "execution_observed", first("attention"), C.get("num_key_value_heads")),
+        ("decoder.attention", "head_dim", "head width", F["head_dim"], "execution_observed", "query reshape shape", hd_cfg),
+        ("decoder.attention", "scores_scale", "score scale", round(F["scale"], 6) if F["scale"] else None,
+         "execution_observed", "product of the scalar multipliers on the score path", None),
+        ("decoder.attention", "mask", "mask", F["mask"], "execution_observed", "captured additive mask operand on the scores", None),
+        ("decoder.attention", "rope_theta", "RoPE base", F["theta"], "execution_observed" if F["theta"] else "unknown",
+         first("rope") or "no measurable rotation buffer", theta_cfg),
+        ("decoder.attention", "qk_norm", "QK-norm", F["qk_norm"], "execution_observed", "norm ops on the query/key paths", None),
+        ("decoder.attention", "cached", "K/V cache", bool((F.get("cache") or {}).get("verified")), "execution_observed",
+         "cache-on run: stored K/V produced by this layer's projections and read by its scores", None),
+        ("decoder.ffn", "intermediate_size", "FFN width", F["inter"], "execution_observed", first("mlp"), C.get("intermediate_size")),
+        ("decoder.ffn", "activation", "activation", F["act"], "execution_observed", first("mlp"), C.get("hidden_act")),
+        ("decoder.ffn", "gated", "gated FFN", F["gated"], "execution_observed", first("mlp"), None),
+        ("decoder.layer", "norm_kind", "layer norms", F["norm"], "execution_observed", first("residual"), None),
+        ("decoder.layer", "residual_topology", "residual", F["residual"], "execution_observed", first("residual"), None),
+        ("model", "max_position_embeddings", "context length", F["max_pos"], "config_declared",
+         "config.max_position_embeddings (not observable in one run)", None),
+    ]
+    L, facts = FactLedger(), []
+    for owner, fact, label, value, status, src, cfg_value in rows:
+        L.record(owner, fact, value, status, src or None)
+        check = None
+        if status == "execution_observed" and cfg_value is not None and value is not None:
+            num = isinstance(value, float) and isinstance(cfg_value, (int, float)) and not isinstance(cfg_value, bool)
+            same = abs(value - cfg_value) <= 1e-3 * abs(cfg_value) if num else value == cfg_value
+            check = "agrees" if same else f"says {cfg_value}"
+        facts.append({"key": f"{owner}.{fact}", "label": label, "value": value, "status": status, "source": src,
+                      "config_check": check})
+    card = {"verdict": G.get("verdict"), "checks": G.get("checks") or {}, "pass": F.get("pass_label"),
+            "total_ops": F.get("total_ops"), "op_accounting": F.get("accounting") or {}, "facts": facts,
+            "source": "execution recording (zero-storage weights, real tokenized prompt)"}
+    return L.to_dict(), card
 
 
 def to_ir(F):
@@ -812,6 +871,7 @@ def to_ir(F):
               "exec_capture": {"source": "execution recording (zero-storage weights, real tokenized prompt)", "total_ops": F["total_ops"],
                                "layers_identical": f"{F['identical']} of {F['layers']}", "evidence": F["evidence"],
                                "declared_not_observed": {"max_position_embeddings": F["max_pos"]}}}
+    extras["fact_provenance"], extras["execution_evidence"] = _scorecard(F)
     ir = make(I.ModelIR, name=F["repo"].split("/")[-1], architecture=F["arch"], vocab_size=F["vocab"], hidden_size=H,
               max_position_embeddings=F["max_pos"], tie_word_embeddings=F["tied"], embedding_norm_kind=None,
               final_norm_kind=F["final_norm"], layers=layers, cross_layer_edges=[], extras=extras,
