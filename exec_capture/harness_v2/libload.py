@@ -91,12 +91,22 @@ def _report(A, cls, aux_keys=(), **kw):
         return {"error": "no safetensors weight files"}
     MU.safe_open = recording_safe_open
     CML.rename_source_key = recording_rename
+    # tied weights shipped twice: the library compares their VALUES (torch.equal) to decide whether to tie, which
+    # meta tensors cannot do. Keep the tie the config builds and record that the check could not run.
+    tie_unchecked, orig_equal = [], torch.equal
+    def meta_equal(a, b, *args, **kwargs):
+        if getattr(a, "is_meta", False) or getattr(b, "is_meta", False):
+            tie_unchecked.append([list(a.shape), list(b.shape)])
+            return True
+        return orig_equal(a, b, *args, **kwargs)
+    torch.equal = meta_equal
     try:
         with torch.device("meta"):
             model, info = cls.from_pretrained(d, output_loading_info=True, device_map="meta", ignore_mismatched_sizes=True, **kw)
     finally:
         MU.safe_open = orig
         CML.rename_source_key = orig_rename
+        torch.equal = orig_equal
     loaded = {k for k, _ in model.named_parameters()} - set(info.get("missing_keys", []))
     # size accounting: every tensor in the files the library read must land in the model's state (params or
     # persistent buffers, tied names counted per name) or be reported by the library as unexpected/mismatched.
@@ -163,6 +173,14 @@ def _report(A, cls, aux_keys=(), **kw):
             if bn != k and bn in buffer_names and bn in sd and bn not in read and bn not in paired \
                     and getattr(sd[bn], "_is_hf_initialized", False) and sd[bn].numel() == rest_read[k]:
                 paired.add(bn); del rest_read[k]; break
+    # a shipped tensor the library maps onto a TIED target while its tie value check could not run: it is either an
+    # equal duplicate (discarded) or the real separate weight — named here, never counted as an unidentified drop
+    tie_dups = []
+    if tie_unchecked:
+        targets = set((getattr(model, "all_tied_weights_keys", None) or {}).keys())
+        for k in list(rest_read):
+            if k in targets or any(n_ in targets for n_ in renamed_to.get(k, ())):
+                tie_dups.append(k); del rest_read[k]
     rest_state = {k: n for k, n in state.items() if k not in read}
     state_numel = sum(state.values())
     du = int(os.popen(f"du -sk '{d}'").read().split()[0])
@@ -176,4 +194,5 @@ def _report(A, cls, aux_keys=(), **kw):
             "loaded_params": len(loaded), "model_params": sum(1 for _ in model.named_parameters()),
             "missing_param_numel": sum(pshape.get(k, 0) for k in info.get("missing_keys", [])),
             "reported_sources": {k: sorted(v) for k, v in src_of.items()},
+            "tie_value_check_unevaluable": tie_unchecked, "tie_unchecked_shipped": sorted(tie_dups),
             "stub_disk_kb": du}

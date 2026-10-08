@@ -986,6 +986,10 @@ if T:
         R["library_silent_drops"] = silent[:50]
         unused = [(p, numel(shp[p])) for p in un_loaded]
         R["t1_authority"] = "library_load_report"
+        if LIB.get("tie_value_check_unevaluable"):
+            # the library ties shipped-twice weights only if their values are equal: not checkable without the weights
+            R["library_tie_value_check_unevaluable"] = {"pairs": LIB["tie_value_check_unevaluable"],
+                                                       "shipped_tied_tensors": LIB.get("tie_unchecked_shipped") or []}
         R["library_load_report"] = {"files_read": LIB.get("files_read"), "files_ignored": sorted(set(LIB.get("files_all", [])) - set(LIB.get("files_read", []))),
                                     "unaccounted_numel": LIB.get("unaccounted_numel"), "unexpected": len(LIB["unexpected"]), "missing": LIB["missing"][:20], "mismatched": LIB["mismatched"][:10],
                                     "loaded_params": LIB["loaded_params"], "model_params": LIB["model_params"], "stub_disk_kb": LIB["stub_disk_kb"],
