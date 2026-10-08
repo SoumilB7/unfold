@@ -128,8 +128,9 @@ def run(job, solo=False):
         env["BENCH_OPTIONAL_BUDGET_S"] = str(job_timeout - 400)
         while _free_mem_pct() < a.min_free_mem_pct:          # start gate: do not start a job into memory pressure
             time.sleep(5)
-        # the runner's own kill time, on the runner's clock: the worker keeps every stage inside it (saves before the kill)
-        env["BENCH_DEADLINE_EPOCH"] = str(time.time() + job_timeout)
+        # the runner's kill budget: measured by both sides on the monotonic clock (it pauses while the machine sleeps,
+        # like the kill timer below), so a sleep never makes the worker think its time is used up
+        env["BENCH_JOB_TIMEOUT_S"] = str(job_timeout)
         proc = subprocess.Popen([a.python, worker, r["repo"], p], env=env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         RUNNING[proc.pid] = r["repo"]
         t_start, last_sys = time.monotonic(), 0.0

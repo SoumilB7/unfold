@@ -12,6 +12,7 @@ Verdict ladder
   OUT     : excluded by policy (remote code only, gated, no config, class not in installed library)
 """
 import sys, os, json, time, resource, traceback, collections, warnings, inspect
+T0M = time.monotonic()               # job clock (pauses in sleep, as the runner's kill timer does)
 warnings.filterwarnings("ignore")
 os.environ.setdefault("TRANSFORMERS_VERBOSITY", "error")
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -198,7 +199,7 @@ if not torch.cuda.is_available():
 
 # time limits. Optional stages (3a-3d) are bounded so they can never cost the main result: each model call gets a hard
 # limit, and no new optional call starts once the job is past its optional budget (the runner kills at
-# BENCH_DEADLINE_EPOCH). The library authority (1c, T1) has its own budget, capped by that deadline.
+# BENCH_JOB_TIMEOUT_S, monotonic clock). The library authority (1c, T1) has its own budget, capped by that deadline.
 import signal, contextlib
 class StageTimeout(Exception):
     pass
@@ -207,7 +208,7 @@ def _on_alarm(sig, frm):
     ALARMS[0] += 1
     raise StageTimeout("stage time limit reached")
 signal.signal(signal.SIGALRM, _on_alarm)
-STAGE_S = int(os.environ.get("BENCH_STAGE_S", "150")); LIBLOAD_S = int(os.environ.get("BENCH_LIBLOAD_S", "1200")); DEADLINE = float(os.environ.get("BENCH_DEADLINE_EPOCH", "0")); OPTIONAL_BUDGET_S = int(os.environ.get("BENCH_OPTIONAL_BUDGET_S", "600"))
+STAGE_S = int(os.environ.get("BENCH_STAGE_S", "150")); LIBLOAD_S = int(os.environ.get("BENCH_LIBLOAD_S", "1200")); JOB_TIMEOUT_S = float(os.environ.get("BENCH_JOB_TIMEOUT_S", "0")); DEADLINE = (T0M + JOB_TIMEOUT_S - 10) if JOB_TIMEOUT_S else 0; OPTIONAL_BUDGET_S = int(os.environ.get("BENCH_OPTIONAL_BUDGET_S", "600"))
 @contextlib.contextmanager
 def _limit():
     signal.alarm(STAGE_S)
@@ -216,7 +217,7 @@ def _limit():
     finally:
         signal.alarm(0)
 def _optional_ok(label):
-    if time.time() - T0 < OPTIONAL_BUDGET_S:
+    if time.monotonic() - T0M < OPTIONAL_BUDGET_S:          # job clock: a sleep does not use up the budget
         return True
     R.setdefault("optional_stages_skipped_time_budget", []).append(label)
     return False
@@ -279,7 +280,7 @@ if T and R.get("ground_truth_source") in (None, "safetensors") and GGUF_RAW is N
             if ALARMS[0] != n0:
                 AUTH.cache.pop(klass.__name__, None); raise StageTimeout("alarm during library load")
             return r_
-        _left = int(DEADLINE - time.time() - 900) if DEADLINE else LIBLOAD_S
+        _left = int(DEADLINE - time.monotonic() - 900) if DEADLINE else LIBLOAD_S
         if _left < 60:
             raise StageTimeout("no time left for library class selection")
         signal.setitimer(signal.ITIMER_REAL, min(LIBLOAD_S, _left), 5)
@@ -893,7 +894,7 @@ if T:
             # never past the runner's kill (its deadline, on its clock): leave 150 s to finish, grade and save.
             # A repeating timer: if the library swallows one alarm (its conversion ops catch every Exception), the
             # next one fires 5 s later, so the deadline holds.
-            _left = int(DEADLINE - time.time() - 150) if DEADLINE else LIBLOAD_S
+            _left = int(DEADLINE - time.monotonic() - 150) if DEADLINE else LIBLOAD_S
             if _left < 30:
                 raise StageTimeout(f"no time left for the library load report ({_left}s)")
             signal.setitimer(signal.ITIMER_REAL, min(LIBLOAD_S, _left), 5)
