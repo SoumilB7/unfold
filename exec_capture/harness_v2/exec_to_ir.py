@@ -924,7 +924,7 @@ def _recognize(bundle):
                  o_bias=o_bias,
                  max_pos=(bundle.get("max_position_embeddings") if bundle.get("max_position_embeddings") is not None else cfg.get("max_position_embeddings")), total_ops=len(N), evidence=dict(ev), cache=cache,
                  seq=P["inputs"]["input_ids"][-1] if isinstance(P["inputs"].get("input_ids"), list) else None,
-                 graded={k: bundle.get(k) for k in ("verdict", "failed_checks", "reason", "checks", "decisions", "leftovers")},
+                 graded={k: bundle.get(k) for k in ("verdict", "failed_checks", "reason", "checks", "decisions", "leftovers", "unknowns")},
                  pass_label=label, accounting=accounting, tie_both_shipped=tie_both_shipped,
                  config_view={k: cfg.get(k) for k in ("hidden_size", "vocab_size", "num_hidden_layers",
                               "num_attention_heads", "num_key_value_heads", "head_dim", "intermediate_size",
@@ -1136,11 +1136,20 @@ def to_ir(F):
               notes=["Built from an execution recording: every fact is observed in the run harness v2 graded "
                      f"(verdict {G.get('verdict')}, pass '{F.get('pass_label')}'; no modeling-code parsing). "
                      "Context length is the config's declared value (not observable in one run)."]
-                    + ([f"Benchmark verdict FULL_LEFTOVERS: only tensors the library itself declares unused were not "
-                        f"executed ({', '.join(map(str, (G.get('leftovers') or {}).get('library_declared_unbuilt') or [])) or 'see the result'})."]
+                    + ([f"Benchmark verdict FULL_LEFTOVERS: the only shipped tensors not executed are "
+                        + "; ".join(x for x in [
+                            (f"tensors the library itself declares unused ({', '.join(map(str, (G.get('leftovers') or {}).get('library_declared_unbuilt') or []))})"
+                             if (G.get('leftovers') or {}).get('library_declared_unbuilt') else ""),
+                            (f"{len((G.get('leftovers') or {}).get('buffers_never_read_in_any_mode') or [])} stored buffers measured never "
+                             "read in any run mode (e.g. training statistics; not declared by the library)"
+                             if (G.get('leftovers') or {}).get('buffers_never_read_in_any_mode') else "")] if x) + "."]
                        if G.get("verdict") == "FULL_LEFTOVERS" else [])
                     + ([F["rope_note"]] if F.get("rope_note") else []),
               warnings=([] if G.get("verdict") in ("FULL", "FULL_LEFTOVERS") else
+                        [f"Benchmark verdict FULL_UNVERIFIED: every observed check passed, but not everything could be "
+                         f"verified: " + "; ".join(f"{u.get('what')}" + (f" ({u.get('count')}: {', '.join(map(str, (u.get('items') or [])[:3]))})"
+                                                                     if u.get('count') else "") for u in (G.get('unknowns') or []))
+                         + ". Drawn from what ran."] if G.get("verdict") == "FULL_UNVERIFIED" else
                         [f"Unresolved evidence — benchmark verdict {G.get('verdict')}: checks failed "
                          f"{', '.join(G.get('failed_checks') or []) or 'n/a'}"
                          + (f" ({G.get('reason')})" if G.get('reason') else "")

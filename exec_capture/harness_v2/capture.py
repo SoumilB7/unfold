@@ -176,6 +176,7 @@ def write(out_dir, repo, R, cap, model, cfg, build_attn, shipped=None):
         "format": FORMAT, "repo": repo, "transformers": transformers.__version__, "torch": torch.__version__,
         "verdict": R.get("verdict"), "reason": R.get("reason"), "failed_checks": R.get("failed_checks"),
         "leftovers": R.get("leftovers"),
+        "unknowns": R.get("unknowns"),
         "checks": {k: v.get("pass") for k, v in (R.get("checks") or {}).items()},
         "class": R.get("class"), "model_type": R.get("model_type"),
         "decisions": {k: R.get(k) for k in ("class_selected_by_library", "class_selected_by_weights",

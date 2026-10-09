@@ -38,20 +38,23 @@ lines = ["# Strict capture benchmark — measured results", "",
          + ("  **(MIXED: these numbers combine different grading code)**" if len(HV) > 1 else ""), "",
          f"Repos with a verdict: **{len(rows)}**  |  " + "  ".join(f"**{k}** {v}" for k, v in V.most_common()), "",
          (lambda run: f"Runnable {run}: FULL {100*V['FULL']/run:.1f}%  |  architecture-complete (FULL + FULL_LEFTOVERS) "
-                      f"{100*(V['FULL']+V['FULL_LEFTOVERS'])/run:.1f}%")(V['FULL'] + V['FULL_LEFTOVERS'] + V['PARTIAL'] + V['FAIL']), "",
+                      f"{100*(V['FULL']+V['FULL_LEFTOVERS'])/run:.1f}%  |  FULL_UNVERIFIED {100*V['FULL_UNVERIFIED']/run:.1f}%")(
+             V['FULL'] + V['FULL_LEFTOVERS'] + V['FULL_UNVERIFIED'] + V['PARTIAL'] + V['FAIL']), "",
          "FULL = every shipped weight used, every module executed, closed dataflow, no opaque ops, identical structure for two inputs. "
          "FULL_LEFTOVERS = everything the model runs is captured; the only gap is shipped tensors the library itself certifies as unused "
-         "by this model and that no available runtime executes (listed per result). Architecture-complete = FULL + FULL_LEFTOVERS.", "",
-         "## By category", "", "| category | repos | FULL | FULL_LEFTOVERS | PARTIAL | FAIL | OUT | FULL % of runnable | architecture-complete % |",
-         "|---|---|---|---|---|---|---|---|---|"]
+         "by this model and that no available runtime executes, or stored buffers measured never read in any run mode (both listed per result). Architecture-complete = FULL + FULL_LEFTOVERS. "
+         "FULL_UNVERIFIED = every observed check passes, but some predicate could not be evaluated (e.g. no library load, a tie "
+         "shipped twice); the unknowns are listed per result and it is never counted as FULL.", "",
+         "## By category", "", "| category | repos | FULL | FULL_LEFTOVERS | FULL_UNVERIFIED | PARTIAL | FAIL | OUT | FULL % of runnable | architecture-complete % |",
+         "|---|---|---|---|---|---|---|---|---|---|"]
 bycat = collections.defaultdict(list)
 for r in rows: bycat[r["category"]].append(r)
 for c, rs in sorted(bycat.items(), key=lambda x: -len(x[1])):
     cc = collections.Counter(r["verdict"] for r in rs)
-    runnable = cc["FULL"] + cc["FULL_LEFTOVERS"] + cc["PARTIAL"] + cc["FAIL"]
-    lines.append(f"| {c} | {len(rs)} | {cc['FULL']} | {cc['FULL_LEFTOVERS']} | {cc['PARTIAL']} | {cc['FAIL']} | {cc['OUT']} | "
+    runnable = cc["FULL"] + cc["FULL_LEFTOVERS"] + cc["FULL_UNVERIFIED"] + cc["PARTIAL"] + cc["FAIL"]
+    lines.append(f"| {c} | {len(rs)} | {cc['FULL']} | {cc['FULL_LEFTOVERS']} | {cc['FULL_UNVERIFIED']} | {cc['PARTIAL']} | {cc['FAIL']} | {cc['OUT']} | "
                  f"{100*cc['FULL']/runnable:.0f}% | {100*(cc['FULL']+cc['FULL_LEFTOVERS'])/runnable:.0f}% |"
-                 if runnable else f"| {c} | {len(rs)} | 0 | 0 | 0 | 0 | {cc['OUT']} | – | – |")
+                 if runnable else f"| {c} | {len(rs)} | 0 | 0 | 0 | 0 | 0 | {cc['OUT']} | – | – |")
 lines += ["", "## Why PARTIAL (which strict checks failed)", ""]
 pc = collections.Counter(c for r in rows if r["verdict"] == "PARTIAL" for c in r["failed_checks"])
 lines += [f"- {k}: {v}" for k, v in pc.most_common()]
@@ -59,12 +62,13 @@ lines += ["", "## Why FAIL / OUT", ""]
 for v in ("FAIL", "OUT"):
     rc = collections.Counter(reason_class(r) for r in rows if r["verdict"] == v)
     lines.append(f"- **{v}**: " + ", ".join(f"{k} ({n})" for k, n in rc.most_common(12)))
-lines += ["", "## By subcategory", "", "| category / subcategory | repos | FULL | PARTIAL | FAIL | OUT |", "|---|---|---|---|---|---|"]
+lines += ["", "## By subcategory", "", "| category / subcategory | repos | FULL | FULL_LEFTOVERS | FULL_UNVERIFIED | PARTIAL | FAIL | OUT |",
+          "|---|---|---|---|---|---|---|---|"]
 bysub = collections.defaultdict(list)
 for r in rows: bysub[(r["category"], r["subcategory"])].append(r)
 for (c, s), rs in sorted(bysub.items()):
     cc = collections.Counter(r["verdict"] for r in rs)
-    lines.append(f"| {c} / {s} | {len(rs)} | {cc['FULL']} | {cc['PARTIAL']} | {cc['FAIL']} | {cc['OUT']} |")
+    lines.append(f"| {c} / {s} | {len(rs)} | {cc['FULL']} | {cc['FULL_LEFTOVERS']} | {cc['FULL_UNVERIFIED']} | {cc['PARTIAL']} | {cc['FAIL']} | {cc['OUT']} |")
 sec = [r["secs"] for r in rows if isinstance(r["secs"], (int, float))]
 gb = [r["peak_gb"] for r in rows if isinstance(r["peak_gb"], (int, float))]
 if sec:

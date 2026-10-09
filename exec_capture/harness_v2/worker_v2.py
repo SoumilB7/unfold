@@ -28,6 +28,7 @@ from inputs import build_passes, mask_positions
 
 repo, out_path = sys.argv[1], sys.argv[2]
 HDR_CACHE = os.environ.get("BENCH_HEADER_CACHE", os.path.join(HERE, "..", "cache_v2", "headers"))
+UNKNOWNS = []       # predicates that could not be evaluated (INTENT.md): an otherwise FULL row becomes FULL_UNVERIFIED
 R = {"repo": repo, "transformers": transformers.__version__, "torch": torch.__version__, "steps": {}, "harness_id": harness_id()}
 T0 = time.time()
 # capture bundle for the renderer (capture.py): opt-in, never part of the graded result
@@ -926,7 +927,7 @@ if T:
     # ---- library authority (safetensors repos): which shipped keys the library consumes, from its own from_pretrained
     #      on sparse header stubs (file choice, renames, merges/splits, ignore lists all the library's). Replaces the
     #      name matcher's "class lacks" and "unused" sets; the matcher's result is kept for comparison.
-    LIB = None
+    LIB, G1 = None, None
     reported_by_library = None                    # None = no library load report (matcher only): nothing certified
     if R.get("ground_truth_source") in (None, "safetensors") and GGUF_RAW is None:
         try:
@@ -957,6 +958,9 @@ if T:
             R["library_load_report_error"] = f"not run: {LIB['error']}"
     if not LIB or "error" in LIB:
         R["t1_authority"] = "name matcher (no library load report)"
+        UNKNOWNS.append({"predicate": "G1", "what": "no library load: which shipped tensors the library consumes, and how "
+                         "it fills the rest, is not established (" + (R.get("library_load_report_error") or "no report") + ")",
+                         "items": [], "count": 0})
     if LIB and "error" not in LIB:
         matcher_lacks = list(un_c)
         matcher_view = {"class_lacks": top_groups([(c, numel(W[c][0])) for c in un_c], 5), "unused": top_groups(unused, 5)}
@@ -989,6 +993,24 @@ if T:
         R["library_silent_drops"] = silent[:50]
         unused = [(p, numel(shp[p])) for p in un_loaded]
         R["t1_authority"] = "library_load_report"
+        # G1/G2 load provenance (INTENT.md): how the library filled every tensor it did not load, and whether the
+        # executed model is the loaded one
+        _sd = m.state_dict(keep_vars=True)
+        _pn = {n for n, _ in m.named_parameters(remove_duplicate=False)}
+        _bg = {k: (type(m.get_submodule(k.rpartition(".")[0]) if "." in k else m).__name__, k.rpartition(".")[2])
+               for k, t in _sd.items() if k not in _pn and t.is_floating_point()}
+        G1 = libload.g1_assess(LIB.get("provenance") or {}, used, {k: list(t.shape) for k, t in _sd.items()}, _bg)
+        UNKNOWNS.extend(G1["unknowns"])
+        _prov = LIB.get("provenance") or {}
+        R["load_provenance"] = {"quantizer": _prov.get("quantizer"),
+                                "nonloaded": {k: v for k, v in list((_prov.get("nonloaded") or {}).items())[:60]},
+                                "nonloaded_classes": dict(collections.Counter(v["class"] for v in (_prov.get("nonloaded") or {}).values())),
+                                "missing_silenced_by_ignore": _prov.get("missing_silenced_by_ignore"),
+                                "unexpected_silenced_by_ignore": _prov.get("unexpected_silenced_by_ignore"),
+                                "files_not_opened": _prov.get("files_not_opened"),
+                                "raw_tie_word_embeddings": _prov.get("raw_tie_word_embeddings"),
+                                "library_tie_word_embeddings": _prov.get("library_tie_word_embeddings"),
+                                "fail": G1["fail"], "leftovers": G1["leftovers"]}
         if LIB.get("tie_value_check_unevaluable"):
             # the library ties shipped-twice weights only if their values are equal: not checkable without the weights
             R["library_tie_value_check_unevaluable"] = {"pairs": LIB["tie_value_check_unevaluable"],
@@ -1001,15 +1023,20 @@ if T:
         if LIB.get("read_keys"):
             rk = set(LIB["read_keys"])
             R["checkpoint_numel_in_files_library_reads"] = sum(numel(T[k][0]) for k in rk if k in T)
+    _g1f = (G1 or {}).get("fail") or {}
+    _g1l = (G1 or {}).get("leftovers") or {}
+    _t1_old = not unused and not un_c and not unbuilt
     checks["T1_weights"] = {
-        "pass": not unused and not un_c and not unbuilt,
+        "pass": _t1_old and not _g1f and not _g1l,
+        "load_provenance_fail": _g1f, "buffers_never_read_in_any_mode": _g1l.get("buffers_never_read_in_any_mode", [])[:20],
         # leftovers = ONLY what the library certifies BY DESIGN: keys it declares ignorable (class or built-model list)
         # and keys its own conversion silently drops. Merely reported "unexpected" keys do not qualify (the library
         # itself says "not ok if you expect identical arch"), nor does anything only our matcher saw.
-        "leftovers_eligible": (not unused) and bool(un_c or unbuilt) and (not unbuilt or no_runtime)
+        "leftovers_eligible": not _g1f and (((not unused) and bool(un_c or unbuilt) and (not unbuilt or no_runtime)
                               and (not un_c or (reported_by_library is not None and not reported_by_library
                                                 and all(c in (R.get("library_silent_drops") or []) for c in un_c)
-                                                and not any(str(c).startswith("(unidentified") for c in un_c))),
+                                                and not any(str(c).startswith("(unidentified") for c in un_c))))
+                                                or (_t1_old and bool(_g1l))),
         "shipped_weights_unused": top_groups(unused, 5), "shipped_weights_unused_numel": sum(n for _, n in unused),
         "shipped_but_not_built_by_model": top_groups([(c, numel((W.get(c) or T.get(c) or ((0,),))[0])) for c in un_c], 5),
         "library_declared_unbuilt_numel": unb, "library_declared_unbuilt_prefixes": sorted({".".join(k.split(".")[:3]) for k in unbuilt})[:5],
@@ -1086,8 +1113,15 @@ if failed == ["T1_weights"] and _t1.get("leftovers_eligible"):
     R["leftovers"] = {"library_declared_unbuilt": _t1.get("library_declared_unbuilt_prefixes"),
                       "not_in_library_class": _t1.get("shipped_but_not_built_by_model"),
                       "silently_dropped": R.get("library_silent_drops"),
+                      "buffers_never_read_in_any_mode": _t1.get("buffers_never_read_in_any_mode") or None,
                       "certification": ("transformers load report" if R.get("t1_authority") == "library_load_report" else "no load report")
-                                       + " / declared-ignore list" + ("; vLLM MTP registry: none" if _t1.get("library_declared_unbuilt_numel") else "")}
+                                       + " / declared-ignore list" + ("; vLLM MTP registry: none" if _t1.get("library_declared_unbuilt_numel") else "")
+                                       + ("; buffers measured never read in any mode (not declared by the library)"
+                                          if _t1.get("buffers_never_read_in_any_mode") else "")}
+if R["verdict"] in ("FULL", "FULL_LEFTOVERS") and UNKNOWNS:
+    # every observed check passes, but a predicate could not be evaluated: never FULL (INTENT.md, Soumil 2026-10-09)
+    R["verdict"] = "FULL_UNVERIFIED"
+R["unknowns"] = UNKNOWNS
 R["failed_checks"] = failed
 R["structure"] = {l: {k: v.get(k) for k in ("layer_patterns", "cross_layer_edges", "non_layer_into_layers", "activation_like_ops", "ops", "zero_skipped")}
                   for l, v in pass_res.items() if v["ok"] and not l.startswith("stability:")}
