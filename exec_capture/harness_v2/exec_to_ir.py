@@ -217,18 +217,6 @@ def _recognize(bundle):
                        "layers are not drawn yet")
     ev["layers"].append(f"{len(layer_ids)} numbered children of {stack} executed")
 
-    # identical structure across layers
-    def normseq(ops):
-        nm = lambda x: re.sub(rf"^{re.escape(stack)}\.\d+", "L", x)
-        return [(nm(N[j].module), N[j].func, tuple(N[j].consts),
-                 tuple(sorted(nm(e[1]) for e in N[j].ins if e[0] in ("param", "buffer"))),
-                 N[j].shape, tuple(sorted(tuple(R.pshape.get(e[1], ())) for e in N[j].ins if e[0] == "param"))) for j in ops]
-    ref = normseq(L[layer_ids[0]])
-    identical = [i for i in layer_ids if normseq(L[i]) == ref]
-    if len(identical) < len(layer_ids):
-        odd = [i for i in layer_ids if i not in identical]
-        raise NotDrawn(f"layers differ: {len(identical)} of {len(layer_ids)} run layer 0's ops, constants and weights "
-                       f"(others: {odd[:6]}{'...' if len(odd) > 6 else ''}); per-layer drawing is not implemented yet")
     # the RoPE config gate: only default and llama3 frequencies (llama3 rescales long wavelengths only; the drawn base
     # is checked against the buffer itself below); every other scaling type also changes what the drawing shows
     rs = cfg.get("rope_scaling") or cfg.get("rope_parameters") or {}
@@ -261,6 +249,51 @@ def _recognize(bundle):
             for c in R.cons[j]:
                 if c not in hid: hid.add(c); nxt.append(c)
         frontier = nxt
+
+    def _moves_only(j):
+        """A shape-only op that keeps every value in place. A slice / select / narrow that drops part of the tensor
+        (x[:, :1], one token) is NOT shape-only: it changes which values flow on."""
+        nd = N[j]
+        if nd.func not in TRANSPARENT: return False
+        if nd.func in ("slice", "select", "narrow"):
+            src = R.srcs(j)
+            return bool(src) and nd.shape is not None and N[src[0]].shape is not None and tuple(nd.shape) == tuple(N[src[0]].shape)
+        return True
+    # identical layers: the same ops, constants, string arguments, weights AND wiring. Each operand is named by its
+    # producer: an op of the same layer (by position), the one hidden state entering the layer, or the very same
+    # shared off-path tensor (e.g. one mask, one rotation table); a layer reading a different value is not identical
+    strs_ = P["graph"].get("op_strings") or {}
+    def normseq(i):
+        nm = lambda x: re.sub(rf"^{re.escape(stack)}\.{i}(?=\.|$)", "L", x)
+        local = {j: k for k, j in enumerate(L[i])}
+        def edge(e):
+            if e[0] != "op": return (e[0], nm(e[1]) if isinstance(e[1], str) else e[1])
+            if e[1] in local: return ("local", local[e[1]])
+            return ("hidden_in",) if e[1] in hid else ("shared", e[1])
+        return [(nm(N[j].module), N[j].func, tuple(N[j].consts), tuple(edge(e) for e in N[j].ins), N[j].shape,
+                 tuple(tuple(R.pshape.get(e[1], ())) for e in N[j].ins if e[0] == "param"),
+                 tuple(strs_.get(str(j), []))) for j in L[i]]
+    ref = normseq(layer_ids[0])
+    identical = [i for i in layer_ids if normseq(i) == ref]
+    if len(identical) < len(layer_ids):
+        odd = [i for i in layer_ids if i not in identical]
+        raise NotDrawn(f"layers differ: {len(identical)} of {len(layer_ids)} run layer 0's ops, constants, weights and "
+                       f"wiring (others: {odd[:6]}{'...' if len(odd) > 6 else ''}); per-layer drawing is not implemented yet")
+    # the layers form one chain: each reads exactly one hidden state, the one the previous layer hands on
+    def _layer_io(i):
+        s_ = set(L[i])
+        ins_ = {e[1] for j in L[i] for e in N[j].ins if e[0] == "op" and e[1] in hid and e[1] not in s_}
+        outs = {j for j in L[i] if j in hid and any(c not in s_ for c in R.cons[j])}
+        return ins_, outs
+    layer_in, prev_out = None, None
+    for i in layer_ids:
+        ins_, outs = _layer_io(i)
+        if len(ins_) != 1 or len(outs) != 1 or (prev_out is not None and ins_ != prev_out):
+            raise NotDrawn(f"layer {i} is not chained to the previous one through a single hidden state (hidden inputs "
+                           f"{sorted(ins_)[:4]}, outputs {sorted(outs)[:4]}): only a plain layer stack is drawn yet")
+        if layer_in is None: layer_in = next(iter(ins_))
+        prev_out = outs
+    stack_out = next(iter(prev_out))
     def _off(j, k):
         """Is tensor operand k of op j off the hidden-state path (a mask, a table, a parameter, an input)?"""
         e = N[j].ins[k] if k < len(N[j].ins) else None
@@ -286,13 +319,40 @@ def _recognize(bundle):
         region = set(region)
         unit = {j for j in region if N[j].func in ("mul", "div") and N[j].consts and all(c in (1, 1.0) for c in N[j].consts)
                 and not _off_ops(j) and not any(e[0] == "param" for e in N[j].ins)}          # x 1.0 changes nothing
-        core = [j for j in region if N[j].func not in TRANSPARENT and j not in unit]
+        core = [j for j in region if not _moves_only(j) and j not in unit]
         if not core: return None, set()
+        # a normalization reads exactly one hidden value: its statistic and its scaling see the same input
+        ext = {_thru(x) for j in region for x in R.srcs(j) if x in hid and x not in region}
+        if len(ext) != 1: return None, set()
+        xin = next(iter(ext))
+        def _last_axis(j, dims):                         # reduces / normalizes over the last axis only
+            rank = len(N[R.srcs(j)[0]].shape or ()) if R.srcs(j) else 0
+            return len(dims) == 1 and isinstance(dims[0], int) and dims[0] in (-1, rank - 1)
         if len(core) == 1 and N[core[0]].func in ("native_layer_norm", "layer_norm"):
+            c_ = list(N[core[0]].consts)                  # [normalized_shape..., eps]: one dim, the last
+            src_ = R.srcs(core[0])
+            if not src_ or len(c_) != 2 or N[src_[0]].shape is None or c_[0] != N[src_[0]].shape[-1]:
+                return None, set()
             return "layernorm", region
         stat = [j for j in core if N[j].func in ("rsqrt", "sqrt")]
         if len(stat) != 1: return None, set()
         r = stat[0]
+        # the statistic is exactly [rsqrt|sqrt]( mean_last( (x | x - mean_last(x)) ^ 2 ) [+ eps] )
+        def _one(j):
+            s_ = [_thru(x) for x in R.srcs(j)]
+            return s_[0] if len(s_) == 1 else None
+        y = _one(r)
+        if y is not None and N[y].func == "add" and N[y].consts: y = _one(y)
+        if y is None or N[y].func != "mean" or not _last_axis(y, list(N[y].consts)): return None, set()
+        y = _one(y)
+        if y is None or N[y].func != "pow" or list(N[y].consts) not in ([2], [2.0]): return None, set()
+        y = _one(y)
+        def _centered_of(s):                              # s = x - mean_last(x) of the norm's own input
+            if s is None or N[s].func != "sub" or N[s].consts: return False
+            a_ = [_thru(x) for x in R.srcs(s)]
+            return (len(a_) == 2 and a_[0] == xin and N[a_[1]].func == "mean" and _last_axis(a_[1], list(N[a_[1]].consts))
+                    and _one(a_[1]) == xin)
+        if y != xin and not _centered_of(y): return None, set()
         def anc(j):                                     # region ancestors of j
             got, fr = set(), [j]
             while fr:
@@ -306,7 +366,7 @@ def _recognize(bundle):
         centered = False
         for j in before:
             nd = N[j]; f = nd.func
-            if f in TRANSPARENT or f in ("mean", "var", "var_mean"): continue
+            if f in TRANSPARENT or f == "mean": continue           # var / var_mean: correction unchecked, not drawn
             if f == "pow" and list(nd.consts) in ([2], [2.0]): continue
             if f == "add" and nd.consts and 0 < abs(nd.consts[0]) <= 1e-2 and len(R.srcs(j)) == 1: continue
             if f == "sub" and any(N[x].func == "mean" for x in R.srcs(j)): centered = True; continue
@@ -322,12 +382,23 @@ def _recognize(bundle):
                and any(from_r(x) for x in R.srcs(j))
                and any(x != r and r not in anc(x) for x in R.srcs(j))]                   # times the (centered) input
         if len(scl) != 1: return None, set()
+        # x * rsqrt(stat) or x / sqrt(stat); the other operand is the norm's input (or that input, centered)
+        if (N[r].func, N[scl[0]].func) not in (("rsqrt", "mul"), ("sqrt", "div")): return None, set()
+        if N[scl[0]].func == "div" and not from_r(R.srcs(scl[0])[-1]): return None, set()
+        other = [_thru(x) for x in R.srcs(scl[0]) if not from_r(x)]
+        if len(other) != 1 or not (other[0] == xin if not centered else _centered_of(other[0])): return None, set()
         rest = [j for j in after if j != scl[0]]
         wmul = [j for j in rest if N[j].func == "mul" and any(_param_side(e) for e in N[j].ins) and not N[j].consts]
         badd = [j for j in rest if N[j].func == "add" and any(_param_side(e) for e in N[j].ins) and not N[j].consts]
         if len(wmul) > 1 or len(badd) > 1 or len(wmul) + len(badd) != len(rest): return None, set()
         if badd and wmul and not (wmul[0] in anc(badd[0])): return None, set()      # weight before bias
         if any(scl[0] not in anc(j) for j in rest): return None, set()                # both after the scaling
+        # the affine ops form one chain: scaling -> [x weight] -> [+ bias], each reading the previous value
+        prev_ = scl[0]
+        for j in wmul + badd:
+            hs_ = [_thru(x) for x in R.srcs(j) if x in hid]
+            if hs_ != [prev_]: return None, set()
+            prev_ = j
         if badd and not centered: return None, set()          # an RMSNorm with a bias has no drawn form
         region = region | unit
         return ("layernorm" if centered else "rmsnorm"), region
@@ -358,40 +429,88 @@ def _recognize(bundle):
     def _thru(x):
         """The value an op stands for, looking through shape-only / cast ops."""
         seen = 0
-        while N[x].func in TRANSPARENT and R.srcs(x) and seen < 20:
+        while _moves_only(x) and R.srcs(x) and seen < 20:
             x = R.srcs(x)[0]; seen += 1
         return x
 
+    SHAPE_ONLY = {"view", "_unsafe_view", "unsqueeze", "expand", "reshape", "contiguous", "clone", "alias", "detach",
+                  "_to_copy", "to", "type_as", "lift_fresh_copy", "copy", "transpose"}       # no slicing / reordering
+    def _walk(x):
+        seen = 0
+        while N[x].func in SHAPE_ONLY and R.srcs(x) and seen < 30:
+            x = R.srcs(x)[0]; seen += 1
+        return x
+    def _last_dim(j, d):
+        return isinstance(d, int) and N[j].shape is not None and d in (-1, len(N[j].shape) - 1)
+
+    def _rope_table(x):
+        """(role, buffer, angle op, width) if x is cos or sin of the rotate-half angle table cat(f, f) on the last axis,
+        f = positions 0..S-1 times the frequency buffer, scaled by exactly 1; None for anything else."""
+        x = _walk(x); hops = 0
+        while (N[x].func in ("mul", "div") and N[x].consts and all(c in (1, 1.0) for c in N[x].consts)
+               and len(N[x].ins) == 1 and len(R.srcs(x)) == 1 and hops < 4):
+            x = _walk(R.srcs(x)[0]); hops += 1                    # the attention scaling, exactly 1 (default, llama3)
+        if N[x].func not in ("cos", "sin") or len(N[x].ins) != 1 or len(R.srcs(x)) != 1: return None
+        role, c = N[x].func, _walk(R.srcs(x)[0])
+        if (N[c].func != "cat" or len(N[c].ins) != 2 or N[c].ins[0] != N[c].ins[1] or N[c].ins[0][0] != "op"
+                or not _last_dim(c, N[c].consts[0] if N[c].consts else 0)):
+            return None                                           # rotate-half layout: the half-table twice, side by side
+        f = _walk(N[c].ins[0][1])
+        if N[f].func not in ("bmm", "matmul", "mm", "mul") or len(N[f].ins) != 2 or any(e[0] != "op" for e in N[f].ins):
+            return None
+        buf = pos = None
+        for e in N[f].ins:
+            y = _walk(e[1])
+            bs = [e2[1] for e2 in N[y].ins if e2[0] == "buffer"]
+            if N[y].func in SHAPE_ONLY and len(N[y].ins) == 1 and bs:
+                buf = bs[0]; continue
+            while N[y].func == "add" and list(N[y].consts) in ([0], [0.0]) and len(R.srcs(y)) == 1:
+                y = _walk(R.srcs(y)[0])                           # + 0 (no cached positions)
+            S_ = N[emb].shape[-2] if N[emb].shape and len(N[emb].shape) >= 2 else None       # the run's token count
+            if (N[y].func == "arange" and not N[y].ins and S_ and list(N[y].consts) in ([S_], [0, S_])
+                    and N[f].shape is not None and S_ in tuple(N[f].shape)[-2:]):
+                pos = y
+        bvals = (bundle["model"].get("computed_buffers") or {}).get(buf, {}).get("values") if buf else None
+        if buf is None or pos is None or not bvals or N[c].shape[-1] != 2 * len(bvals): return None
+        return role, buf, c, N[c].shape[-1]
+
     def _rope_match(ops):
-        """The ops of exactly one rotation in `ops`: x*cos + rot(x)*sin with rot(x) = cat/stack(-half, half) of the
-        same x, or one complex multiply by a polar table. None if the rotation ops are anything else."""
+        """The ops of exactly one rotate-half rotation in `ops`: x*cos + cat(-x[..., d/2:], x[..., :d/2])*sin, with
+        cos / sin of one angle table (see _rope_table). None if the rotation ops are anything else (complex, interleaved,
+        swapped tables, wrong half, wrong axis, subtraction, ...)."""
         ops = set(ops)
         trig = [j for j in ops if N[j].func == "mul" and _rot_operands(j)]
-        hadd = [j for j in ops if N[j].func in ("add", "sub") and len(R.srcs(j)) == 2 and all(x in hid for x in R.srcs(j))]
-        if any(any(e[0] == "param" for e in N[j].ins) for j in trig): return None
-        cplx = {j for j in ops if N[j].func in ("view_as_complex", "view_as_real")}
-        if len(trig) == 1 and cplx and not hadd:
-            return {trig[0]} | cplx
-        if len(trig) != 2 or len(hadd) != 1: return None
-        A = hadd[0]
-        if {_thru(x) for x in R.srcs(A)} != set(trig) and set(R.srcs(A)) != set(trig): return None
-        hidden_in = {}
+        if len(trig) != 2: return None
+        adds_ = [j for j in ops if N[j].func == "add" and not N[j].consts and len(N[j].ins) == 2
+                 and sorted(_thru(x) for x in R.srcs(j)) == sorted(trig)]
+        if len(adds_) != 1: return None
+        A = adds_[0]
+        tab, hin = {}, {}
         for m_ in trig:
-            hs = [x for x in R.srcs(m_) if x in hid]
-            if len(hs) != 1: return None
-            hidden_in[m_] = _thru(hs[0])
-        rot = [m_ for m_ in trig if N[hidden_in[m_]].func in ("cat", "stack", "flatten")]
-        if len(rot) != 1: return None
-        x_m = [m_ for m_ in trig if m_ not in rot][0]; x = R.base(hidden_in[x_m])
-        rc = hidden_in[rot[0]]
-        if N[rc].func == "flatten": rc = _thru(R.srcs(rc)[0])
-        parts = [_thru(y) for y in R.srcs(rc)]
-        negs = [y for y in parts if N[y].func == "neg"]
-        if len(parts) != 2 or len(negs) != 1: return None
-        halves = [R.base(R.srcs(negs[0])[0])] + [R.base(y) for y in parts if y not in negs]
-        if any(h != x for h in halves): return None                 # both halves of the same rotated tensor
-        keep = {A, rc, negs[0], *trig, hidden_in[rot[0]]}
-        return keep | {j for j in ops if N[j].func in TRANSPARENT}
+            hs = [x for x in R.srcs(m_) if x in hid]; offs = [x for x in R.srcs(m_) if x not in hid]
+            if len(N[m_].ins) != 2 or N[m_].consts or len(hs) != 1 or len(offs) != 1: return None
+            tab[m_] = _rope_table(offs[0]); hin[m_] = hs[0]
+            if tab[m_] is None: return None
+        if {t[0] for t in tab.values()} != {"cos", "sin"} or len({t[2] for t in tab.values()}) != 1: return None
+        mc = next(m_ for m_ in trig if tab[m_][0] == "cos"); ms = next(m_ for m_ in trig if tab[m_][0] == "sin")
+        x = _walk(hin[mc])                                       # x * cos
+        rc = _walk(hin[ms])                                      # rotate_half(x) * sin
+        d = tab[mc][3]; h = d // 2
+        if N[rc].func != "cat" or len(N[rc].ins) != 2 or any(e[0] != "op" for e in N[rc].ins): return None
+        if not _last_dim(rc, N[rc].consts[0] if N[rc].consts else 0) or N[rc].shape[-1] != d: return None
+        neg, keep_half = (_walk(e[1]) for e in N[rc].ins)
+        if N[neg].func != "neg" or len(R.srcs(neg)) != 1: return None
+        def _half(sl, start, end_ok):
+            nd = N[sl]
+            if nd.func != "slice" or len(nd.consts) < 3 or len(R.srcs(sl)) != 1: return False
+            dim, st, en = nd.consts[:3]; step = nd.consts[3] if len(nd.consts) > 3 else 1
+            rank = len(N[R.srcs(sl)[0]].shape or ())
+            return (dim in (-1, rank - 1) and st == start and step == 1 and end_ok(en) and _walk(R.srcs(sl)[0]) == x
+                    and N[R.srcs(sl)[0]].shape == N[hin[mc]].shape)          # the same tensor x*cos reads
+        second = _walk(R.srcs(neg)[0])
+        if not (_half(second, h, lambda en: en >= d) and _half(keep_half, 0, lambda en: en == h)): return None
+        keep = {A, rc, neg, second, keep_half, *trig}
+        return keep | {j for j in ops if _moves_only(j)}
 
     last = max(L[layer_ids[-1]])
     head = next((j for j in range(last + 1, len(N)) if N[j].func in MATMULS and R.weights(j)), None)
@@ -429,6 +548,8 @@ def _recognize(bundle):
     sm = next((j for j in lops if N[j].func in SOFTMAX), None)
     if sm is None:
         raise NotDrawn("layer 0 runs no softmax attention (a state-space / linear-attention mixer): not drawn yet")
+    if not (N[sm].consts and N[sm].shape is not None and N[sm].consts[0] in (-1, len(N[sm].shape) - 1)):
+        raise NotDrawn(f"the attention softmax normalizes over axis {list(N[sm].consts)[:1]}, not the key axis: not drawn")
     attn_mod = N[sm].module
     scores, pre_sm = R.back(sm, lambda j: N[j].func in ("bmm", "matmul") and not R.weights(j))
     num_heads = N[sm].shape[1] if N[sm].shape and len(N[sm].shape) == 4 else None
@@ -456,7 +577,7 @@ def _recognize(bundle):
     def _mask_adds(pre):
         out = []
         for j in pre:
-            if j not in hid or N[j].func != "add": continue
+            if j not in hid or N[j].func != "add" or N[j].consts: continue   # add(..., alpha=c) scales the mask
             per = square_adds.get(j, {})
             if -1 in per:                                    # older bundle: the last square operand only
                 out.append((j, -1)); continue
@@ -532,6 +653,9 @@ def _recognize(bundle):
         first_rot = min(j for j in q_path if j in hid and N[j].func == "mul" and _rot_operands(j))
         first_rs = min((j for j in q_path if N[j].func in ("rsqrt", "native_layer_norm")), default=None)
         norm_before_rope = first_rs is not None and first_rs < first_rot
+    if bool(qk_norm_q) != bool(qk_norm_k) or qk_norm_q != qk_norm_k:
+        raise NotDrawn(f"the query is normalized by {qk_norm_q} and the key by {qk_norm_k}: one QK-norm kind is drawn, so "
+                       "this is not drawn")
     if qk_norm_q and rope_q and norm_before_rope is False:
         raise NotDrawn("QK-norm runs after the rotation: the drawing has no way to show that order yet")
     theta = None
@@ -564,13 +688,43 @@ def _recognize(bundle):
             raise NotDrawn(f"layers rotate with different frequency tables ({sorted(per_layer)}): per-layer RoPE is "
                            "not drawn yet")
         names = [n_ for n_ in _theta_bufs(layer_ids[0]) if n_ in bufs and len(bufs[n_]["values"]) > 2]
-        if len(names) == 1:
-            vals = bufs[names[0]]["values"]
-            # a plain RoPE table is geometric from 1: v0 = 1 and v2 = v1^2 (scaled tables fail this)
-            if abs(vals[0] - 1) > 1e-6 or abs(vals[2] - vals[1] ** 2) > 1e-4 * abs(vals[2]):
-                raise NotDrawn(f"the rotation frequencies in {names[0]} are not a plain geometric series from 1 "
-                               "(scaled RoPE): not drawn yet")
-            d = 2 * len(vals); raw = float(vals[1] ** (-d / 2))
+        if len(names) != 1:
+            raise NotDrawn(f"the rotation reads {len(names)} recorded frequency tables ({names[:3]}): its "
+                           "frequencies cannot be checked, so the rotation is not drawn")
+        if names:
+            vals = bufs[names[0]]["values"]; n_ = len(vals)
+            # EVERY frequency: theta^(-i/n) (default), or the llama3 piecewise rescale of that series; the base comes
+            # from entry 1 (a high frequency, unscaled by llama3), every other entry must follow from it
+            raw = float(vals[1] ** (-n_)) if n_ > 1 and vals[1] > 0 else None
+            if raw is None or abs(vals[0] - 1) > 1e-6:
+                raise NotDrawn(f"the rotation frequencies in {names[0]} do not start at 1: not drawn")
+            l3 = next((v for v in rope_cfg if (v.get("rope_type") or v.get("type")) == "llama3"), None)
+            if l3:
+                fac, lo_f, hi_f = float(l3["factor"]), float(l3["low_freq_factor"]), float(l3["high_freq_factor"])
+                old_ctx = float(l3["original_max_position_embeddings"])
+                lo_wl, hi_wl = old_ctx / lo_f, old_ctx / hi_f
+                def _l3(f_):                                 # transformers' _compute_llama3_parameters, per entry
+                    wl = 2 * math.pi / f_
+                    if wl < hi_wl: return f_
+                    if wl > lo_wl: return f_ / fac
+                    sm_ = (old_ctx / wl - lo_f) / (hi_f - lo_f)
+                    return (1 - sm_) * f_ / fac + sm_ * f_
+            def _want(base_):
+                w_ = [base_ ** (-i / n_) for i in range(n_)]
+                return [_l3(f_) for f_ in w_] if l3 else w_
+            def _freq_off(base_):
+                w_ = _want(base_)
+                return [i for i in range(n_) if abs(vals[i] - w_[i]) > 1e-4 * abs(w_[i])], w_
+            # candidate bases: the one entry 1 implies (unscaled in every real llama3 table), else the declared one;
+            # a base is accepted only if EVERY entry follows from it, so the buffer itself proves it
+            decl = next((v.get("rope_theta") for v in rope_cfg if v.get("rope_theta")), None) or cfg.get("rope_theta")
+            off, want = _freq_off(raw)
+            if off and decl and not _freq_off(float(decl))[0]:
+                raw = float(decl); off, want = [], _want(raw)
+            if off:
+                raise NotDrawn(f"rotation frequency {off[0]} of {n_} in {names[0]} is {vals[off[0]]:.6g}, not the "
+                               f"{'llama3-scaled ' if l3 else ''}base-{raw:.4g} value {want[off[0]]:.6g} "
+                               f"({len(off)} entries differ): not drawn")
             theta = float(f"{raw:.4g}")                 # the buffer is float32: 4 significant digits are real
             ev["rope"].append(f"frequency base from {names[0]} (the buffer feeding every layer's rotation)")
     cache = verify_cache(bundle.get("cache_run"), pshape, wk, wv, f"{stack}.{layer_ids[0]}")
@@ -645,14 +799,16 @@ def _recognize(bundle):
             pre = {j for j in ops if first is None or j < first}
             kind_, acc = _norm_match(pre)
             if kind_ is None:
-                return sorted(j for j in pre if N[j].func not in TRANSPARENT and not _scalar_only(j))
+                return sorted(j for j in ops if not _moves_only(j) and not _scalar_only(j))
             explained_ |= acc
         if rope:
             m_ = _rope_match(ops - explained_)
             if m_ is None:
-                return sorted(j for j in ops - explained_ if N[j].func not in TRANSPARENT and not _scalar_only(j))
+                raise NotDrawn("the rotation on the query/key path is not exactly x*cos + rotate_half(x)*sin of one "
+                               "position x frequency table (rotate-half halves, cos/sin roles, last axis, positions "
+                               "0..S-1, scale 1): that rotation is not drawn")
             explained_ |= m_
-        return [j for j in ops if j not in explained_ and N[j].func not in TRANSPARENT and not _scalar_only(j)]
+        return [j for j in ops if j not in explained_ and not _moves_only(j) and not _scalar_only(j)]
     explained = {emb, head, q_proj, k_proj, v_proj, scores, sm, apply_v} | set(adds)
     explained |= {x for x in (o_proj, gate, up, down, act_op) if x is not None}
     if gated:
@@ -667,13 +823,13 @@ def _recognize(bundle):
     explained |= {j for j, _ in madds}
     bad = []
     bad += [("query path", j) for j in _proj_path_bad(q_hid)] + [("key path", j) for j in _proj_path_bad(k_hid)]
-    bad += [("value path", j) for j in v_hid if N[j].func not in TRANSPARENT]
+    bad += [("value path", j) for j in v_hid if not _moves_only(j)]
     explained |= q_hid | k_hid | v_hid
     first_layer_op, last_layer_op = min(L[layer_ids[0]]), last
     layer_mods = tuple(f"{stack}.{i}" for i in layer_ids)
     for j in sorted(hid):
         nd = N[j]
-        if j in explained or nd.func in TRANSPARENT:
+        if j in explained or _moves_only(j):
             continue
         if _scalar_only(j) and all(c in (1, 1.0) for c in nd.consts):
             continue                                   # a multiplier of exactly 1 changes nothing
@@ -711,6 +867,46 @@ def _recognize(bundle):
                        "kind, so mixed kinds are not drawn yet")
     if final_norm is None:
         raise NotDrawn("no final norm observed before the output head: that model ending is not drawn yet")
+    # ---- wiring: every arrow the drawing shows is a recorded dataflow edge of layer 0 (the other layers are wired
+    #      identically, checked above), looking only through shape-only ops
+    def _hin(j):
+        return sorted({_thru(x) for x in R.srcs(j) if x in hid})
+    def _feeds(region):
+        return sorted({_thru(x) for j in region for x in R.srcs(j) if x in hid and x not in region})
+    reg1 = _region(q_proj, min(lops) - 1) & set(pre_attn_ops)
+    reg2 = _region(mlp_in, adds[0]) & set(pre_mlp_ops)
+    regf = _region(head, last) & set(fin_ops)
+    o_out = o_proj if o_proj is not None else apply_v
+    v_src = _hin(v_proj)
+    arrows = [
+        ("attention-input norm <- layer input", _feeds(reg1) == [_thru(layer_in)]),
+        ("Q, K, V projections <- one normed input", _hin(q_proj) == _hin(k_proj) == v_src and len(v_src) == 1
+         and v_src[0] in reg1),
+        ("weighted sum <- softmax, V", _hin(apply_v) == sorted({_thru(sm), _thru(v_proj)})),
+        ("first residual add <- layer input + attention output", _hin(adds[0]) == sorted({_thru(layer_in), _thru(o_out)})),
+        ("MLP-input norm <- first residual sum", _feeds(reg2) == [adds[0]]),
+        ("MLP projections <- one normed input", len({tuple(_hin(x)) for x in (gate, up) if x is not None}) == 1
+         and len(_hin(up)) == 1 and _hin(up)[0] in reg2),
+        ("second residual add <- first sum + MLP output", _hin(adds[1]) == sorted({adds[0], _thru(down)})),
+        ("final norm <- last layer output", _feeds(regf) == [_thru(stack_out)]),
+    ]
+    if o_proj is not None:
+        arrows.append(("output projection <- weighted sum", _hin(o_proj) == [apply_v]))
+    if gated:
+        prod = _hin(down)
+        arrows.append(("down projection <- act(gate) x up", len(prod) == 1 and N[prod[0]].func == "mul"
+                       and _hin(prod[0]) == sorted({act_op, up}) and act_op is not None and _hin(act_op) == [gate]))
+    else:
+        arrows.append(("down projection <- act(up)", act_op is not None and _hin(down) == [act_op]
+                       and _hin(act_op) == [up]))
+    scaled_mm = [x for x in (q_proj, k_proj, v_proj, o_proj, gate, up, down, head)
+                 if x is not None and any(c not in (1, 1.0) for c in N[x].consts)]
+    arrows.append(("projections are plain matmuls (no alpha / beta multipliers)", not scaled_mm))
+    miswired = [a_ for a_, ok in arrows if not ok]
+    if miswired:
+        raise NotDrawn(f"the recorded dataflow does not match the drawn arrows ({'; '.join(miswired)}): not drawn")
+    ev["layers"].append(f"wiring: {len(arrows)} drawn arrows match recorded dataflow edges; layers chained through one "
+                        "hidden state each")
     win = cfg.get("sliding_window")
     lt = cfg.get("layer_types")
     marks_sliding = (not lt) or any("sliding" in str(t) for t in lt)
