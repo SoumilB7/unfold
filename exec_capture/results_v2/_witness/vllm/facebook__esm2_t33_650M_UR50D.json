@@ -1,0 +1,10 @@
+{
+ "repo": "facebook/esm2_t33_650M_UR50D",
+ "closed": false,
+ "failed_stage": "config",
+ "vllm_mtp_arch": null,
+ "error": "NotImplementedError: Unsupported speculative method: 'mtp'",
+ "where": "vllm/config/speculative.py:1369",
+ "secs": 7.1,
+ "peak_rss_gb": 0.5
+}

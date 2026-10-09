@@ -1,0 +1,10 @@
+{
+ "repo": "microsoft/deberta-v3-small",
+ "closed": false,
+ "failed_stage": "config",
+ "vllm_mtp_arch": null,
+ "error": "ValidationError: 1 validation error for ModelConfig\n  Value error, Model architectures ['DebertaV2Model'] are not supported for now. Supported architectures: dict_keys(['AfmoeForCausalLM', 'ApertusForCausalLM', 'ArceeForCausalLM', 'AXK1ForCausalLM', 'BailingMoeForCausalLM', 'BailingMoeV2ForCausalLM', 'BailingMoeV2_5",
+ "where": "/Users/soumil/Code/Projects/Understand/llmvisualizer/model-benchmark/.venv_vllm/lib/python3.12/site-packages/pydantic/_internal/_dataclasses.py:121",
+ "secs": 5.5,
+ "peak_rss_gb": 0.47
+}

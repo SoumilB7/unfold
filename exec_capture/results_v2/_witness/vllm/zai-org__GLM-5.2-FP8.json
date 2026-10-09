@@ -1,0 +1,10 @@
+{
+ "repo": "zai-org/GLM-5.2-FP8",
+ "closed": false,
+ "failed_stage": "config",
+ "vllm_mtp_arch": "DeepseekV32MTPModel",
+ "error": "NotImplementedError: Sparse Attention is not supported on CPU.",
+ "where": "vllm/platforms/cpu.py:145",
+ "secs": 43.1,
+ "peak_rss_gb": 1.09
+}

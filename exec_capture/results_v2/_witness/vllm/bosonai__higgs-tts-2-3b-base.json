@@ -1,0 +1,10 @@
+{
+ "repo": "bosonai/higgs-tts-2-3b-base",
+ "closed": false,
+ "failed_stage": "config",
+ "vllm_mtp_arch": null,
+ "error": "NotImplementedError: Unsupported speculative method: 'mtp'",
+ "where": "vllm/config/speculative.py:1369",
+ "secs": 8.2,
+ "peak_rss_gb": 0.46
+}

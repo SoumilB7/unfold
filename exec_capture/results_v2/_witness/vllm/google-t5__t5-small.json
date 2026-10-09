@@ -1,0 +1,10 @@
+{
+ "repo": "google-t5/t5-small",
+ "closed": false,
+ "failed_stage": "config",
+ "vllm_mtp_arch": null,
+ "error": "NotImplementedError: Unsupported speculative method: 'mtp'",
+ "where": "vllm/config/speculative.py:1369",
+ "secs": 9.4,
+ "peak_rss_gb": 0.46
+}

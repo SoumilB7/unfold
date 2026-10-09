@@ -1,0 +1,10 @@
+{
+ "repo": "openai-community/gpt2",
+ "closed": false,
+ "failed_stage": "config",
+ "vllm_mtp_arch": null,
+ "error": "NotImplementedError: Unsupported speculative method: 'mtp'",
+ "where": "vllm/config/speculative.py:1369",
+ "secs": 8.4,
+ "peak_rss_gb": 0.5
+}
