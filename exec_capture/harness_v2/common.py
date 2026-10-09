@@ -11,6 +11,16 @@ AUX = re.compile(r"(\.biases|inv_freq|position_ids|num_batches_tracked|_scales|w
 INT_DTYPES = {"I8", "U8", "I16", "U16", "I32", "U32", "I64", "U64"}
 
 
+def harness_id():
+    """Content hash of this harness's own code (every .py beside this file): two results with the same id were graded
+    by byte-identical code, whichever copy (worktree or run mirror) ran them."""
+    import hashlib, os
+    here = os.path.dirname(os.path.abspath(__file__)); h = hashlib.sha256()
+    for f in sorted(x for x in os.listdir(here) if x.endswith(".py")):
+        h.update(f.encode()); h.update(open(os.path.join(here, f), "rb").read())
+    return h.hexdigest()[:12]
+
+
 def module_pattern(name):
     parts = name.split(".")[:-1]
     return ".".join("*" if p.isdigit() else p for p in parts) or "(root)"

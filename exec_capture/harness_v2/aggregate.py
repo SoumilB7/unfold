@@ -1,5 +1,5 @@
 """Summarise results_v2/**.json into results_v2/SUMMARY.md (+ summary.json). Every number is counted from result files."""
-import json, glob, os, collections
+import json, glob, os, sys, collections
 HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(HERE)
 RES = os.path.join(ROOT, "results_v2")
 rows = []
@@ -16,7 +16,7 @@ for f in glob.glob(os.path.join(RES, "**", "*.json"), recursive=True):
     fails = R.get("failed_checks") or sorted({c for v in (R.get("failed_components") or {}).values() for c in v})
     rows.append({"repo": R["repo"], "category": cat, "subcategory": sub, "verdict": R.get("verdict", "?"),
                  "failed_checks": fails, "reason": (R.get("reason") or "")[:160], "secs": R.get("job_secs") or R.get("secs"),
-                 "peak_gb": R.get("peak_rss_gb")})
+                 "peak_gb": R.get("peak_rss_gb"), "harness_id": R.get("harness_id")})
 
 
 def reason_class(r):
@@ -30,7 +30,12 @@ def reason_class(r):
 
 
 V = collections.Counter(r["verdict"] for r in rows)
+HV = collections.Counter(r["harness_id"] or "unstamped (graded before 2026-10-09)" for r in rows)
+if "--strict" in sys.argv and len(HV) > 1:
+    sys.exit(f"refusing: rows graded by {len(HV)} harness versions {dict(HV)}; regrade so every row has one id")
 lines = ["# Strict capture benchmark — measured results", "",
+         "Graded by harness version(s): " + ", ".join(f"`{k}` {v}" for k, v in HV.most_common())
+         + ("  **(MIXED: these numbers combine different grading code)**" if len(HV) > 1 else ""), "",
          f"Repos with a verdict: **{len(rows)}**  |  " + "  ".join(f"**{k}** {v}" for k, v in V.most_common()), "",
          (lambda run: f"Runnable {run}: FULL {100*V['FULL']/run:.1f}%  |  architecture-complete (FULL + FULL_LEFTOVERS) "
                       f"{100*(V['FULL']+V['FULL_LEFTOVERS'])/run:.1f}%")(V['FULL'] + V['FULL_LEFTOVERS'] + V['PARTIAL'] + V['FAIL']), "",

@@ -22,13 +22,13 @@ import noweights; noweights.install()
 torch.set_num_threads(int(os.environ.get("BENCH_THREADS", "2")))
 import transformers
 from lowcost import zero_storage, fetch_headers, fetch_bin_headers
-from common import ckpt_split, match, library_rename, split_library_ignored, looks_like_stored_buffer, top_groups, numel, INT_DTYPES, buffer_names
+from common import harness_id, ckpt_split, match, library_rename, split_library_ignored, looks_like_stored_buffer, top_groups, numel, INT_DTYPES, buffer_names
 from dag import DagRecorder, analyse, tied_alias_modules, math_attention, clear_library_caches
 from inputs import build_passes, mask_positions
 
 repo, out_path = sys.argv[1], sys.argv[2]
 HDR_CACHE = os.environ.get("BENCH_HEADER_CACHE", os.path.join(HERE, "..", "cache_v2", "headers"))
-R = {"repo": repo, "transformers": transformers.__version__, "torch": torch.__version__, "steps": {}}
+R = {"repo": repo, "transformers": transformers.__version__, "torch": torch.__version__, "steps": {}, "harness_id": harness_id()}
 T0 = time.time()
 # capture bundle for the renderer (capture.py): opt-in, never part of the graded result
 EMIT = os.environ.get("BENCH_EMIT_CAPTURE")

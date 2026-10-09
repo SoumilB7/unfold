@@ -12,12 +12,12 @@ torch.set_num_threads(int(os.environ.get("BENCH_THREADS", "2")))
 import transformers, diffusers
 from huggingface_hub import HfApi, hf_hub_download
 from lowcost import zero_storage
-from common import ckpt_split, match, library_rename, split_library_ignored, looks_like_stored_buffer, top_groups, numel
+from common import harness_id, ckpt_split, match, library_rename, split_library_ignored, looks_like_stored_buffer, top_groups, numel
 from dag import DagRecorder, tied_alias_modules, math_attention, clear_library_caches
 
 repo, out_path = sys.argv[1], sys.argv[2]
 HDR_CACHE = os.environ.get("BENCH_HEADER_CACHE", os.path.join(HERE, "..", "cache_v2", "headers"))
-R = {"repo": repo, "diffusers": diffusers.__version__, "transformers": transformers.__version__, "components": {}}
+R = {"repo": repo, "diffusers": diffusers.__version__, "transformers": transformers.__version__, "components": {}, "harness_id": harness_id()}
 T0 = time.time()
 
 
