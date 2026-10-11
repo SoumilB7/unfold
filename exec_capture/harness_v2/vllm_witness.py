@@ -65,6 +65,12 @@ def _register_cache_write():
         vc.index_copy_(0, slot_mapping.long(), value[:n].to(vc.dtype))
     lib.impl("reshape_and_cache_flash", impl, "CPU")
     _register_cache_write.lib = lib                       # keep the library alive
+    # under the witness recorder the same pure-PyTorch body runs with the recorder active (every step recorded)
+    def _rule(mode, func, types, args, kwargs):
+        with mode:
+            impl(*args)
+        return None
+    torch.library.register_torch_dispatch("_C_cache_ops::reshape_and_cache_flash", WitnessRecorder, _rule)
 
 
 def _prefer_flex_attention():
@@ -97,6 +103,8 @@ def _reference_moe():
 
 
 def build(repo):
+    from vllm.ir import op as irop
+    irop.set_default_torch_wrap(False)    # vLLM's worker setting (worker_base.py): IR ops run their PyTorch body
     _prefer_flex_attention()
     _register_cache_write()
     _reference_moe()
@@ -111,7 +119,7 @@ def build(repo):
                 try: delattr(c, "quantization_config")
                 except Exception: c.quantization_config = None
         return cfg
-    args = EngineArgs(model=repo, skip_tokenizer_init=True, enforce_eager=True, load_format="dummy", hf_overrides=_drop_quant,
+    args = EngineArgs(model=repo, revision=noweights.PIN.get(repo), skip_tokenizer_init=True, enforce_eager=True, load_format="dummy", hf_overrides=_drop_quant,
                       dtype="float32", trust_remote_code=False,
                       speculative_config={"method": "mtp", "num_speculative_tokens": 1},
                       compilation_config={"custom_ops": ["none"], "mode": 0},   # every custom op on its pure-PyTorch path
@@ -193,13 +201,57 @@ def _flex_visible_to_recorder():
     FAmod._FLEX_ATTENTION_DISABLE_COMPILE_DEBUG = True
     if getattr(_flex_visible_to_recorder, "done", False):
         return
-    @FH.flex_attention.py_impl(DagRecorder)
     def _rule(mode, query, key, value, score_mod, block_mask, scale, kernel_options,
               score_mod_other_buffers=(), mask_mod_other_buffers=()):
         with mode:
             return FH.sdpa_dense(query, key, value, score_mod, block_mask, scale, kernel_options,
                                  score_mod_other_buffers, mask_mod_other_buffers)
+    for _cls in (DagRecorder, WitnessRecorder):             # higher-order-op rules match the exact mode class
+        FH.flex_attention.py_impl(_cls)(_rule)
     _flex_visible_to_recorder.done = True
+
+
+from dag import DagRecorder as _DagRecorder
+
+
+class WitnessRecorder(_DagRecorder):
+    """The harness recorder, made transparent for the vLLM witness (INTENT.md G4): every op keeps its full name
+    (namespace::op.overload); an aten op that is not transparent by opclass's registry evidence but has a PyTorch
+    reference decomposition is recorded AS that decomposition; the engine's per-request metadata (attention metadata,
+    slot mapping, built before the forward by vLLM's builder) is a named input, not an external tensor."""
+    def __init__(self, model, inputs, extra_inputs=None):
+        super().__init__(model, inputs)
+        for k, name in (extra_inputs or {}).items():
+            self.input_names.setdefault(k, name)
+        self.op_full, self.decomposed = [], {}
+
+    def __torch_dispatch__(self, func, types, args=(), kwargs=None):
+        import opclass
+        from torch._decomp import decomposition_table, core_aten_decompositions
+        if not hasattr(WitnessRecorder, "_DEC"):
+            WitnessRecorder._DEC = dict(decomposition_table); WitnessRecorder._DEC.update(core_aten_decompositions())
+        name = func.name()
+        if func.namespace == "aten" and not opclass.classify(name)[0] and func in WitnessRecorder._DEC:
+            self.decomposed[name] = self.decomposed.get(name, 0) + 1
+            with self:
+                return WitnessRecorder._DEC[func](*args, **(kwargs or {}))
+        out = super().__torch_dispatch__(func, types, args, kwargs)
+        self.op_full.append(name)
+        return out
+
+
+def _tensors_in(o, path, out, depth=0, seen=None):
+    """Every tensor reachable from the engine's metadata object, with its path (named inputs of the forward)."""
+    seen = set() if seen is None else seen
+    if id(o) in seen or depth > 6: return out
+    seen.add(id(o))
+    if isinstance(o, torch.Tensor):
+        out[id(o)] = path; return out
+    items = (o.items() if isinstance(o, dict) else enumerate(o) if isinstance(o, (list, tuple))
+             else vars(o).items() if hasattr(o, "__dict__") else ())
+    for k, v in items:
+        _tensors_in(v, f"{path}.{k}", out, depth + 1, seen)
+    return out
 
 
 def run_forward(model, dcfg, n_tokens=8, attn_metadata=None):
@@ -217,8 +269,10 @@ def run_forward(model, dcfg, n_tokens=8, attn_metadata=None):
     for m in model.modules():                            # vLLM's direct-call path: attention is not one opaque op
         if hasattr(m, "use_direct_call"):
             m.use_direct_call = True
-    rec = DagRecorder(model, inputs)
     slots = {name: torch.arange(n_tokens, dtype=torch.int64) for name in (attn_metadata or {})}
+    meta = _tensors_in(attn_metadata, "attn_metadata", {})
+    meta.update({id(t): f"forward_context.slot_mapping.{nm}" for nm, t in slots.items()})
+    rec = WitnessRecorder(model, inputs, meta)
     with set_current_vllm_config(dcfg), set_forward_context(attn_metadata, dcfg, num_tokens=n_tokens, slot_mapping=slots or None), \
             torch.no_grad(), rec:
         out = model(**inputs)

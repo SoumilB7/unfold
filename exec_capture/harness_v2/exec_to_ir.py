@@ -150,11 +150,23 @@ def bundle_for(repo, captures=CAPTURES, refresh=False):
     return capture.load(p)
 
 
+def render_id():
+    """Content hash of the drawing code (this file + the renderer copy's snapshot record): separate from grading_id."""
+    import hashlib
+    h = hashlib.sha256(open(os.path.abspath(__file__), "rb").read())
+    snap = os.path.join(HERE, "..", "renderer_snapshot", "SNAPSHOT.txt")
+    if os.path.exists(snap): h.update(open(snap, "rb").read())
+    return h.hexdigest()[:12]
+
+
 def recognize(bundle):
     """Facts from a capture bundle, or NotDrawn with the evidence when the recording is outside what this adapter
     draws truthfully (it never crashes and never draws a guess)."""
     try:
-        return _recognize(bundle)
+        F = _recognize(bundle)
+        F["provenance"] = {"revision": bundle.get("revision"), "grading_id": bundle.get("grading_id"),
+                           "render_id": render_id()}
+        return F
     except NotDrawn:
         raise
     except Exception as e:

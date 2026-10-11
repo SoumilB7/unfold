@@ -25,7 +25,8 @@ def mirror_sparse(repo, dest, headers=None, workers=16):
     # every shard's header is fetched in parallel (sharded repos have up to hundreds of files)
     ex = ThreadPoolExecutor(max_workers=workers)
     try:
-        got = list(ex.map(lambda fz: _read_header(fs, f"{repo}/{fz[0]}"), weights))
+        import noweights
+        got = list(ex.map(lambda fz: _read_header(fs, f"{noweights.ref(repo)}/{fz[0]}"), weights))   # pinned revision
     finally:                                            # on a timeout: do not wait for reads still in flight
         ex.shutdown(wait=False, cancel_futures=True)
     for (f, size), (n, hdr) in zip(weights, got):
@@ -116,6 +117,7 @@ def _report(A, cls, aux_keys=(), **kw):
     import loadtrace
     set_ids, pre, tracer_box = {}, {}, {}
     orig_spf, orig_fin = CML.set_param_for_module, MU.PreTrainedModel._finalize_model_loading
+    orig_fin_attr = MU.PreTrainedModel.__dict__["_finalize_model_loading"]      # the staticmethod object itself
     def recording_spf(model_, target_name, param_value, loading_info, *a, **k):
         mm = len(loading_info.mismatched_keys)
         r = orig_spf(model_, target_name, param_value, loading_info, *a, **k)
@@ -143,7 +145,7 @@ def _report(A, cls, aux_keys=(), **kw):
         CML.rename_source_key = orig_rename
         torch.equal = orig_equal
         CML.set_param_for_module = orig_spf
-        MU.PreTrainedModel._finalize_model_loading = orig_fin
+        MU.PreTrainedModel._finalize_model_loading = orig_fin_attr                # restored as the staticmethod it was
     loaded = {k for k, _ in model.named_parameters()} - set(info.get("missing_keys", []))
     # size accounting: every tensor in the files the library read must land in the model's state (params or
     # persistent buffers, tied names counted per name) or be reported by the library as unexpected/mismatched.

@@ -18,7 +18,10 @@ REG = {}
 
 def one(repo):
     R = {"repo": repo, "executed_by": "vLLM (source, no compiled extension; custom ops on their pure-PyTorch path)", "t0": time.time()}
-    import vllm
+    import vllm, noweights
+    from huggingface_hub import HfApi
+    R["revision"] = HfApi().model_info(repo).sha             # the witness is bound to one checkpoint revision (G6)
+    noweights.pin(repo, R["revision"])
     R["vllm_version"] = getattr(vllm, "__version__", "0.30.0-source")
     R["notes"] = ["standard attention: vLLM FlexAttention backend, computed by torch's reference flex implementation (sdpa_dense)",
                   "KV-cache write: pure-PyTorch scatter registered as _C_cache_ops.reshape_and_cache_flash (vLLM's kernel is not compiled)",
@@ -44,7 +47,7 @@ def one(repo):
     R["vllm_class"] = arch
     STAGE["now"] = "run"
     md = W.attention_metadata(model, dcfg, 8)
-    rec_a, _ = W.run_forward(model, dcfg, 8, md)
+    rec_a, out_a = W.run_forward(model, dcfg, 8, md)
     md = W.attention_metadata(model, dcfg, 8)
     rec_b, _ = W.run_forward(model, dcfg, 8, md)                 # T5: same shape, different values
     import torch
@@ -71,6 +74,16 @@ def one(repo):
     # closure against the library's declared-unbuilt list is decided in the main environment (apply_witness.py)
     R["closed"] = bool(R["executed_checkpoint_keys"]) and not R["loaded_not_used_keys"] and R["stable_structure"] and not R["mapping_error"]
     R["op_kinds"] = sorted({n.func for n in rec_a.nodes})
+    # transparency (INTENT.md G4): full op names, every op transparent by registry evidence, nothing from outside
+    import opclass
+    from dag import analyse
+    R["op_full"] = sorted(set(rec_a.op_full))
+    R["opaque_ops"] = {f: opclass.classify(f)[1] for f in R["op_full"] if not opclass.classify(f)[0]}
+    R["decomposed_on_record"] = dict(rec_a.decomposed)
+    _a = analyse(rec_a, out_a)
+    R["external_nonscalar"] = _a["external_nonscalar"]
+    R["ir_torch_wrap"] = False
+    R["transparent"] = bool(R["op_full"]) and not R["opaque_ops"] and R["external_nonscalar"] == 0
     return R
 
 

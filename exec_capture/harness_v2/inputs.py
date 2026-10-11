@@ -24,6 +24,9 @@ def _load_components(repo):
         try:
             comps[key] = loader.from_pretrained(repo, trust_remote_code=False)
         except Exception as e:
+            import noweights
+            if noweights.network_error(e):        # an outage is not "this repo has no processor": never fall back on it
+                raise
             comps[key + "_error"] = f"{type(e).__name__}: {str(e)[:120]}"
     p = comps.get("processor")
     for attr in ("tokenizer", "image_processor", "feature_extractor", "video_processor"):
@@ -42,12 +45,17 @@ def _proc(repo):
             base = getattr(cd, "base_model", None) if cd is not None else None
             base = base[0] if isinstance(base, list) and base else base
             if isinstance(base, str) and base != repo:
+                import noweights                     # the base model's files: one pinned revision too (INTENT.md G6)
+                comps["processor_base_revision"] = HfApi().model_info(base).sha
+                noweights.pin(base, comps["processor_base_revision"])
                 bc = _load_components(base)
                 bc = {k: v for k, v in bc.items() if not k.endswith("_error")}
                 if bc:
                     comps.update(bc); comps["processor_from_base_model"] = base
-        except Exception:
-            pass
+        except Exception as e:
+            import noweights
+            if noweights.network_error(e):
+                raise
     return comps
 
 
@@ -116,7 +124,8 @@ def build_passes(repo, model, cfg, dtype=torch.float32, text_len_variant=False):
     passes, notes = [], []
     extra_passes = []                  # run only if weights remain unused after the main passes
     if comps.get("processor_from_base_model"):
-        notes.append(f"processor taken from base model {comps['processor_from_base_model']}")
+        notes.append(f"processor taken from base model {comps['processor_from_base_model']}"
+                     f"@{(comps.get('processor_base_revision') or '')[:12]}")
     tok, img, fe, vid, proc = (comps.get(k) for k in ("tokenizer", "image_processor", "feature_extractor", "video_processor", "processor"))
     if proc is not None:                  # processor fields left empty by the repo: take the same-named value from the config
         for attr in ("num_query_tokens", "image_seq_length", "num_image_tokens"):

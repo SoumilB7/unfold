@@ -177,6 +177,7 @@ def write(out_dir, repo, R, cap, model, cfg, build_attn, shipped=None):
         "verdict": R.get("verdict"), "reason": R.get("reason"), "failed_checks": R.get("failed_checks"),
         "leftovers": R.get("leftovers"),
         "unknowns": R.get("unknowns"),
+        "revision": R.get("revision"), "grading_id": R.get("grading_id"),          # provenance of the graded run (G6)
         "checks": {k: v.get("pass") for k, v in (R.get("checks") or {}).items()},
         "class": R.get("class"), "model_type": R.get("model_type"),
         "decisions": {k: R.get(k) for k in ("class_selected_by_library", "class_selected_by_weights",

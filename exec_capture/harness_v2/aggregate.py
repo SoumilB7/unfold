@@ -16,7 +16,11 @@ for f in glob.glob(os.path.join(RES, "**", "*.json"), recursive=True):
     fails = R.get("failed_checks") or sorted({c for v in (R.get("failed_components") or {}).values() for c in v})
     rows.append({"repo": R["repo"], "category": cat, "subcategory": sub, "verdict": R.get("verdict", "?"),
                  "failed_checks": fails, "reason": (R.get("reason") or "")[:160], "secs": R.get("job_secs") or R.get("secs"),
-                 "peak_gb": R.get("peak_rss_gb"), "harness_id": R.get("harness_id")})
+                 "peak_gb": R.get("peak_rss_gb"), "grading_id": R.get("grading_id"),
+                 "libs": json.dumps({k: v for k, v in (R.get("runtime") or {}).items() if k not in ("platform", "settings")},
+                                    sort_keys=True) if R.get("runtime") else None,
+                 "revision": R.get("revision"), "by_runner": R.get("written_by") == "run_batch",
+                 "network": str(R.get("reason") or "").startswith("network:")})
 
 
 def reason_class(r):
@@ -30,11 +34,23 @@ def reason_class(r):
 
 
 V = collections.Counter(r["verdict"] for r in rows)
-HV = collections.Counter(r["harness_id"] or "unstamped (graded before 2026-10-09)" for r in rows)
-if "--strict" in sys.argv and len(HV) > 1:
-    sys.exit(f"refusing: rows graded by {len(HV)} harness versions {dict(HV)}; regrade so every row has one id")
+HV = collections.Counter(r["grading_id"] or "unstamped (graded before 2026-10-09)" for r in rows)
+if "--strict" in sys.argv:
+    _why = []
+    if len(HV) != 1 or not all(r["grading_id"] for r in rows):
+        _why.append(f"rows graded by {len(HV)} grading-code versions {dict(HV)} (every row needs the same grading_id)")
+    _dup = [k for k, n in collections.Counter(r["repo"] for r in rows).items() if n > 1]
+    if _dup: _why.append(f"{len(_dup)} repos counted more than once (e.g. {_dup[:3]})")
+    _libs = collections.Counter(r["libs"] for r in rows)
+    if len(_libs) != 1: _why.append(f"{len(_libs)} different library-version fingerprints")
+    _norev = [r["repo"] for r in rows if not r["by_runner"] and r["verdict"] != "OUT" and not r["revision"]]
+    if _norev: _why.append(f"{len(_norev)} worker-graded rows without a pinned revision (e.g. {_norev[:3]})")
+    _net = [r["repo"] for r in rows if r["network"]]
+    if _net: _why.append(f"{len(_net)} rows are network failures, not verdicts: re-run them (e.g. {_net[:3]})")
+    if _why:
+        sys.exit("refusing --strict: " + "; ".join(_why))
 lines = ["# Strict capture benchmark — measured results", "",
-         "Graded by harness version(s): " + ", ".join(f"`{k}` {v}" for k, v in HV.most_common())
+         "Graded by grading-code version(s): " + ", ".join(f"`{k}` {v}" for k, v in HV.most_common())
          + ("  **(MIXED: these numbers combine different grading code)**" if len(HV) > 1 else ""), "",
          f"Repos with a verdict: **{len(rows)}**  |  " + "  ".join(f"**{k}** {v}" for k, v in V.most_common()), "",
          (lambda run: f"Runnable {run}: FULL {100*V['FULL']/run:.1f}%  |  architecture-complete (FULL + FULL_LEFTOVERS) "

@@ -107,13 +107,16 @@ def run(job, solo=False):
     p = out_path(r)
     if os.path.exists(p):
         try:
-            if json.load(open(p)).get("verdict"):
-                return r["repo"], "cached", 0
+            _old = json.load(open(p))
+            if _old.get("verdict") and not str(_old.get("reason") or "").startswith("network:"):
+                return r["repo"], "cached", 0           # a network FAIL is not a verdict about the model: run it again
         except Exception:
             pass
     os.makedirs(os.path.dirname(p), exist_ok=True)
     if kind == "pointer":
-        json.dump({"repo": r["repo"], "verdict": "OUT", "reason": f"{r.get('library_name') or r.get('quant_format') or 'adapter'} repo: "
+        from common import grading_id, runtime
+        json.dump({"repo": r["repo"], "grading_id": grading_id(), "runtime": runtime(), "written_by": "run_batch",
+                   "verdict": "OUT", "reason": f"{r.get('library_name') or r.get('quant_format') or 'adapter'} repo: "
                    f"architecture is measured on its base model {r.get('base_model')}", "catalog": r}, open(p, "w"), indent=1)
         return r["repo"], "OUT(pointer)", 0
     if free_gb() < a.min_free_gb:
@@ -180,6 +183,9 @@ def run(job, solo=False):
     R["catalog"] = {kk: r.get(kk) for kk in ("category", "subcategory", "sources", "pipeline_tag", "library_name", "mechanism_tags", "total_params", "quant_format", "gated", "remote_code")}
     R["job_secs"] = round(time.time() - t, 1)
     R["tmp_cache_mb"] = round(tmp_mb, 2); R["weight_files_downloaded"] = heavy
+    if "grading_id" not in R:                  # rows the runner writes itself carry the grading identity too (G6)
+        from common import grading_id, runtime
+        R["grading_id"], R["runtime"], R["written_by"] = grading_id(), runtime(), "run_batch"
     json.dump(R, open(p, "w"), indent=1, default=str)
     return r["repo"], R["verdict"], R["job_secs"]
 

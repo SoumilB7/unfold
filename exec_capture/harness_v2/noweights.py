@@ -46,3 +46,162 @@ def install():
         if hasattr(ha, "snapshot_download"): ha.snapshot_download = filtered_snapshot
     except Exception:
         pass
+
+
+# ---- one checkpoint revision per run (INTENT.md G6) ------------------------------------------------------------------
+# Every hub read of the pinned repo (config, tokenizer, processor, model card, headers, the library-load mirror) uses the
+# commit resolved once at the start, so a repo updated mid-run cannot mix revisions. Calls that name no revision (or
+# "main") are pointed at the pinned commit; a call naming another revision is counted (PIN_LOG) and left alone.
+PIN, PIN_LOG = {}, {"pinned": 0, "other_revision": []}
+_API_METHODS = ("model_info", "list_repo_files", "list_repo_tree", "parse_safetensors_file_metadata", "file_exists",
+                "get_paths_info", "hf_hub_download", "snapshot_download")
+
+
+def _pinned(repo_id, kwargs):
+    sha = PIN.get(repo_id)
+    if sha is None:
+        return kwargs
+    rev = kwargs.get("revision")
+    if rev in (None, "main"):
+        kwargs["revision"] = sha; PIN_LOG["pinned"] += 1
+    elif rev != sha and len(PIN_LOG["other_revision"]) < 20:
+        PIN_LOG["other_revision"].append(str(rev))
+    return kwargs
+
+
+def ref(repo):
+    """A HfFileSystem path prefix for the pinned revision of repo ("repo@sha"), or repo itself when not pinned."""
+    return f"{repo}@{PIN[repo]}" if repo in PIN else repo
+
+
+def pin(repo, sha):
+    import huggingface_hub, huggingface_hub.hf_api as ha, huggingface_hub.file_download as fd
+    import huggingface_hub._snapshot_download as sd
+    PIN[repo] = sha
+    if getattr(pin, "installed", False):
+        _rebind_all()                        # modules imported since the last pin() may hold unpinned functions
+        return
+    pin.installed = True
+    for name in _API_METHODS:
+        if not hasattr(ha.HfApi, name):
+            continue
+        orig = getattr(ha.HfApi, name)
+        def wrapped(self, repo_id, *a, __orig=orig, **k):
+            return __orig(self, repo_id, *a, **_pinned(repo_id, k))
+        setattr(ha.HfApi, name, wrapped)
+        if hasattr(huggingface_hub, name) and name not in ("hf_hub_download", "snapshot_download"):
+            setattr(huggingface_hub, name, getattr(ha.api, name))          # the module-level bound shortcuts
+    # the cache lookup: transformers resolves a downloaded file with try_to_load_from_cache(revision=None -> "main"),
+    # which a commit-pinned download never writes; the lookup must use the pinned commit too
+    for mod in [m for m in (_mod("huggingface_hub"), _mod("huggingface_hub.file_download"), _mod("transformers.utils.hub"),
+                            _mod("diffusers.utils.hub_utils")) if m]:
+        cur = getattr(mod, "try_to_load_from_cache", None)
+        if cur is None or getattr(cur, "_pinned", False):
+            continue
+        def lookup(repo_id, filename, *a, __cur=cur, **k):
+            if a:                                       # cache_dir positional
+                k.setdefault("cache_dir", a[0]); a = a[1:]
+            if repo_id in PIN and k.get("revision") in (None, "main"):
+                k["revision"] = PIN[repo_id]
+            return __cur(repo_id, filename, *a, **k)
+        lookup._pinned = True
+        setattr(mod, "try_to_load_from_cache", lookup)
+    # the module-level download functions (already wrapped by install(): wrap the current ones again)
+    for mod in [fd, huggingface_hub, sd] + [m for m in (_mod("transformers.utils.hub"), _mod("diffusers.utils.hub_utils"),
+                                                         _mod("huggingface_hub.hf_api")) if m]:
+        for name in ("hf_hub_download", "snapshot_download"):
+            cur = getattr(mod, name, None)
+            if cur is None or getattr(cur, "_pinned", False):
+                continue
+            def wrapped_fn(repo_id, *a, __cur=cur, **k):
+                return __cur(repo_id, *a, **_pinned(repo_id, k))
+            wrapped_fn._pinned = True
+            setattr(mod, name, wrapped_fn)
+    # modules that bound a hub function at import (e.g. `from huggingface_hub import hf_hub_download` in diffusers or in
+    # a worker) still hold the unpinned object: rebind every loaded module's reference to the pinned one (LAST, once the
+    # pinned functions exist)
+    _rebind_all()
+
+
+def _mod(name):
+    import importlib
+    try:
+        return importlib.import_module(name)
+    except Exception:
+        return None
+
+
+
+_HUB_NAMES = ("hf_hub_download", "snapshot_download", "try_to_load_from_cache", "model_info", "list_repo_files",
+              "list_repo_tree", "get_paths_info", "file_exists", "parse_safetensors_file_metadata")
+
+
+def _rebind_all():
+    """After pin(): any module attribute named like a hub function that is not the pinned one is replaced by the pinned
+    one (taken from the module that defines it), so nothing reads main through an early import."""
+    import sys, huggingface_hub, huggingface_hub.file_download as fd, huggingface_hub._snapshot_download as sd
+    pinned = {}
+    for name in _HUB_NAMES:
+        for src in (huggingface_hub, fd, sd):
+            f = getattr(src, name, None)
+            if f is not None and (getattr(f, "_pinned", False) or name not in ("hf_hub_download", "snapshot_download",
+                                                                               "try_to_load_from_cache")):
+                pinned[name] = f; break
+    for mod in list(sys.modules.values()):
+        if mod is None or mod in (huggingface_hub,):
+            continue
+        for name, f in pinned.items():
+            try:
+                cur = mod.__dict__.get(name)
+            except Exception:
+                break
+            if cur is not None and cur is not f and callable(cur) and getattr(cur, "__module__", "").startswith(("huggingface_hub", "noweights")):
+                try:
+                    setattr(mod, name, f)
+                except Exception:
+                    pass
+
+
+def revision_outcome(repos=None):
+    """What the run's fresh HF cache actually holds: for each repo, the snapshot commits and refs written. A pinned run
+    must hold exactly the pinned commit and no refs/main (anything else = some read went to another revision)."""
+    import os
+    from huggingface_hub.constants import HF_HUB_CACHE
+    out = {}
+    for repo, sha in PIN.items():
+        if repos and repo not in repos: continue
+        d = os.path.join(HF_HUB_CACHE, "models--" + repo.replace("/", "--"))
+        snaps = sorted(os.listdir(os.path.join(d, "snapshots"))) if os.path.isdir(os.path.join(d, "snapshots")) else []
+        refs = sorted(os.listdir(os.path.join(d, "refs"))) if os.path.isdir(os.path.join(d, "refs")) else []
+        out[repo] = {"pinned": sha, "snapshots": snaps, "refs": refs, "ok": set(snaps) <= {sha} and not refs}
+    return out
+
+
+def network_error(e):
+    """The exception chain is a network / hub-availability failure (never evidence about a model): returns a short
+    description, else None. By type, not by name."""
+    import socket, ssl
+    kinds = [ConnectionError, socket.gaierror, ssl.SSLError]       # not socket.timeout: an alias of builtin TimeoutError
+    try:
+        import httpx; kinds.append(httpx.TransportError)
+    except Exception: pass
+    try:
+        import requests; kinds.append(requests.exceptions.ConnectionError); kinds.append(requests.exceptions.Timeout)
+    except Exception: pass
+    try:
+        from huggingface_hub.errors import LocalEntryNotFoundError, OfflineModeIsEnabled, HfHubHTTPError
+        kinds += [LocalEntryNotFoundError, OfflineModeIsEnabled]
+    except Exception:
+        HfHubHTTPError = None
+    chain, x, hit = [], e, False
+    while x is not None and len(chain) < 10:
+        chain.append(type(x).__name__)
+        if isinstance(x, tuple(kinds)):
+            hit = True
+        if HfHubHTTPError is not None and isinstance(x, HfHubHTTPError):
+            code = getattr(getattr(x, "response", None), "status_code", None)
+            if code is not None and (code >= 500 or code == 429): hit = True
+        if "couldn't connect to" in str(x) or "We couldn't connect" in str(x):
+            hit = True                                    # transformers' own wording for an unreachable hub
+        x = x.__cause__ or x.__context__
+    return " <- ".join(chain) if hit else None

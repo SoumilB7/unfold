@@ -141,7 +141,8 @@ def fetch_bin_headers(repo, workers=4):
     fs = HfFileSystem()
     T = {}
     def one(f):
-        with fs.open(f"{repo}/{f}", "rb", block_size=1 << 20) as fh:
+        import noweights
+        with fs.open(f"{noweights.ref(repo)}/{f}", "rb", block_size=1 << 20) as fh:     # the pinned revision
             return _bin_index(fh)
     with cf.ThreadPoolExecutor(workers) as ex:
         for d in ex.map(one, files):

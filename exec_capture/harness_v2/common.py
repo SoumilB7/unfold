@@ -11,14 +11,38 @@ AUX = re.compile(r"(\.biases|inv_freq|position_ids|num_batches_tracked|_scales|w
 INT_DTYPES = {"I8", "U8", "I16", "U16", "I32", "U32", "I64", "U64"}
 
 
-def harness_id():
-    """Content hash of this harness's own code (every .py beside this file): two results with the same id were graded
-    by byte-identical code, whichever copy (worktree or run mirror) ran them."""
+# the code that decides a verdict (INTENT.md G6). Drawing code (exec_to_ir), reports and self-tests are not in it, so
+# a drawing-only change never changes the grading identity.
+GRADING_FILES = ("worker_v2.py", "worker_v2_diffusion.py", "run_batch.py", "dag.py", "common.py", "libload.py",
+                 "loadtrace.py", "lowcost.py", "inputs.py", "gguf_parts.py", "noweights.py", "synth.py", "opclass.py",
+                 "mtp_witness_run.py", "vllm_witness.py", "capture.py")      # capture.py records graded passes
+
+
+def grading_id():
+    """Content hash of the grading code: two results with the same id were graded by byte-identical code, whichever
+    copy (worktree or run mirror) ran them."""
     import hashlib, os
     here = os.path.dirname(os.path.abspath(__file__)); h = hashlib.sha256()
-    for f in sorted(x for x in os.listdir(here) if x.endswith(".py")):
-        h.update(f.encode()); h.update(open(os.path.join(here, f), "rb").read())
+    for f in GRADING_FILES:
+        p = os.path.join(here, f)
+        h.update(f.encode()); h.update(open(p, "rb").read() if os.path.exists(p) else b"<missing>")
     return h.hexdigest()[:12]
+
+
+def runtime():
+    """Library versions and run settings that can change a verdict (recorded beside grading_id)."""
+    import sys, os, platform, importlib
+    v = {"python": sys.version.split()[0], "platform": platform.platform()}
+    for m in ("torch", "transformers", "diffusers", "huggingface_hub", "safetensors", "numpy", "tokenizers", "accelerate",
+              "compressed_tensors", "bitsandbytes", "gptqmodel", "awq", "gguf", "torchvision", "sentencepiece", "PIL",
+              "mistral_common", "vllm", "scipy"):
+        try:
+            v[m] = importlib.import_module(m).__version__
+        except Exception:
+            pass
+    v["settings"] = {k: os.environ[k] for k in sorted(os.environ)
+                     if k.startswith("BENCH_") or k in ("HF_ENDPOINT", "HF_HUB_OFFLINE", "HF_HUB_DISABLE_XET", "TRANSFORMERS_OFFLINE")}
+    return v
 
 
 def module_pattern(name):

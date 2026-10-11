@@ -12,13 +12,28 @@ torch.set_num_threads(int(os.environ.get("BENCH_THREADS", "2")))
 import transformers, diffusers
 from huggingface_hub import HfApi, hf_hub_download
 from lowcost import zero_storage
-from common import harness_id, ckpt_split, match, library_rename, split_library_ignored, looks_like_stored_buffer, top_groups, numel
+from common import grading_id, runtime, ckpt_split, match, library_rename, split_library_ignored, looks_like_stored_buffer, top_groups, numel
 from dag import DagRecorder, tied_alias_modules, math_attention, clear_library_caches
 
 repo, out_path = sys.argv[1], sys.argv[2]
 HDR_CACHE = os.environ.get("BENCH_HEADER_CACHE", os.path.join(HERE, "..", "cache_v2", "headers"))
-R = {"repo": repo, "diffusers": diffusers.__version__, "transformers": transformers.__version__, "components": {}, "harness_id": harness_id()}
+R = {"repo": repo, "diffusers": diffusers.__version__, "transformers": transformers.__version__, "components": {}, "grading_id": grading_id(), "runtime": runtime()}
 T0 = time.time()
+# one checkpoint revision for the whole run (INTENT.md G6)
+try:
+    from huggingface_hub import HfApi as _Api0
+    R["revision"] = _Api0().model_info(repo).sha
+    noweights.pin(repo, R["revision"])
+except Exception as e:
+    R["revision_error"] = f"{type(e).__name__}: {str(e)[:160]}"
+    _NET0 = noweights.network_error(e)
+UNKNOWNS = []          # predicates that could not be evaluated (INTENT.md): an otherwise FULL row becomes FULL_UNVERIFIED
+
+
+def _net_fail(e, what):
+    """An outage is never evidence about a model: FAIL as an environment error so the runner re-runs it."""
+    if noweights.network_error(e):
+        fail("FAIL", f"network: {what} ({noweights.network_error(e)}: {str(e)[:120]})", what)
 
 
 def _last_resort(etype, e, tb):
@@ -43,6 +58,10 @@ def save():
 
 def fail(v, why, where=""):
     R["verdict"] = v; R["reason"] = why[:400]; R["where"] = where; save(); sys.exit(0)
+
+
+if globals().get("_NET0"):
+    fail("FAIL", f"network: repo revision unavailable ({_NET0})", "revision")
 
 
 def resolve(lib, cname):
@@ -75,6 +94,7 @@ try:
     sha = api.model_info(repo).sha
     files = api.list_repo_files(repo)
 except Exception as e:
+    _net_fail(e, "model index")
     s = f"{type(e).__name__}: {e}"
     fail("OUT" if ("gated" in s.lower() or "403" in s or "404" in s) else "FAIL", ("gated or missing: " if "403" in s or "404" in s else "") + s[:300])
 pcls = getattr(diffusers, idx.get("_class_name", ""), None)
@@ -108,7 +128,7 @@ def headers(sub):
         bins = [f for f in files if at(f) and f.endswith(".bin") and "training_args" not in f]
         full = [f for f in bins if ".fp16." not in f] or bins
         for f in full:
-            with fsys.open(f"{repo}/{f}", "rb", block_size=1 << 20) as fh:
+            with fsys.open(f"{noweights.ref(repo)}/{f}", "rb", block_size=1 << 20) as fh:      # pinned revision
                 T.update(_bin_index(fh))
     if T:
         json.dump({k: [list(s), d] for k, (s, d) in T.items()}, open(hp, "w"))
@@ -154,11 +174,13 @@ for name, spec in idx.items():
             if name not in objs:
                 C["error"] = f"class {lib}.{cname} not in installed libraries"
     except Exception as e:
+        _net_fail(e, f"component {name}")
         C["error"] = f"{type(e).__name__}: {str(e)[:200]}"
     if name in models:
         try:
             C["headers"] = len(headers(name if sub else ""))
         except Exception as e:
+            _net_fail(e, f"headers of {name}")
             C["headers_error"] = f"{type(e).__name__}: {str(e)[:150]}"
 save()
 container = torch.nn.ModuleDict(models)
@@ -523,4 +545,16 @@ if stop_a and not R.get("reason"):
 R["verdict"] = ("OUT" if verdicts == ["OUT"] else "FULL" if verdicts and all(v == "FULL" for v in verdicts)
                 else ("PARTIAL" if any(v in ("PARTIAL", "FULL") for v in verdicts) else "FAIL"))   # FAIL only if nothing was captured
 R["failed_components"] = {cn: R["components"][cn]["failed_checks"] for cn in models if R["components"][cn].get("failed_checks")}
+# one checkpoint revision (INTENT.md G6): what the run's cache actually holds
+R["revision_pin"] = dict(noweights.PIN_LOG, outcome=noweights.revision_outcome())
+_bad = {r_: o for r_, o in R["revision_pin"]["outcome"].items() if not o["ok"]}
+if _bad:
+    UNKNOWNS.append({"predicate": "G6", "what": "the run's cache holds files from another revision than the pinned one",
+                     "items": [f"{r_}: snapshots {o['snapshots']} refs {o['refs']}" for r_, o in _bad.items()], "count": len(_bad)})
+if R.get("revision") is None:
+    UNKNOWNS.append({"predicate": "G6", "what": "the checkpoint revision could not be pinned (" + (R.get("revision_error") or "unknown") + ")",
+                     "items": [], "count": 0})
+if R["verdict"] == "FULL" and UNKNOWNS:
+    R["verdict"] = "FULL_UNVERIFIED"
+R["unknowns"] = UNKNOWNS
 save()

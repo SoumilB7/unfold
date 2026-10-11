@@ -22,14 +22,14 @@ import noweights; noweights.install()
 torch.set_num_threads(int(os.environ.get("BENCH_THREADS", "2")))
 import transformers
 from lowcost import zero_storage, fetch_headers, fetch_bin_headers
-from common import harness_id, ckpt_split, match, library_rename, split_library_ignored, looks_like_stored_buffer, top_groups, numel, INT_DTYPES, buffer_names
+from common import grading_id, runtime, ckpt_split, match, library_rename, split_library_ignored, looks_like_stored_buffer, top_groups, numel, INT_DTYPES, buffer_names
 from dag import DagRecorder, analyse, tied_alias_modules, math_attention, clear_library_caches
 from inputs import build_passes, mask_positions
 
 repo, out_path = sys.argv[1], sys.argv[2]
 HDR_CACHE = os.environ.get("BENCH_HEADER_CACHE", os.path.join(HERE, "..", "cache_v2", "headers"))
 UNKNOWNS = []       # predicates that could not be evaluated (INTENT.md): an otherwise FULL row becomes FULL_UNVERIFIED
-R = {"repo": repo, "transformers": transformers.__version__, "torch": torch.__version__, "steps": {}, "harness_id": harness_id()}
+R = {"repo": repo, "transformers": transformers.__version__, "torch": torch.__version__, "steps": {}, "grading_id": grading_id(), "runtime": runtime()}
 T0 = time.time()
 # capture bundle for the renderer (capture.py): opt-in, never part of the graded result
 EMIT = os.environ.get("BENCH_EMIT_CAPTURE")
@@ -68,6 +68,9 @@ def save():
     json.dump(R, open(out_path, "w"), indent=1, default=str)
 
 
+network_error = noweights.network_error         # type-based (noweights.py): an outage is never evidence about a model
+
+
 def fail(verdict, reason, where=""):
     R["verdict"] = verdict; R["reason"] = reason[:400]; R["where"] = where; save(); _emit(); sys.exit(0)
 
@@ -84,6 +87,15 @@ def classify_load_error(e):
 # ---- 1. config (build instructions) + headers (ground truth) ------------------------------------------------
 # GGUF-only repo: the library loads it with from_pretrained(gguf_file=...), which takes config AND architecture from
 # the GGUF header. Same rule here: header range-read into a sparse stub, the library parses it; no tensor data read.
+# one checkpoint revision for the whole run (INTENT.md G6): every hub read below uses this commit
+try:
+    from huggingface_hub import HfApi as _Api0
+    R["revision"] = _Api0().model_info(repo).sha
+    noweights.pin(repo, R["revision"])
+except Exception as e:
+    if network_error(e):
+        fail("FAIL", f"network: repo revision unavailable ({network_error(e)}: {str(e)[:120]})", "revision")
+    R["revision_error"] = f"{type(e).__name__}: {str(e)[:160]}"     # e.g. gated / missing: classified at config load
 GGUF_RAW = None
 try:
     from huggingface_hub import HfApi as _Api
@@ -114,11 +126,15 @@ try:
 except Exception as e:
     if GGUF_RAW is not None:                 # the library's own GGUF reader cannot read this file: a format limit
         fail("OUT", f"the library's GGUF loader cannot read this file: {type(e).__name__}: {str(e)[:220]}")
+    if network_error(e):
+        fail("FAIL", f"network: GGUF probe ({network_error(e)}: {str(e)[:120]})", "gguf probe")
     R["steps"]["gguf_probe_error"] = f"{type(e).__name__}: {str(e)[:120]}"
 if GGUF_RAW is None:
     try:
         cfg = transformers.AutoConfig.from_pretrained(repo, trust_remote_code=False)
     except Exception as e:
+        if network_error(e):
+            fail("FAIL", f"network: config unavailable ({network_error(e)}: {str(e)[:120]})", "config")
         v, why = classify_load_error(e); fail(v, why)
 archs = getattr(cfg, "architectures", None) or []
 cls = next((getattr(transformers, a) for a in archs if hasattr(transformers, a)), None)
@@ -138,7 +154,7 @@ R["class"] = cls.__name__; R["model_type"] = cfg.model_type
 try:
     from huggingface_hub import HfApi
     if GGUF_RAW is not None: raise LookupError("gguf repo: parts list comes from the gguf header after build")
-    sha = HfApi().model_info(repo).sha
+    sha = R.get("revision") or HfApi().model_info(repo).sha
     os.makedirs(HDR_CACHE, exist_ok=True)
     hp = os.path.join(HDR_CACHE, repo.replace("/", "__") + f"@{sha[:12]}.json")
     cached = json.load(open(hp)) if os.path.exists(hp) else {}
@@ -154,6 +170,10 @@ try:
 except Exception as e:
     T = {}
     R["steps"]["headers_error"] = f"{type(e).__name__}: {str(e)[:160]}"
+    # a network failure says nothing about the model: never grade a row without its checkpoint's tensor list because
+    # the connection dropped (e.g. the Mac slept); FAIL as an environment error so the runner re-runs it
+    if network_error(e):
+        fail("FAIL", f"network: checkpoint headers unavailable ({network_error(e)}: {str(e)[:120]})", "headers")
 R["has_ground_truth"] = bool(T)
 if not T and GGUF_RAW is None:
     # weights only in a format the library cannot load (ONNX, OpenVINO IR, NPU/TFLite/CoreML exports): a converted
@@ -174,8 +194,9 @@ if not T and GGUF_RAW is None:
                         f"{'; .bin files are OpenVINO weights' if _ov else ''}): architecture is measured on its base model {_base}")
     except SystemExit:
         raise
-    except Exception:
-        pass
+    except Exception as e:
+        if network_error(e):
+            fail("FAIL", f"network: repo file list unavailable ({network_error(e)}: {str(e)[:120]})", "file list")
 if T and any(k.endswith(".biases") for k in T) and any(d == "U32" for _, d in T.values()):
     try:
         cd = HfApi().model_info(repo).card_data
@@ -418,6 +439,8 @@ try:
                 child.__dict__.pop("_bench_extra_passes", None)
                 p2, _, _ = build_passes(repo, child, ccfg, text_len_variant=True)
             except Exception as e:
+                if network_error(e):
+                    fail("FAIL", f"network: input construction ({network_error(e)}: {str(e)[:120]})", "inputs")
                 notes.append(f"sub={cn}: input construction {type(e).__name__}: {str(e)[:80]}"); continue
             passes += [(f"sub={cn}|{l}", kw) for l, kw in p1]; passes_b += [(f"sub={cn}|{l}", kw) for l, kw in p2]
             notes += [f"sub={cn}: {x}" for x in n1]; proc_errs.update({f"sub={cn}|{k}": v for k, v in (e1 or {}).items()})
@@ -427,6 +450,8 @@ try:
         extra_passes = list(m.__dict__.pop("_bench_extra_passes", []))
         passes_b, _, _ = build_passes(repo, m, cfg, text_len_variant=True)
 except Exception as e:
+    if network_error(e):                       # an outage is not "this model has no input path"
+        fail("FAIL", f"network: input construction ({network_error(e)}: {str(e)[:120]})", "inputs")
     # the processor could not build inputs: no processor-built passes; the synthesized-input fallback still runs
     passes, passes_b, extra_passes, notes, proc_errs = [], [], [], [f"input construction: {type(e).__name__}: {str(e)[:200]}"], {}
 R["input_notes"] = notes; R["processor_errors"] = proc_errs
@@ -916,8 +941,23 @@ if T:
         _ex = set(WIT.get("executed_checkpoint_keys") or [])
         witnessed = [k for k in unbuilt if k in _ex]
         if len(witnessed) == len(unbuilt):
+            # credit is proven only if the witness recording itself is transparent (INTENT.md G4): full op names, no
+            # opaque op, nothing entering from outside. Older records (op_kinds only) or opaque runs: credit unknown.
+            _proven = (WIT.get("transparent") is True and R.get("revision") is not None
+                       and WIT.get("revision") == R.get("revision"))                  # same checkpoint
             R["executed_by_witness"] = {"runtime": WIT.get("executed_by"), "vllm_class": WIT.get("vllm_class"),
-                                        "tensors": len(witnessed), "notes": WIT.get("notes")}
+                                        "tensors": len(witnessed), "notes": WIT.get("notes"),
+                                        "credit": "proven" if _proven else "unknown",
+                                        "opaque_ops": WIT.get("opaque_ops") if "op_full" in WIT else "not recorded (old witness record)",
+                                        "external_nonscalar": WIT.get("external_nonscalar")}
+            if not _proven:
+                UNKNOWNS.append({"predicate": "G4", "what": "tensors executed only in the vLLM witness, whose recording is "
+                                 "not shown transparent and bound to this revision (" + (
+                                     "recorded for revision " + str(WIT.get("revision")) + ", graded " + str(R.get("revision"))
+                                     if WIT.get("transparent") is True else
+                                     "opaque ops or tensors from outside the recording" if "op_full" in WIT
+                                     else "old record without full op names") + ")",
+                                 "items": witnessed[:20], "count": len(witnessed)})
             unbuilt = []
         else:
             R["executed_by_witness_partial"] = {"covered": len(witnessed), "declared_unbuilt": len(unbuilt)}
@@ -954,6 +994,8 @@ if T:
         except Exception as e:
             signal.setitimer(signal.ITIMER_REAL, 0)        # a tick that landed inside the finally above left it armed
             R["library_load_report_error"] = f"{type(e).__name__}: {str(e)[:200]}"
+            if network_error(e):                      # the library load lost its connection: not a fact about the model
+                fail("FAIL", f"network: library load report unavailable ({network_error(e)}: {str(e)[:120]})", "library load")
         if LIB and "error" in LIB:                 # e.g. no safetensors files: say so instead of looking like a legacy row
             R["library_load_report_error"] = f"not run: {LIB['error']}"
     if not LIB or "error" in LIB:
@@ -1118,6 +1160,17 @@ if failed == ["T1_weights"] and _t1.get("leftovers_eligible"):
                                        + " / declared-ignore list" + ("; vLLM MTP registry: none" if _t1.get("library_declared_unbuilt_numel") else "")
                                        + ("; buffers measured never read in any mode (not declared by the library)"
                                           if _t1.get("buffers_never_read_in_any_mode") else "")}
+R["revision_pin"] = dict(noweights.PIN_LOG, outcome=noweights.revision_outcome())
+_bad = {r_: o for r_, o in R["revision_pin"]["outcome"].items() if not o["ok"]}
+if _bad:                                  # what the cache actually holds: a read went to another revision
+    UNKNOWNS.append({"predicate": "G6", "what": "the run's cache holds files from another revision than the pinned one",
+                     "items": [f"{r_}: snapshots {o['snapshots']} refs {o['refs']}" for r_, o in _bad.items()], "count": len(_bad)})
+if noweights.PIN_LOG["other_revision"]:
+    UNKNOWNS.append({"predicate": "G6", "what": "some hub reads named another revision than the pinned commit",
+                     "items": noweights.PIN_LOG["other_revision"], "count": len(noweights.PIN_LOG["other_revision"])})
+if R.get("revision") is None:
+    UNKNOWNS.append({"predicate": "G6", "what": "the checkpoint revision could not be pinned ("
+                     + (R.get("revision_error") or "unknown") + ")", "items": [], "count": 0})
 if R["verdict"] in ("FULL", "FULL_LEFTOVERS") and UNKNOWNS:
     # every observed check passes, but a predicate could not be evaluated: never FULL (INTENT.md, Soumil 2026-10-09)
     R["verdict"] = "FULL_UNVERIFIED"

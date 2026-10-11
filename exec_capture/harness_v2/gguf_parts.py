@@ -173,14 +173,15 @@ GGML_DTYPE = {0: "F32", 1: "F16", 30: "BF16", 24: "I8", 25: "I16", 26: "I32", 27
 
 def fetch_gguf_parts(repo):
     """-> (raw {gguf_name: (torch_shape, dtype)}, kv, file names). Shapes are GGUF dims reversed (ggml ne order)."""
-    fs = HfFileSystem()
-    files = [{"name": f["name"].split(repo + "/", 1)[-1], "size": f.get("size") or 0}
-             for f in fs.find(repo, detail=True).values() if f["name"].lower().endswith(".gguf")]
+    import noweights
+    fs, root = HfFileSystem(), noweights.ref(repo)                      # the pinned revision
+    files = [{"name": f["name"].split(root + "/", 1)[-1], "size": f.get("size") or 0}
+             for f in fs.find(root, detail=True).values() if f["name"].lower().endswith(".gguf")]
     main, _ = pick_gguf_files(files)
     raw, kv = {}, {}
     first = None
     for f in main:                                   # every shard of the picked quantization
-        h = fetch_and_parse(fs, f"{repo}/{f['name']}")
+        h = fetch_and_parse(fs, f"{root}/{f['name']}")
         kv = kv or h["kv"]
         if first is None: first = (f["name"], f["size"], h["_bytes"])
         for t in h["tensors"]:
