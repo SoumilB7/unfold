@@ -5,6 +5,6 @@
  "vllm_mtp_arch": "Glm4MoeLiteMTPModel",
  "error": "RuntimeError: No Glm4MoE layer found in model.layers.",
  "where": "vllm/model_executor/models/glm4_moe.py:509",
- "secs": 12.2,
- "peak_rss_gb": 0.56
+ "secs": 13.1,
+ "peak_rss_gb": 0.65
 }

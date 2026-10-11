@@ -5,6 +5,6 @@
  "vllm_mtp_arch": null,
  "error": "NotImplementedError: Unsupported speculative method: 'mtp'",
  "where": "vllm/config/speculative.py:1369",
- "secs": 8.2,
- "peak_rss_gb": 0.46
+ "secs": 8.6,
+ "peak_rss_gb": 0.48
 }

@@ -5,6 +5,6 @@
  "vllm_mtp_arch": "DeepseekV32MTPModel",
  "error": "NotImplementedError: Sparse Attention is not supported on CPU.",
  "where": "vllm/platforms/cpu.py:145",
- "secs": 38.9,
- "peak_rss_gb": 0.47
+ "secs": 28.5,
+ "peak_rss_gb": 0.64
 }

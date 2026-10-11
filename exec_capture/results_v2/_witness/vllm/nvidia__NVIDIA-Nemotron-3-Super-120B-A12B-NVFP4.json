@@ -5,6 +5,6 @@
  "vllm_mtp_arch": "NemotronHMTPModel",
  "error": "NotImplementedError: is_act_and_mul=False is supported only for CUDA, XPU and ROCm for now",
  "where": "vllm/model_executor/layers/fused_moe/config.py:1388",
- "secs": 13.5,
- "peak_rss_gb": 0.72
+ "secs": 16.4,
+ "peak_rss_gb": 0.66
 }

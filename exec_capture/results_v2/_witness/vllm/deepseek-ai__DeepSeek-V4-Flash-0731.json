@@ -5,6 +5,6 @@
  "vllm_mtp_arch": "DeepSeekV4MTPModel",
  "error": "NotImplementedError: DeepSeek-V4 speculative decoding (MTP) is not implemented on CPU.",
  "where": "vllm/models/deepseek_v4/cpu/mtp.py:17",
- "secs": 21.7,
+ "secs": 18.4,
  "peak_rss_gb": 0.46
 }

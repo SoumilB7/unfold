@@ -5,6 +5,6 @@
  "vllm_mtp_arch": "Qwen3_5MTP",
  "error": "ValueError: Invalid model_type qwen3_5_mtp",
  "where": "vllm/model_executor/models/qwen3_5.py:180",
- "secs": 7.4,
- "peak_rss_gb": 1.07
+ "secs": 8.9,
+ "peak_rss_gb": 1.14
 }
