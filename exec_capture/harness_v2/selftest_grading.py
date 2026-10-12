@@ -34,6 +34,16 @@ def save(d, name, model, edit=None, cfg_edit=None, extra_files=None):
     return p
 
 
+class LlamaWithSpareHead(transformers.LlamaForCausalLM):
+    """A class with a learned head its forward never uses, which it declares ignorable when missing (as PP-DocLayoutV2
+    declares rel_pos_x/y_bias): a checkpoint without it leaves it random, unread and NOT shipped."""
+    _keys_to_ignore_on_load_missing = [r"spare_head\."]
+    def __init__(self, config):
+        super().__init__(config)
+        self.spare_head = torch.nn.Linear(config.hidden_size, 4)
+        self.post_init()
+
+
 def build(d):
     """name -> (dir, class, inputs, intended verdict)"""
     torch.manual_seed(0)
@@ -160,13 +170,18 @@ def build(d):
         return out
     C["Q11 supported quantizer (fine-grained FP8): loaded and certified"] = (save(d, "Q11", m, fp8_block, cfg_edit=lambda j: j.__setitem__(
         "quantization_config", {"quant_method": "fp8", "weight_block_size": [8, 8], "activation_scheme": "dynamic"})), L, ids, "FULL@loaded")
+    # ---- P0.6 D2-C14: a parameter the checkpoint does not ship is never "shipped but unused" ----
+    ms = LlamaWithSpareHead(llama)
+    C["D2-C14 unshipped, ignore-missing head (random, unread) is not 'shipped unused'"] = (
+        save(d, "D2C14", ms, lambda sd: {k: v for k, v in sd.items() if not k.startswith("spare_head.")}),
+        LlamaWithSpareHead, ids, "FULL_UNVERIFIED@loaded+the checkpoint does not ship, randomly initialised")
     # (missing-but-random head: C1 / C9 / C17; ordinary integer counters: C7)
     return C
 
 
 def grade(path, cls_name, kw):
     """The worker's G1/G2 path on one local checkpoint: library load + provenance, zero-storage execution, g1_assess."""
-    cls = getattr(transformers, cls_name)
+    cls = getattr(transformers, cls_name) if isinstance(cls_name, str) else cls_name
     cfg = transformers.AutoConfig.from_pretrained(path)
     A = libload.Authority(path)
     A.mirror()
@@ -200,7 +215,8 @@ def grade(path, cls_name, kw):
     G = libload.g1_assess(LIB["provenance"], used, {k: list(t.shape) for k, t in sd.items()}, bg)
     # the worker's other T1 inputs, as the library reports them: unexpected / mismatched keys, loaded params never read
     unexp = [k for k in LIB["unexpected"] if not k.endswith("num_batches_tracked")]
-    loaded = {n for n, _ in m.named_parameters()} - set(LIB["missing"])
+    lp = getattr(libload, "loaded_params", None)          # (absent before P0.6: params minus the reported-missing list)
+    loaded = lp({n for n, _ in m.named_parameters()}, LIB) if lp else {n for n, _ in m.named_parameters()} - set(LIB["missing"])
     unused = sorted(p for p in loaded if p not in used)
     t1_old = not unexp and not LIB["mismatched"] and not unused
     if G["fail"] or not t1_old:

@@ -13,6 +13,7 @@ torch.set_num_threads(int(os.environ.get("BENCH_THREADS", "2")))
 import transformers, diffusers
 from huggingface_hub import HfApi, hf_hub_download
 from lowcost import zero_storage
+import common
 from common import grading_id, runtime, ckpt_split, match, library_rename, split_library_ignored, looks_like_stored_buffer, top_groups, numel
 from dag import DagRecorder, tied_alias_modules, math_attention, clear_library_caches
 
@@ -39,7 +40,7 @@ def _net_fail(e, what):
 
 def _last_resort(etype, e, tb):
     import traceback as _tb
-    R["verdict"] = R.get("verdict") or "FAIL"
+    common.after_grading_exception(R, UNKNOWNS, f"{etype.__name__}: {str(e)[:200]}")   # FULL* never stands after a crash
     R["reason"] = R.get("reason") or f"unhandled {etype.__name__}: {str(e)[:250]}"
     fr = _tb.extract_tb(tb)
     R["where"] = R.get("where") or (f"{fr[-1].filename.split('site-packages/')[-1]}:{fr[-1].lineno}" if fr else "")
@@ -350,6 +351,10 @@ def _attempt(pipe, ck, sig):
         lib = [f for f in tb if "site-packages/diffusers/" in f.filename or "site-packages/transformers/" in f.filename]
         f = lib[-1] if lib else tb[-1]
         stopped = f"{type(e).__name__}: {str(e)[:160]} @ {f.filename.split('site-packages/')[-1]}:{f.lineno}"
+        try:                                                # which components the stop ran through (P0.6 F7)
+            rec.stopped_in = diffusion_rules.components_on_traceback(e.__traceback__, models)
+        except Exception:
+            rec.stopped_in = {}
     finally:
         GenerationMixin.generate = _orig_gen
         if o is not None: sched.step = o
@@ -486,7 +491,7 @@ for cn, m in models.items():
     direct[cn] = (r1, r2)
     extra[cn] = (extra[cn] if isinstance(extra.get(cn), list) else ([extra[cn]] if cn in extra else [])) + [r1] + method_runs
     R["components"][cn]["direct_run"] = {"inputs": label, "attempts_before": len(tried),
-                                        "reason": "the pipeline call never reached this component"}
+                                        "reason": diffusion_rules.direct_run_reason(cn, getattr(rec_a, "stopped_in", {}) or {}, stop_a)}
 
 
 def norm(nodes, cn):
@@ -508,13 +513,16 @@ for cn, m in models.items():
     if T:
         W, A, packed = ckpt_split(T)
         ren = library_rename(m) if isinstance(m, transformers.PreTrainedModel) else None
-        bufs, unbuilt = split_library_ignored(m, W, ren) if isinstance(m, transformers.PreTrainedModel) else ([], [])
+        QW = common.quantized_weight_keys(T)                        # quantized learned weights: never tables (P0.6 B4)
+        POS = common.pos_lengths(m.config) if getattr(m, "config", None) is not None else set()
+        bufs, unbuilt = split_library_ignored(m, W, ren, QW) if isinstance(m, transformers.PreTrainedModel) else ([], [])
         W = {k: v for k, v in W.items() if k not in set(bufs) | set(unbuilt)}
         sd = m.state_dict(keep_vars=True); H = {k: tuple(v.shape) for k, v in sd.items()}
         alias = collections.defaultdict(list)
         for k, v in sd.items(): alias[id(v)].append(k)
         matched, un_c, _, _ = match(W, H, alias, packed, rename=ren)
-        masks = [c for c in un_c if looks_like_stored_buffer(*W[c])]; un_c = [c for c in un_c if c not in set(masks)]
+        masks = [c for c in un_c if common.stored_constant(c, *W[c], quantized=QW, pos=POS)]    # THE common rule
+        un_c = [c for c in un_c if c not in set(masks)]
         for names in alias.values():
             if any(n in used for n in names): used |= set(names)
         unused = [(c, numel(s)) for c, (s, _) in W.items() if c not in set(masks) | set(un_c) and not (

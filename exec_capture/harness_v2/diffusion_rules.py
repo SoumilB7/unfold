@@ -129,3 +129,28 @@ def component_checks(checks):
     """(failed, not_evaluated) check names of one component: pass False is a failure, pass None is not evaluated."""
     return ([k for k, v in checks.items() if v.get("pass") is False],
             [k for k, v in checks.items() if v.get("pass") is None])
+
+
+def components_on_traceback(tb, components):
+    """{component name: "file:line" of its innermost frame} for every component (or sub-module of one) that is `self`
+    in a frame of the traceback: matched by object identity, never by name (P0.6 F7)."""
+    owner = {}
+    for cn, m in components.items():
+        for sm in (m.modules() if hasattr(m, "modules") else [m]):
+            owner.setdefault(id(sm), cn)
+    out = {}
+    while tb is not None:
+        cn = owner.get(id(tb.tb_frame.f_locals.get("self")))
+        if cn is not None:
+            out[cn] = f"{tb.tb_frame.f_code.co_filename.split('site-packages/')[-1]}:{tb.tb_lineno} ({tb.tb_frame.f_code.co_name})"
+        tb = tb.tb_next
+    return out
+
+
+def direct_run_reason(cn, stopped_in, stop_first):
+    """Why a component was run directly, from the evidence (P0.6 F7)."""
+    if cn in stopped_in:
+        return f"the pipeline call raised inside this component ({stopped_in[cn]})"
+    if stop_first:
+        return "the pipeline call stopped before reaching this component"
+    return "the pipeline call completed without calling this component's forward"

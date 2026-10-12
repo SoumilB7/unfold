@@ -100,6 +100,14 @@ def main():
     check("S1 input only one tied forward accepts -> not used", si([{"input_ids", "labels"}, {"input_ids"}], "labels"), False)
     check("S1 input every tied forward accepts -> used", si([{"labels"}, {"labels", "x"}], "labels"), True)
     check("S1 no tie -> every input used", si([], "labels"), True)
+    # --- P0.6 N6: a candidate that could not be scored is never dropped silently; it matters (an unknown) only when the
+    #     selected class still leaves shipped tensors unplaced ---
+    si = getattr(CR, "selection_incomplete", None)
+    inc = (lambda sel_file_side, unscored: si(sel_file_side, unscored)) if si and not legacy else (lambda a, b: None)
+    check("N6 selected leaves tensors unplaced + an unscored candidate -> G1 unknown",
+          (inc(590592, ["XForCausalLM: error: AttributeError"]) or {}).get("predicate"), "G1")
+    check("N6 selected fits exactly (file side 0) + an unscored candidate -> no unknown", inc(0, ["XForCausalLM: no report"]), None)
+    check("N6 selected leaves tensors unplaced, every candidate scored -> no unknown", inc(590592, []), None)
     print(f"\n{bad} unexpected" + (" (legacy logic: expected to fail)" if legacy else ""))
     sys.exit(1 if bad else 0)
 

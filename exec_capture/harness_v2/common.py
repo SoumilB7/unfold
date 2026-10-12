@@ -69,8 +69,18 @@ def ckpt_split(T):
             return False
         sib = T.get(k[: -len(".scale")] + ".weight")
         return sib is not None and (sib[1] in INT_DTYPES or str(sib[1]).startswith("F8"))
+    def packed_bookkeeping(k):
+        """compressed-tensors' pack-quantized schema: <m>.weight_shape (1-D integer, length = the packed tensor's rank)
+        and <m>.weight_g_idx sit next to an integer <m>.weight_packed (P0.6 B3); a same-named tensor elsewhere is a weight."""
+        for suf in (".weight_shape", ".weight_g_idx"):
+            if k.endswith(suf):
+                sib = T.get(k[: -len(suf)] + ".weight_packed")
+                s_, d_ = T[k]
+                return (sib is not None and sib[1] in INT_DTYPES and d_ in INT_DTYPES
+                        and (suf != ".weight_shape" or (len(s_) == 1 and s_[0] == len(sib[0]))))
+        return False
     for k, (s, d) in T.items():
-        if AUX.search(k) or quant_scale(k):
+        if AUX.search(k) or quant_scale(k) or packed_bookkeeping(k):
             aux[k] = (tuple(s), d); continue
         if packed:
             k = re.sub(r"\.(qweight|weight_packed)$", ".weight", k)
@@ -194,6 +204,60 @@ def numel(shape):
     return math.prod(shape) if shape else 1
 
 
+QUANT_INT = ("I8", "U8", "I16", "U16", "I32", "U32")      # integer formats quantized weights use (I64 / BOOL are tables)
+_NON_QUANT_AUX = re.compile(r"(inv_freq|position_ids|num_batches_tracked)$")
+_PACKED_NAME = re.compile(r"(qweight|weight_packed|_blocks)$")
+
+
+def quantized_weight_keys(T):
+    """Checkpoint keys (raw, and as ckpt_split names them) that are quantized LEARNED weights, from the checkpoint alone:
+    a raw packed name (qweight / weight_packed / _blocks), or I8..U32 codes whose module ships a quantization auxiliary
+    tensor (a scale / zero point). Such keys are never stored tables (P0.6 B4)."""
+    aux = ckpt_split(T)[1]
+    qmods = {k.rpartition(".")[0] for k in aux if not _NON_QUANT_AUX.search(k)}
+    out = set()
+    for k, (s, d) in T.items():
+        if k in aux:
+            continue
+        if _PACKED_NAME.search(k) or (d in QUANT_INT and k.rpartition(".")[0] in qmods):
+            out.add(k); out.add(re.sub(r"_blocks$", "", re.sub(r"\.(qweight|weight_packed)$", ".weight", k)))
+    return out
+
+
+def pos_lengths(c):
+    """The position lengths a config declares (its own and its sub-configs')."""
+    out = set()
+    subs = [v for v in vars(c).values() if hasattr(v, "to_dict") and hasattr(v, "model_type")] if hasattr(c, "__dict__") else []
+    for sc in [c] + [getattr(c, a) for a in dir(c) if a.endswith("_config") and hasattr(getattr(c, a, None), "to_dict")] + subs:
+        for f in ("n_positions", "max_position_embeddings", "n_ctx", "max_seq_len", "block_size"):
+            v = getattr(sc, f, None)
+            if isinstance(v, int) and v > 0: out.add(v)
+    return out
+
+
+def stored_constant(key, shape, dtype, *, quantized=frozenset(), pos=frozenset(), declared=False, buffer_slot=False):
+    """THE rule for "a shipped tensor is stored state (a table / mask / counter), not a learned weight", on every path
+    (P0.6 B4 + C7; D-C7 ruling 2026-10-12 "strict unless declared"):
+      - it lands in a buffer slot of the built model;
+      - never a quantized learned weight (quantized_weight_keys);
+      - an integer / bool table;
+      - a float 1x1xNxN matrix whose N is a position length of the model (a stored mask), or any N if the library
+        declares the key ignorable;
+      - a 0-d float ONLY when the library declares the key ignorable (a learned scalar such as CLIP's logit_scale is
+        never hidden)."""
+    if buffer_slot:
+        return True
+    if key in quantized:
+        return False
+    if dtype in INT_DTYPES or dtype == "BOOL":
+        return True
+    if len(shape) == 4 and shape[0] == shape[1] == 1 and shape[2] == shape[3]:
+        return declared or shape[2] in pos
+    if len(shape) == 0:
+        return declared
+    return False
+
+
 def looks_like_stored_buffer(shape, dtype):
     """Masks and counters shipped in old checkpoints: integer/bool, scalars, or 1x1xNxN matrices."""
     return (dtype in INT_DTYPES or dtype == "BOOL" or len(shape) == 0
@@ -209,7 +273,7 @@ def buffer_names(model):
     return names
 
 
-def split_library_ignored(model, W, rename=None):
+def split_library_ignored(model, W, rename=None, quantized=frozenset()):
     """Checkpoint keys the library declares it will not load, split into
     (a) stored buffers (the model has a buffer at that path, e.g. causal masks) and
     (b) learned weights the library does not build (e.g. multi-token-prediction layers)."""
@@ -225,7 +289,45 @@ def split_library_ignored(model, W, rename=None):
     for k in ignored:
         t = rename(k) if rename else k
         shape, dtype = W[k]
-        stored_buffer = (k in buf_names or t in buf_names or dtype in INT_DTYPES or dtype == "BOOL"
-                         or len(shape) == 0 or (len(shape) == 4 and shape[0] == shape[1] == 1 and shape[2] == shape[3]))
+        stored_buffer = stored_constant(k, shape, dtype, quantized=quantized, declared=True,     # the library declares it
+                                        buffer_slot=(k in buf_names or t in buf_names))
         (buffers if stored_buffer else unbuilt).append(k)
     return buffers, unbuilt
+
+
+def after_grading_exception(R, unknowns, err):
+    """A worker's last resort (sys.excepthook). Before grading the row is FAIL. After a verdict was set, the steps that
+    follow grading (revision pin, unknown promotion) did not run, so a FULL* verdict cannot stand certified: it becomes
+    FULL_UNVERIFIED with a G6 unknown naming the exception. An observed failure (PARTIAL / FAIL / OUT) stays."""
+    v = R.get("verdict")
+    if not v:
+        R["verdict"] = "FAIL"
+    elif v in ("FULL", "FULL_LEFTOVERS", "FULL_UNVERIFIED"):
+        unknowns.append({"predicate": "G6", "what": f"the run raised after grading ({err[:200]}): the revision pin and "
+                         "the unknown promotion were not evaluated", "items": [], "count": 0})
+        R["verdict"] = "FULL_UNVERIFIED"
+        R["unknowns"] = unknowns
+    return R
+
+
+def runtime_credit_needed(unbuilt, wit):
+    """DB-3, reading B (Soumil 2026-10-12): which declared-unbuilt tensors need runtime (vLLM witness) credit before the
+    library's own "unused" declaration can certify them as leftovers. Only tensors a runtime is known to run do: the
+    checkpoint keys vLLM's own loader maps (executed or loaded) when vLLM has an MTP module for this config; all of
+    them when it has one but the witness never mapped (a failed run); none when vLLM has no MTP module (nothing runs
+    them). A missing or errored witness record is an unknown, not a failure; a failed witness run (not closed / a mapping
+    error) needs credit for every one. Witness keys are compared under ckpt_split names. Returns (need, unknown or None)."""
+    unbuilt = set(unbuilt)
+    if not unbuilt:
+        return set(), None
+    if not wit or "vllm_mtp_arch" not in wit:
+        return set(), "no runtime witness record: whether a runtime executes the declared-unbuilt tensors is not established"
+    if wit.get("registry_error"):
+        return set(), f"the runtime registry could not be read ({str(wit['registry_error'])[:120]})"
+    if not wit.get("vllm_mtp_arch"):
+        return set(), None
+    if not wit.get("closed") or wit.get("mapping_error"):
+        return unbuilt, None                      # a failed witness run proves nothing about what vLLM runs: all of them
+    norm = lambda k: re.sub(r"_blocks$", "", re.sub(r"\.(qweight|weight_packed)$", ".weight", k))   # as ckpt_split names
+    mapped = {norm(k) for k in (wit.get("executed_checkpoint_keys") or []) + (wit.get("loaded_not_used_keys") or [])}
+    return (unbuilt & mapped if mapped else unbuilt), None

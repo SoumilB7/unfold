@@ -145,6 +145,29 @@ def main():
     check("F4 video/image ladder reaches steps4", tr2[-1].split(":")[0], "steps4")
     # F5: no embedding slot -> base:<dim> would repeat the identical call; it is not tried
     check("F5 no embedding slot -> one base attempt", ini([768, 1024], False), [("base", None)])
+    # ---- P0.6 F7: a call that stops INSIDE a component's method reached that component; the direct-run reason says
+    #      what the evidence shows (never "never reached" when the traceback runs through it) ----
+    import torch
+    class Normalizer(torch.nn.Module):
+        def scale(self, x):
+            return x @ torch.zeros(3, 2)                     # raises: width mismatch, inside the component
+    comps = {"image_normalizer": Normalizer(), "unet": torch.nn.Linear(2, 2)}
+    def pipe(x):
+        return comps["image_normalizer"].scale(x)
+    try:
+        pipe(torch.zeros(1, 4))
+    except Exception as e:
+        tb = e.__traceback__
+    walk = getattr(DR, "components_on_traceback", None)
+    si = walk(tb, comps) if walk and not legacy else {}
+    why = (lambda cn, si, stop: DR.direct_run_reason(cn, si, stop)) if hasattr(DR, "direct_run_reason") and not legacy \
+        else (lambda cn, si, stop: "the pipeline call never reached this component")     # ce9a8db4 wording
+    check("F7 the stopping component is found on the traceback", "image_normalizer" in si, True)
+    check("F7 an untouched component is not", "unet" in si, False)
+    check("F7 reason for the stopping component is not 'never reached'",
+          "never reached" in why("image_normalizer", si, "RuntimeError @ x.py:1"), False)
+    check("F7 reason for a component the call completed without calling",
+          "completed" in why("unet", {}, None), True)
     print(f"\n{bad} unexpected" + (" (legacy logic: expected to fail)" if legacy else ""))
     sys.exit(1 if bad else 0)
 

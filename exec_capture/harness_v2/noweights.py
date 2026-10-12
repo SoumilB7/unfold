@@ -182,9 +182,22 @@ def network_error(e):
     description, else None. By type, not by name."""
     import socket, ssl
     kinds = [ConnectionError, socket.gaierror, ssl.SSLError]       # not socket.timeout: an alias of builtin TimeoutError
+    http_answer, http_misuse = (), ()
     try:
-        import httpx; kinds.append(httpx.TransportError)
+        import httpx; kinds.append(httpx.TransportError); http_answer = (httpx.HTTPError,)
+        http_misuse = (httpx.StreamError,)
     except Exception: pass
+    def raised_in_http_client(x):
+        """Raised by the HTTP client's own code (its innermost frame is in httpx / httpcore), e.g. a closed client.
+        Typed httpx errors are handled by type above (a TransportError is network; an HTTPStatusError is the server's
+        answer, e.g. a 404, never network)."""
+        tb, last = x.__traceback__, None
+        while tb is not None:
+            last, tb = tb, tb.tb_next
+        mod = str(last.tb_frame.f_globals.get("__name__", "")) if last is not None else ""
+        # (an argument-type error or a consumed stream raised inside httpx is a caller bug, not the network)
+        return (mod.split(".")[0] in ("httpx", "httpcore") and not isinstance(x, http_answer)
+                and not isinstance(x, (TypeError,) + http_misuse))
     try:
         import requests; kinds.append(requests.exceptions.ConnectionError); kinds.append(requests.exceptions.Timeout)
     except Exception: pass
@@ -196,7 +209,7 @@ def network_error(e):
     chain, x, hit = [], e, False
     while x is not None and len(chain) < 10:
         chain.append(type(x).__name__)
-        if isinstance(x, tuple(kinds)):
+        if isinstance(x, tuple(kinds)) or raised_in_http_client(x):
             hit = True
         if HfHubHTTPError is not None and isinstance(x, HfHubHTTPError):
             code = getattr(getattr(x, "response", None), "status_code", None)

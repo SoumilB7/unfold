@@ -22,6 +22,7 @@ import noweights; noweights.install()
 torch.set_num_threads(int(os.environ.get("BENCH_THREADS", "2")))
 import transformers
 from lowcost import zero_storage, fetch_headers, fetch_bin_headers
+import common
 from common import grading_id, runtime, ckpt_split, match, library_rename, split_library_ignored, looks_like_stored_buffer, top_groups, numel, INT_DTYPES, buffer_names
 from dag import DagRecorder, analyse, tied_alias_modules, math_attention, clear_library_caches
 from inputs import build_passes, mask_positions
@@ -50,7 +51,7 @@ def _emit():
 
 def _last_resort(etype, e, tb):
     import traceback as _tb
-    R["verdict"] = R.get("verdict") or "FAIL"
+    common.after_grading_exception(R, UNKNOWNS, f"{etype.__name__}: {str(e)[:200]}")   # FULL* never stands after a crash
     R["reason"] = R.get("reason") or f"unhandled {etype.__name__}: {str(e)[:250]}"
     fr = _tb.extract_tb(tb)
     R["where"] = R.get("where") or (f"{fr[-1].filename.split('site-packages/')[-1]}:{fr[-1].lineno}" if fr else "")
@@ -269,30 +270,24 @@ def _uncovered_numel(klass):
             return None
     W0, _, packed0 = ckpt_split(T)
     ren0 = library_rename(mm)
-    bufs0, unb0 = split_library_ignored(mm, W0, ren0)
+    bufs0, unb0 = split_library_ignored(mm, W0, ren0, QW)
     W0 = {k: v for k, v in W0.items() if k not in set(bufs0) | set(unb0)}
     H0 = {k: tuple(v.shape) for k, v in mm.state_dict(keep_vars=True).items()}
     al0 = collections.defaultdict(list)
     for k, v in mm.state_dict(keep_vars=True).items(): al0[id(v)].append(k)
     _, unc0, unh0, _ = match(W0, H0, al0, packed0, rename=ren0)
-    unc0 = [c for c in unc0 if not looks_like_stored_buffer(*W0[c])]
+    _bn0 = buffer_names(mm)
+    unc0 = [c for c in unc0 if not common.stored_constant(c, *W0[c], quantized=QW, pos=_POS,
+                                                         buffer_slot=(c in _bn0 or bool(ren0 and ren0(c) in _bn0)))]
     return sum(numel(W0[c][0]) for c in unc0), len(unh0)
 # The library authority (its own from_pretrained over sparse header stubs) decides when it can run: a class is
 # scored by what the library itself says it cannot place (unexpected / mismatched / silently dropped file tensors,
 # and parameters it leaves uninitialized). The name matcher below is the fallback when no load report is possible.
-def _pos_lengths(c):
-    out = set()
-    for sc in [c] + [getattr(c, a) for a in dir(c) if a.endswith("_config") and hasattr(getattr(c, a, None), "to_dict")]:
-        for f in ("n_positions", "max_position_embeddings", "n_ctx", "max_seq_len", "block_size"):
-            v = getattr(sc, f, None)
-            if isinstance(v, int) and v > 0: out.add(v)
-    return out
-_POS = _pos_lengths(cfg)
+_POS = common.pos_lengths(cfg)
+QW = common.quantized_weight_keys(T) if T else set()      # quantized learned weights: never stored tables (P0.6 B4)
 def _stored_constant(x):
-    """A shipped tensor that is a stored table, not a learned weight, from its header alone: an integer/bool table,
-    or a float 1x1xNxN matrix whose N is one of the model's own position lengths (a stored attention mask)."""
-    s_, d_ = T[x]
-    return d_ in INT_DTYPES or d_ == "BOOL" or (len(s_) == 4 and s_[0] == s_[1] == 1 and s_[2] == s_[3] and s_[2] in _POS)
+    """A shipped tensor that is a stored table, not a learned weight: THE common rule (common.stored_constant)."""
+    return common.stored_constant(x, *T[x], quantized=QW, pos=_POS)
 AUTH, _auth_sel, _auth_mirror_failed = None, False, False
 import class_rules
 TIED, TIED_FWD, TIED_SUB = [], [], []   # tied classes (P0.4), their forward parameter names, their sub-module types
@@ -369,6 +364,8 @@ if T and R.get("ground_truth_source") in (None, "safetensors") and GGUF_RAW is N
                         except Exception as e:
                             if ALARMS[0] != _n0:              # the library turned our timeout into another error
                                 _auth_sel = False; raise StageTimeout("alarm during candidate load")
+                            if network_error(e):              # an outage is not the library refusing a candidate
+                                raise
                             _sel["candidates"][c] = f"error: {type(e).__name__}: {str(e)[:80]}"; continue
                         if sc is not None:
                             scored.append((sc, c)); _sel["candidates"][c] = list(sc)
@@ -387,6 +384,10 @@ if T and R.get("ground_truth_source") in (None, "safetensors") and GGUF_RAW is N
                         if _res["tied"]: _sel["ambiguous"] = _res["tied"]
                         _tie(_res)
                         cls = getattr(transformers, _res["selected"]); R["class"] = cls.__name__
+                    # candidates that could not be scored are never dropped silently (P0.6 N6)
+                    _inc = class_rules.selection_incomplete((_res["best"] if _res["switched"] else s0)[0],
+                                                            [f"{c}: {v}" for c, v in _sel["candidates"].items() if not isinstance(v, list)])
+                    if _inc: UNKNOWNS.append(_inc)
                 else:
                     _sel["complete"] = True
                 _sel["declared_score"] = list(s0)
@@ -395,6 +396,8 @@ if T and R.get("ground_truth_source") in (None, "safetensors") and GGUF_RAW is N
     except Exception as e:
         signal.setitimer(signal.ITIMER_REAL, 0)
         R["steps"]["library_class_selection_error"] = f"{type(e).__name__}: {str(e)[:200]}"
+        if not isinstance(e, StageTimeout) and network_error(e):   # lost its connection: not a fact about the model
+            fail("FAIL", f"network: library class selection ({network_error(e)}: {str(e)[:120]})", "class selection")
     _sel["secs"] = round(time.time() - _t1c, 1)
     R["library_class_selection"] = _sel
 if T and not _auth_sel:
@@ -407,11 +410,14 @@ if T and not _auth_sel:
             if nm.endswith("_MAPPING_NAMES") and isinstance(mp, dict):
                 v = mp.get(cfg.model_type)
                 for c in ([v] if isinstance(v, str) else list(v) if isinstance(v, (list, tuple)) else []):
-                    if hasattr(transformers, c): cands.add(c)
-        scored = []
+                    if hasattr(transformers, c) and not c.endswith("Config"): cands.add(c)   # model classes only
+        scored, _unscored = [], []
         for c in sorted(cands - {cls.__name__}):
             s = _uncovered_numel(getattr(transformers, c))
             if s is not None: scored.append(((s[0], s[1]), c))
+            else: _unscored.append(f"{c}: could not be built from this config")
+        R["class_selection_matcher"] = {"declared_uncovered_numel": base[0], "scored": {c: list(sc) for sc, c in scored},
+                                        "unscored": _unscored}
         # a tie for best with no declared winner is never decided by name (class_rules, P0.4)
         _res = class_rules.resolve("weight-name matcher", cls.__name__, scored, class_rules.matcher_qualifies(base[0]))
         if _res["switched"]:
@@ -419,6 +425,8 @@ if T and not _auth_sel:
                                               "uncovered_numel_declared": base[0], "uncovered_numel_selected": _res["best"][0]}
             _tie(_res)
             cls = getattr(transformers, _res["selected"]); R["class"] = cls.__name__
+        _inc = class_rules.selection_incomplete(_res["best"][0] if _res["switched"] else base[0], _unscored)   # P0.6 N6
+        if _inc: UNKNOWNS.append(_inc)
 
 # ---- 2. build: zero-storage weights ---------------------------------------------------------------------
 def _fresh():
@@ -941,7 +949,8 @@ checks = {}
 if T:
     W, A, packed = ckpt_split(T)
     ren = library_rename(m)
-    bufs, unbuilt = split_library_ignored(m, W, ren)
+    bufs, unbuilt = split_library_ignored(m, W, ren, QW)
+    W_UNBUILT = {k: W[k] for k in unbuilt}         # shapes under ckpt_split names (a packed key has no raw-name twin in T)
     W = {k: v for k, v in W.items() if k not in set(bufs) | set(unbuilt)}
     H = {k: tuple(v.shape) for k, v in m.state_dict(keep_vars=True).items()}
     alias = collections.defaultdict(list)
@@ -949,7 +958,8 @@ if T:
         alias[id(v)].append(k)
     matched, un_c, _, _ = match(W, H, alias, packed, rename=ren)
     model_buffers = buffer_names(m)                         # includes non-persistent buffers (recomputed tables)
-    masks = [c for c in un_c if looks_like_stored_buffer(*W[c]) or c in model_buffers or (ren and ren(c) in model_buffers)]
+    masks = [c for c in un_c if common.stored_constant(c, *W[c], quantized=QW, pos=_POS,
+                                                     buffer_slot=(c in model_buffers or bool(ren and ren(c) in model_buffers)))]
     un_c = [c for c in un_c if c not in set(masks)]
     used = set(used_params) | set(used_buffers)
     for names in alias.values():
@@ -994,9 +1004,16 @@ if T:
             unbuilt = []
         else:
             R["executed_by_witness_partial"] = {"covered": len(witnessed), "declared_unbuilt": len(unbuilt)}
-    # leftover eligibility for declared-unbuilt tensors: no runtime implements them (vLLM's own MTP registry said none)
-    no_runtime = bool(WIT) and not WIT.get("vllm_mtp_arch") and not WIT.get("registry_error") and "vllm_mtp_arch" in WIT
-    unb = sum(numel(T[k][0]) for k in unbuilt)
+    # leftover eligibility for declared-unbuilt tensors (DB-3 reading B): only tensors a runtime is known to run need
+    # witness credit; the library's own declaration certifies the rest; a missing / errored record is an unknown
+    # (fully witnessed tensors were credited above, with the G4 transparency check, and removed from `unbuilt`; a
+    #  partial witness gives no credit here: a tensor that needs runtime credit and is still listed keeps leftovers out)
+    _need, _rt_unk = common.runtime_credit_needed(unbuilt, WIT)
+    no_runtime = not _need                        # (name kept: no remaining declared-unbuilt tensor needs runtime credit)
+    R["runtime_credit"] = {"needed": len(_need)}
+    if _rt_unk:
+        UNKNOWNS.append({"predicate": "G3", "what": _rt_unk, "items": sorted(unbuilt)[:20], "count": len(unbuilt)})
+    unb = sum(numel(W_UNBUILT[k][0]) for k in unbuilt)
     # ---- library authority (safetensors repos): which shipped keys the library consumes, from its own from_pretrained
     #      on sparse header stubs (file choice, renames, merges/splits, ignore lists all the library's). Replaces the
     #      name matcher's "class lacks" and "unused" sets; the matcher's result is kept for comparison.
@@ -1060,7 +1077,7 @@ if T:
         lib_unexp = [k for k in lib_unexp if not all(x in T and _stored_constant(x) for x in _src(k))
                      and k not in model_buffers]
         mism = [m_[0] for m_ in LIB["mismatched"]]
-        loaded = {n for n, _ in m.named_parameters()} - set(LIB["missing"])
+        loaded = libload.loaded_params({n for n, _ in m.named_parameters()}, LIB)   # never-shipped params excluded
         used_n = set(used)
         un_loaded = sorted(p for p in loaded if p not in used_n)
         shp = {n: tuple(p.shape) for n, p in m.named_parameters()}
@@ -1135,7 +1152,7 @@ if T:
     def _inv(items, reason):
         g = collections.OrderedDict()
         for c in items:
-            s = tuple((T.get(c) or W.get(c) or [()])[0])
+            s = tuple((T.get(c) or W.get(c) or W_UNBUILT.get(c) or [()])[0])
             key = __import__("re").sub(r"\.\d+(?=\.|$)", ".*", c)
             e = g.setdefault(key, {"pattern": key, "reason": reason, "tensors": 0, "numel": 0, "shape": list(s)})
             e["tensors"] += 1; e["numel"] += numel(s)
@@ -1204,7 +1221,7 @@ if failed == ["T1_weights"] and _t1.get("leftovers_eligible"):
                       "silently_dropped": R.get("library_silent_drops"),
                       "buffers_never_read_in_any_mode": _t1.get("buffers_never_read_in_any_mode") or None,
                       "certification": ("transformers load report" if R.get("t1_authority") == "library_load_report" else "no load report")
-                                       + " / declared-ignore list" + ("; vLLM MTP registry: none" if _t1.get("library_declared_unbuilt_numel") else "")
+                                       + " / declared-ignore list" + ("; vLLM witness credit for the tensors it runs" if R.get("executed_by_witness") else "")
                                        + ("; buffers measured never read in any mode (not declared by the library)"
                                           if _t1.get("buffers_never_read_in_any_mode") else "")}
 R["revision_pin"] = dict(noweights.PIN_LOG, outcome=noweights.revision_outcome())

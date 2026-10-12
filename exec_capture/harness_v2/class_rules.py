@@ -75,3 +75,13 @@ def entry_allowed(tied_classes, tied_subtypes, module_name, meth):
         return shared(tied_classes, meth)
     types = {st.get(module_name) for st in tied_subtypes}
     return len(types) == 1 and None not in types
+
+
+def selection_incomplete(selected_file_side, unscored):
+    """P0.6 N6: candidates that could not be scored (a load / build error, or a report that certifies nothing) are
+    recorded; they leave the class decision unproven only when the selected class still leaves shipped tensors
+    unplaced (file side > 0): an unscored candidate might have placed them. Returns the G1 unknown or None."""
+    if not unscored or not selected_file_side:
+        return None
+    return {"predicate": "G1", "what": "class selection incomplete: candidate classes that could not be scored might place "
+            "the shipped tensors the selected class leaves unplaced", "items": list(unscored)[:20], "count": len(unscored)}

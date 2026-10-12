@@ -315,6 +315,8 @@ def _provenance(model, info, set_ids, pre, tracer, tie_unchecked, headers, opene
             st, fns = loadtrace.classify(tracer.writes.get(id(t), []) if tracer else [])
             c = "INIT_" + st if st not in ("UNINITIALIZED", "UNPROVEN") else st
             nonloaded[k] = {"kind": kind, "class": c, "numel": t.numel(), "init_fns": fns[:6]}
+    for k, v in nonloaded.items():               # did the loader ever write this name from the checkpoint (P0.6 D2-C14)
+        v["set_by_loader"] = k in set_ids
     # a tied alias the library replaced by its source carries the SOURCE's provenance when the source itself was not
     # loaded (e.g. a shipped alias head replaced by an unshipped, re-initialised source: random, not "shipped twice")
     # (random / unproven / discarded sources pass their class on; a source filled by deterministic or computed init means
@@ -390,6 +392,17 @@ def quantized_evidence(read, targets, float_params, state_names, buffer_parts, a
         elif str(d_).startswith("F8") and k.rpartition(".")[0] in aux_mods:
             out.append((k, f"{d_} {where}, with a scale tensor in the same module"))
     return out
+
+
+def loaded_params(param_names, rep):
+    """Parameters the library filled from the checkpoint: every parameter minus the reported-missing keys and minus
+    the ones the loader never wrote (a missing key the library silences with _keys_to_ignore_on_load_missing is not
+    in the reported list). Shipped tensors the library overwrote, replaced or discarded after loading stay: they were
+    shipped (P0.6 D2-C14)."""
+    nl = (rep.get("provenance") or {}).get("nonloaded") or {}
+    never = {k for k, v in nl.items() if v.get("kind") == "param" and v.get("set_by_loader") is False
+             and v.get("class") != "MISMATCHED_DISCARDED"}
+    return set(param_names) - set(rep.get("missing") or []) - never
 
 
 def load_state_of(quantized_ev, quantizer, refusal):
