@@ -58,8 +58,8 @@ lines = ["# Strict capture benchmark — measured results", "",
              V['FULL'] + V['FULL_LEFTOVERS'] + V['FULL_UNVERIFIED'] + V['PARTIAL'] + V['FAIL']), "",
          "FULL = every shipped weight used, every module executed, closed dataflow, no opaque ops, identical structure for two inputs. "
          "FULL_LEFTOVERS = everything the model runs is captured; the only gap is shipped tensors the library itself certifies as unused "
-         "by this model and that no available runtime executes, or stored buffers measured never read in any run mode (both listed per result). Architecture-complete = FULL + FULL_LEFTOVERS. "
-         "FULL_UNVERIFIED = every observed check passes, but some predicate could not be evaluated (e.g. no library load, a tie "
+         "by this model and that no available runtime executes (listed per result); buffers merely unread in the modes tried are an unknown, not leftovers. Architecture-complete = FULL + FULL_LEFTOVERS. "
+         "FULL_UNVERIFIED = every observed check passes, but some predicate could not be evaluated (e.g. no library load, unread buffers, a tie "
          "shipped twice); the unknowns are listed per result and it is never counted as FULL.", "",
          "## By category", "", "| category | repos | FULL | FULL_LEFTOVERS | FULL_UNVERIFIED | PARTIAL | FAIL | OUT | FULL % of runnable | architecture-complete % |",
          "|---|---|---|---|---|---|---|---|---|---|"]

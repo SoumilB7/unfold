@@ -590,6 +590,7 @@ if _bad:
 if R.get("revision") is None:
     UNKNOWNS.append({"predicate": "G6", "what": "the checkpoint revision could not be pinned (" + (R.get("revision_error") or "unknown") + ")",
                      "items": [], "count": 0})
+UNKNOWNS.append(diffusion_rules.no_load_authority_unknown(list(models)))   # P0.2: G1 not established (no D1-A yet)
 if R["verdict"] == "FULL" and UNKNOWNS:
     R["verdict"] = "FULL_UNVERIFIED"
 R["unknowns"] = UNKNOWNS

@@ -70,6 +70,11 @@ def main():
     check("F9b FULL with pending unknowns then an exception -> FULL_UNVERIFIED", run("FULL", [{"predicate": "G1"}])[0], "FULL_UNVERIFIED")
     check("F9b PARTIAL then an exception -> PARTIAL (observed failure stays)", run("PARTIAL", [])[0], "PARTIAL")
     check("F9b no verdict yet -> FAIL", run(None, [])[0], "FAIL")
+    def run_ref(verdict):
+        R = {"verdict": verdict, "library_refuses_checkpoint": True}
+        if lr: lr(R, [], "PermissionError")
+        return R["verdict"]
+    check("R-REFUSE holds through a crash after grading (FULL_UNVERIFIED path never wins)", run_ref("FULL"), "FAIL")
 
     # ---- B3: compressed-tensors bookkeeping (`<m>.weight_shape`, `<m>.weight_g_idx`) is auxiliary ONLY next to an
     #      integer `<m>.weight_packed` (schema evidence), never a learned weight fed to a runtime ----
@@ -141,6 +146,13 @@ def main():
               "executed_checkpoint_keys": ["mtp.layers.0.mlp.down_proj.weight_packed"], "loaded_not_used_keys": []})["needs_credit"],
           ["mtp.layers.0.mlp.down_proj.weight"])
 
+    # ---- P0.2 (Soumil 2026-10-13): the diffusion worker has no library-load authority yet, so every diffusion row
+    #      carries a G1 unknown (never FULL) ----
+    DRm = module("diffusion_rules", legacy)
+    nl = getattr(DRm, "no_load_authority_unknown", None)
+    u = nl(["unet", "vae"]) if nl else None
+    check("P0.2 diffusion rows carry the G1 'no library load' unknown", (u or {}).get("predicate"), "G1")
+
     # ---- S-2 (P0.6 cross-exam): the fixed call sites really call the shared rules (a reverted site fails here) ----
     def src(name):
         if not legacy:
@@ -164,6 +176,11 @@ def main():
         "worker_v2_diffusion: _last_resort applies after_grading_exception": "common.after_grading_exception(R, UNKNOWNS" in WD,
         "worker_v2_diffusion: _attempt records the traceback components": "diffusion_rules.components_on_traceback(e.__traceback__, models)" in WD,
         "worker_v2_diffusion: direct-run reason from evidence": "diffusion_rules.direct_run_reason(cn," in WD,
+        "worker_v2_diffusion: the P0.2 unknown is added BEFORE the FULL -> FULL_UNVERIFIED promotion":
+            0 <= WD.find("UNKNOWNS.append(diffusion_rules.no_load_authority_unknown(") < WD.find('if R["verdict"] == "FULL" and UNKNOWNS:'),
+        "worker_v2: the R-REFUSE FAIL is set before the promotion": 0 <= W2.find('R["reason"] = (f"library refuses this checkpoint') < W2.find('if R["verdict"] in ("FULL", "FULL_LEFTOVERS") and UNKNOWNS:'),
+        "worker_v2: R-REFUSE judges the declared (default) class": "_decl_rep = LIB if cls is DECLARED_CLS else" in W2,
+        "worker_v2: a candidate the library refuses is never selected": "if libload.refuses(_rc):" in W2,
     }
     for k, v in wiring.items():
         check(f"S-2 wiring: {k}", v, True)

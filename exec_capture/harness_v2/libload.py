@@ -413,6 +413,15 @@ def load_state_of(quantized_ev, quantizer, refusal):
     return "refused" if refusal else "loaded"
 
 
+def refuses(rep):
+    """R-REFUSE (Soumil 2026-10-13): the installed library refuses its own default load of this checkpoint (reproduced
+    on the real header layout): a refused load, or quantized codes plus a refusal the codes do not explain."""
+    if not rep or "error" in rep:
+        return False
+    st = rep.get("load_state", "loaded")
+    return st == "refused" or (st == "quantized_interpretation_unknown" and bool(rep.get("refusal_unexplained_by_quantization")))
+
+
 def authority(rep):
     """What a library load report may certify (P0.5). Returns {"certifies": bool, "state", "unknown": text or None}.
     loaded: certifies. refused: the report is the forced diagnostic recovery; it still names the discarded keys (the
@@ -439,7 +448,7 @@ def g1_assess(prov, used, exec_shapes, buffer_group):
       exec_shapes  : {state-dict name: shape} of the executed model
       buffer_group : {name: (module class, buffer name)} for the executed model's FLOATING persistent buffers
     Returns {"fail": {...}, "unknowns": [...], "leftovers": {...}}: a non-empty fail fails T1 (PARTIAL); unknowns make an
-    otherwise FULL row FULL_UNVERIFIED; leftovers make it FULL_LEFTOVERS (measured, listed)."""
+    otherwise FULL row FULL_UNVERIFIED (incl. buffers unread in the modes tried, R-BUF); leftovers is empty since R-BUF."""
     if prov.get("error"):
         return {"fail": {}, "leftovers": {},
                 "unknowns": [{"predicate": "G1", "what": f"load provenance could not be computed ({prov['error']})",
@@ -467,11 +476,15 @@ def g1_assess(prov, used, exec_shapes, buffer_group):
     diff = sorted(k for k in set(ls) | set(exec_shapes) if list(ls.get(k, [])) != list(exec_shapes.get(k, [])) or (k in ls) != (k in exec_shapes))
     unk("G2", "the executed model's state differs from the library-loaded model's (names / shapes)", diff)
     # shipped floating buffers no op read: a sibling of the same kind WAS read -> a real gap (fail); none of that kind
-    # was read in any mode -> dead state (measured, a leftover)
+    # was read in the modes tried -> not proven dead (R-BUF: an unknown, below)
     shipped_bufs = [k for k in buffer_group if k not in nl]
     groups_read = {buffer_group[k] for k in shipped_bufs if k in used}
     unread = [k for k in shipped_bufs if k not in used]
     fail["buffers_unread_while_siblings_read"] = sorted(k for k in unread if buffer_group[k] in groups_read)
-    leftovers = {"buffers_never_read_in_any_mode": sorted(k for k in unread if buffer_group[k] not in groups_read)}
+    # R-BUF (Soumil 2026-10-13): no recorded run read them in the modes tried, but trying modes never proves that no
+    # supported input reads them: not proven dead -> an unknown (FULL_UNVERIFIED), never FULL_LEFTOVERS
+    unk("G3", "floating buffers no recorded run read in the modes tried (not proven dead: no supported input is shown "
+        "to leave them unread)", sorted(k for k in unread if buffer_group[k] not in groups_read))
+    leftovers = {}
     return {"fail": {k: v for k, v in fail.items() if v}, "unknowns": unknowns,
             "leftovers": {k: v for k, v in leftovers.items() if v}}

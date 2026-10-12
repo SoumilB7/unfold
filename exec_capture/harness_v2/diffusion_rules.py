@@ -131,6 +131,14 @@ def component_checks(checks):
             [k for k, v in checks.items() if v.get("pass") is None])
 
 
+def no_load_authority_unknown(component_names):
+    """P0.2 (Soumil 2026-10-13): the diffusion worker never runs the library's own load, so G1 (load provenance) is not
+    established for any component: an unknown (never FULL) until a diffusers load authority (D1-A) exists."""
+    return {"predicate": "G1", "what": "no library load: the diffusion worker has no library-load authority yet, so which "
+            "shipped tensors each component's library load consumes, and how it fills the rest, is not established",
+            "items": list(component_names)[:20], "count": len(component_names)}
+
+
 def components_on_traceback(tb, components):
     """{component name: "file:line" of its innermost frame} for every component (or sub-module of one) that is `self`
     in a frame of the traceback: matched by object identity, never by name (P0.6 F7)."""

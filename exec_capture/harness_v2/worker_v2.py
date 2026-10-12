@@ -289,6 +289,7 @@ def _stored_constant(x):
     """A shipped tensor that is a stored table, not a learned weight: THE common rule (common.stored_constant)."""
     return common.stored_constant(x, *T[x], quantized=QW, pos=_POS)
 AUTH, _auth_sel, _auth_mirror_failed = None, False, False
+DECLARED_CLS = cls        # the class a user's default load uses: R-REFUSE judges its load (Soumil 2026-10-13)
 import class_rules
 TIED, TIED_FWD, TIED_SUB = [], [], []   # tied classes (P0.4), their forward parameter names, their sub-module types
 def _tie(res):
@@ -358,7 +359,11 @@ if T and R.get("ground_truth_source") in (None, "safetensors") and GGUF_RAW is N
                     for c in sorted(cands - {cls.__name__}):
                         _n0 = ALARMS[0]
                         try:
-                            sc = _lib_score(_rep(getattr(transformers, c)))
+                            _rc = _rep(getattr(transformers, c))
+                            _sel.setdefault("candidate_states", {})[c] = (_rc or {}).get("load_state")
+                            if libload.refuses(_rc):              # a class the library refuses is never selected
+                                _sel["candidates"][c] = "refused by the library"; continue
+                            sc = _lib_score(_rc)
                         except StageTimeout:
                             _auth_sel = False; raise          # incomplete: fall back to the matcher's selection
                         except Exception as e:
@@ -386,7 +391,8 @@ if T and R.get("ground_truth_source") in (None, "safetensors") and GGUF_RAW is N
                         cls = getattr(transformers, _res["selected"]); R["class"] = cls.__name__
                     # candidates that could not be scored are never dropped silently (P0.6 N6)
                     _inc = class_rules.selection_incomplete((_res["best"] if _res["switched"] else s0)[0],
-                                                            [f"{c}: {v}" for c, v in _sel["candidates"].items() if not isinstance(v, list)])
+                                                            [f"{c}: {v}" for c, v in _sel["candidates"].items()
+                                                             if not isinstance(v, list) and v != "refused by the library"])
                     if _inc: UNKNOWNS.append(_inc)
                 else:
                     _sel["complete"] = True
@@ -1055,6 +1061,12 @@ if T:
         R["library_load_state"] = LIB.get("load_state")
         if LIB.get("refusal"):
             R["library_load_refusal"] = LIB["refusal"]
+        # R-REFUSE: the user's default load = the declared class's (its report is cached from class selection)
+        _decl_rep = LIB if cls is DECLARED_CLS else (AUTH.cache.get(DECLARED_CLS.__name__) if AUTH is not None else None)
+        R["library_refuses_checkpoint"] = bool(_decl_rep) and libload.refuses(_decl_rep)
+        if R["library_refuses_checkpoint"]:
+            _rk = _decl_rep.get("refusal_unexplained_by_quantization") or (_decl_rep.get("refusal") or {}).get("mismatched") or []
+            R["library_refusal_keys"] = {"count": len(_rk), "keys": list(_rk)[:10], "class": DECLARED_CLS.__name__}
     if _AUTH_ST["unknown"]:
         R["library_load_report_error"] = "not certified: " + _AUTH_ST["unknown"]
         R["library_load_diagnostic"] = {"state": _AUTH_ST["state"], "quantized_evidence": LIB.get("quantized_evidence"),
@@ -1235,6 +1247,13 @@ if noweights.PIN_LOG["other_revision"]:
 if R.get("revision") is None:
     UNKNOWNS.append({"predicate": "G6", "what": "the checkpoint revision could not be pinned ("
                      + (R.get("revision_error") or "unknown") + ")", "items": [], "count": 0})
+if R.get("library_refuses_checkpoint") and R["verdict"] not in ("OUT",):
+    # R-REFUSE (Soumil 2026-10-13): the installed library refuses its own default load of this checkpoint: a user
+    # cannot run it as shipped (checks stay recorded)
+    R["verdict"] = "FAIL"
+    _rk = R.get("library_refusal_keys") or {}
+    R["reason"] = (f"library refuses this checkpoint ({_rk.get('class')}): {_rk.get('count')} mismatched tensors, e.g. "
+                   + ", ".join(_rk.get("keys") or [])[:200])
 if R["verdict"] in ("FULL", "FULL_LEFTOVERS") and UNKNOWNS:
     # every observed check passes, but a predicate could not be evaluated: never FULL (INTENT.md, Soumil 2026-10-09)
     R["verdict"] = "FULL_UNVERIFIED"

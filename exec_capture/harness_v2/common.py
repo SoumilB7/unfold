@@ -300,6 +300,10 @@ def after_grading_exception(R, unknowns, err):
     follow grading (revision pin, unknown promotion) did not run, so a FULL* verdict cannot stand certified: it becomes
     FULL_UNVERIFIED with a G6 unknown naming the exception. An observed failure (PARTIAL / FAIL / OUT) stays."""
     v = R.get("verdict")
+    if R.get("library_refuses_checkpoint") and v != "OUT":          # R-REFUSE holds whatever crashed after it
+        R["verdict"] = "FAIL"
+        R["reason"] = R.get("reason") or "library refuses this checkpoint"
+        return R
     if not v:
         R["verdict"] = "FAIL"
     elif v in ("FULL", "FULL_LEFTOVERS", "FULL_UNVERIFIED"):

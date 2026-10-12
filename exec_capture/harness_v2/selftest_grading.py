@@ -78,7 +78,9 @@ def build(d):
     e = transformers.EncodecModel(enc)
     wav = {"input_values": torch.randn(1, 1, 800)}
     C["C11 EnCodec default bandwidth (codebooks unread while siblings read)"] = (save(d, "C11", e), "EncodecModel", wav, "PARTIAL")
-    C["C11b EnCodec full bandwidth (only dead EMA state unread)"] = (save(d, "C11b", e), "EncodecModel", dict(wav, bandwidth=6.0), "FULL_LEFTOVERS")
+    # R-BUF (Soumil 2026-10-13): buffers unread in the modes tried are not proven dead -> an unknown, never leftovers
+    C["C11b EnCodec full bandwidth (only EMA state unread: not proven dead)"] = (save(d, "C11b", e), "EncodecModel", dict(wav, bandwidth=6.0),
+                                                                             "FULL_UNVERIFIED+floating buffers no recorded run read")
     u = transformers.UMT5ForConditionalGeneration(transformers.UMT5Config(vocab_size=64, d_model=16, d_kv=8, d_ff=32, num_layers=1,
                                                                           num_heads=2, decoder_start_token_id=0))
     C["C12 UMT5 raw tie false, both shipped"] = (save(d, "C12", u, cfg_edit=lambda j: j.__setitem__("tie_word_embeddings", False)),
@@ -136,7 +138,7 @@ def build(d):
         k: (v.to(torch.int32) if k.endswith("num_batches_tracked") else v) for k, v in sd.items()}),
         "ResNetForImageClassification", px, "FULL@loaded")
     C["Q5 ordinary float shape mismatch (library refuses)"] = (save(d, "Q5", m, lambda sd: dict(sd, **{"lm_head.weight": torch.zeros(60, 16)})),
-                                                             L, ids, "PARTIAL:library_refuses_load@refused")
+                                                             L, ids, "FAIL:library_refuses_load@refused")
     q6 = save(d, "Q6", m, packed_u8)
     json.dump({"quantization": {"quant_algo": "NVFP4"}}, open(os.path.join(q6, "hf_quant_config.json"), "w"))
     C["Q6 packed codes, quantization metadata outside config.json"] = (q6, L, ids, "NOT_CERTIFIED@quantized_interpretation_unknown")
@@ -160,7 +162,7 @@ def build(d):
     def packed_plus_head(sd):                 # packed MLP codes AND an unrelated float head of the wrong shape
         return dict(packed_u8(sd), **{"lm_head.weight": torch.zeros(60, 16)})
     C["Q10 quantized codes do not hide an unrelated refusal"] = (save(d, "Q10", m, packed_plus_head), L, ids,
-                                                                 "PARTIAL:library_refuses_load@quantized_interpretation_unknown")
+                                                                 "FAIL:library_refuses_load@quantized_interpretation_unknown")
     def fp8_block(sd):                        # block FP8 the installed library's own quantizer dequantizes on CPU
         out = dict(sd)
         for k in list(sd):
@@ -190,6 +192,9 @@ def grade(path, cls_name, kw):
     state = LIB.get("load_state", "loaded")
     au = getattr(libload, "authority", None)                 # (absent in pre-P0.5 code: every report certified)
     st = au(LIB) if au else {"certifies": True, "unknown": None}
+    rf = getattr(libload, "refuses", None)                   # R-REFUSE (Soumil 2026-10-13): the library refuses -> FAIL
+    if rf and rf(LIB):
+        return "FAIL", {"state": state, "fail": {"library_refuses_load": (LIB.get("refusal") or {}).get("mismatched")}}
     if not st["certifies"]:
         # the worker then grades by its name matcher with this G1 unknown (at best FULL_UNVERIFIED); that path is not
         # reproduced here, so the control asserts the state, and PARTIAL only for a failure the authority itself names
