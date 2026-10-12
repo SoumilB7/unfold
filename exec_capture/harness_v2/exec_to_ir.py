@@ -1157,7 +1157,11 @@ def to_ir(F):
                              if (G.get('leftovers') or {}).get('buffers_never_read_in_any_mode') else "")] if x) + "."]
                        if G.get("verdict") == "FULL_LEFTOVERS" else [])
                     + ([F["rope_note"]] if F.get("rope_note") else []),
-              warnings=([] if G.get("verdict") in ("FULL", "FULL_LEFTOVERS") else
+              warnings=([f"Executed class is arbitrary among equally fitting library classes "
+                         f"({', '.join((G.get('decisions') or {})['class_ambiguous'].get('tied') or [])}): no checkpoint "
+                         f"evidence chooses between them; only what every one of them supports was run."]
+                        if (G.get("decisions") or {}).get("class_ambiguous") else []) +
+                       ([] if G.get("verdict") in ("FULL", "FULL_LEFTOVERS") else
                         [f"Benchmark verdict FULL_UNVERIFIED: every observed check passed, but not everything could be "
                          f"verified: " + "; ".join(f"{u.get('what')}" + (f" ({u.get('count')}: {', '.join(map(str, (u.get('items') or [])[:3]))})"
                                                                      if u.get('count') else "") for u in (G.get('unknowns') or []))

@@ -15,7 +15,7 @@ INT_DTYPES = {"I8", "U8", "I16", "U16", "I32", "U32", "I64", "U64"}
 # a drawing-only change never changes the grading identity.
 GRADING_FILES = ("worker_v2.py", "worker_v2_diffusion.py", "run_batch.py", "dag.py", "common.py", "libload.py",
                  "loadtrace.py", "lowcost.py", "inputs.py", "gguf_parts.py", "noweights.py", "synth.py", "opclass.py",
-                 "mtp_witness_run.py", "vllm_witness.py", "capture.py",
+                 "mtp_witness_run.py", "vllm_witness.py", "capture.py", "class_rules.py",
                  "diffusion_rules.py")      # capture.py records graded passes
 
 

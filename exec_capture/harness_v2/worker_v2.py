@@ -294,6 +294,27 @@ def _stored_constant(x):
     s_, d_ = T[x]
     return d_ in INT_DTYPES or d_ == "BOOL" or (len(s_) == 4 and s_[0] == s_[1] == 1 and s_[2] == s_[3] and s_[2] in _POS)
 AUTH, _auth_sel, _auth_mirror_failed = None, False, False
+import class_rules
+TIED, TIED_FWD, TIED_SUB = [], [], []   # tied classes (P0.4), their forward parameter names, their sub-module types
+def _tie(res):
+    """A tie for best with no declared winner (class_rules.resolve): record it, add the G1 unknown (never FULL), and
+    keep what the tied classes share, so only passes and inputs every tied class supports run."""
+    if not res["record"]:
+        return
+    TIED[:] = [getattr(transformers, c) for c in res["tied"]]
+    TIED_FWD[:] = [set(inspect.signature(k.forward).parameters) for k in TIED]
+    TIED_SUB[:] = []
+    for k in TIED:                                  # sub-module types (depth <= 1), from a meta build of each class
+        try:
+            with torch.device("meta"):
+                mk = k._from_config(cfg)
+            TIED_SUB.append({n: type(x).__name__ for n, x in mk.named_modules() if n and n.count(".") <= 1})
+        except Exception:
+            TIED_SUB.append({})                     # unknown layout: no sub-module entry is shared
+    R["class_ambiguous"] = res["record"]
+    UNKNOWNS.append(res["unknown"])
+def _skip_tied(what):
+    R.setdefault("passes_skipped_class_ambiguous", []).append(what)
 def _lib_score(rep):
     """(file side, model side): file tensors the library cannot place (unexpected / mismatched, not integer tables;
     silently dropped), and parameters it leaves uninitialized. None when there is no report."""
@@ -353,19 +374,18 @@ if T and R.get("ground_truth_source") in (None, "safetensors") and GGUF_RAW is N
                         else:
                             _sel["candidates"][c] = "no report"
                     _sel["complete"] = True
-                    # switch only on FILE-side evidence: the candidate places strictly more of the shipped tensors,
-                    # or fits exactly (nothing unplaced, nothing uninitialized). Parameters missing from the file alone
-                    # never decide the class; a tie for best keeps the declared class (recorded as ambiguous).
-                    ok = [(sc, c) for sc, c in scored if sc[0] < s0[0] or sc == (0, 0)]
-                    if ok:
-                        best = min(sc for sc, _ in ok)
-                        winners = [c for sc, c in ok if sc == best]
-                        if len(winners) == 1:
-                            R["class_selected_by_library"] = {"declared": cls.__name__, "selected": winners[0],
-                                                              "score_declared": list(s0), "score_selected": list(best)}
-                            cls = getattr(transformers, winners[0]); R["class"] = cls.__name__
-                        else:
-                            _sel["ambiguous"] = winners
+                    signal.setitimer(signal.ITIMER_REAL, 0)   # scoring done: no alarm may split the decision below
+                    # switch only on FILE-side evidence: the candidate places strictly more of the shipped tensors, or
+                    # fits exactly (nothing unplaced, nothing uninitialized). Parameters missing from the file alone never
+                    # decide the class. The declared class among the best is kept; a tie for best with no declared winner
+                    # is never decided by name: G1 unknown, shared passes only (class_rules, P0.4)
+                    _res = class_rules.resolve("library load report", cls.__name__, scored, class_rules.authority_qualifies(s0))
+                    if _res["switched"]:
+                        R["class_selected_by_library"] = {"declared": cls.__name__, "selected": _res["selected"],
+                                                          "score_declared": list(s0), "score_selected": list(_res["best"])}
+                        if _res["tied"]: _sel["ambiguous"] = _res["tied"]
+                        _tie(_res)
+                        cls = getattr(transformers, _res["selected"]); R["class"] = cls.__name__
                 else:
                     _sel["complete"] = True
                 _sel["declared_score"] = list(s0)
@@ -390,13 +410,14 @@ if T and not _auth_sel:
         scored = []
         for c in sorted(cands - {cls.__name__}):
             s = _uncovered_numel(getattr(transformers, c))
-            if s is not None: scored.append((s[0], s[1], c))
-        if scored:
-            best = min(scored)
-            if best[0] < base[0]:
-                R["class_selected_by_weights"] = {"declared": cls.__name__, "selected": best[2],
-                                                  "uncovered_numel_declared": base[0], "uncovered_numel_selected": best[0]}
-                cls = getattr(transformers, best[2]); R["class"] = cls.__name__
+            if s is not None: scored.append(((s[0], s[1]), c))
+        # a tie for best with no declared winner is never decided by name (class_rules, P0.4)
+        _res = class_rules.resolve("weight-name matcher", cls.__name__, scored, class_rules.matcher_qualifies(base[0]))
+        if _res["switched"]:
+            R["class_selected_by_weights"] = {"declared": cls.__name__, "selected": _res["selected"],
+                                              "uncovered_numel_declared": base[0], "uncovered_numel_selected": _res["best"][0]}
+            _tie(_res)
+            cls = getattr(transformers, _res["selected"]); R["class"] = cls.__name__
 
 # ---- 2. build: zero-storage weights ---------------------------------------------------------------------
 def _fresh():
@@ -617,7 +638,9 @@ if base and _unused_now():
     # (i) optional outputs: every return_*/output_* switch the forward offers, plus a global-attention mask
     flags = {p: True for p, prm in sig_m.items() if p.startswith(("return_", "output_")) and prm.default in (False, None)
              and p not in ("return_dict", "return_loss")}
-    if "global_attention_mask" in sig_m and "input_ids" in base:
+    for p in [p for p in flags if not class_rules.shared_input(TIED_FWD, p)]:
+        del flags[p]; _skip_tied(f"mode:output_flags.{p}")             # not every tied class accepts it (P0.4)
+    if "global_attention_mask" in sig_m and "input_ids" in base and class_rules.shared_input(TIED_FWD, "global_attention_mask"):
         g = torch.zeros_like(base["input_ids"]); g[..., 0] = 1; flags["global_attention_mask"] = g
     if flags:
         _run_mode("mode:output_flags", dict(base, **flags))
@@ -681,7 +704,10 @@ if base and _unused_now() and S_.get("router_params"):
     for h in hooks: h.remove()
 
 # ---- 3b. generate(): parts that only run inside the generation loop (codecs, multi-stage generators) ------
-if hasattr(m, "generate") and (not any(v["ok"] for l, v in pass_res.items() if not l.startswith("stability:")) or _unused_now()) and _optional_ok("generate"):
+_gen_wanted = hasattr(m, "generate") and (not any(v["ok"] for l, v in pass_res.items() if not l.startswith("stability:")) or _unused_now())
+if _gen_wanted and not class_rules.shared(TIED, "generate"):
+    _skip_tied("generate")                                              # not every tied class can generate (P0.4)
+if hasattr(m, "generate") and class_rules.shared(TIED, "generate") and (not any(v["ok"] for l, v in pass_res.items() if not l.startswith("stability:")) or _unused_now()) and _optional_ok("generate"):
     ok_kws = [kw for l, kw in passes if pass_res.get(l, {}).get("ok")] or [kw for _, kw in passes]
     gkw = dict(max(ok_kws, key=len)) if ok_kws else {}      # the pass that already combines the most modalities
     gkw = {k: v for k, v in gkw.items() if k not in ("decoder_input_ids", "labels")}
@@ -731,6 +757,8 @@ for l, kw in passes:
 for name, sub in m.named_modules():
     if not name or name.count(".") > 1 or not callable(getattr(sub, "encode", None)) or _exercised_prefix(name):
         continue
+    if not class_rules.entry_allowed(TIED, TIED_SUB, name, "encode"):    # not the same module in every tied class (P0.4)
+        _skip_tied(f"entry:{name}"); continue
     if not any(True for _ in sub.parameters()):
         continue
     esig = inspect.signature(sub.encode).parameters
@@ -776,6 +804,9 @@ for name, sub in m.named_modules():
                 continue
             if (type(sub).__name__, meth) in tried or not _unused_under(name) or not _optional_ok(f"entry:{meth}"):
                 continue
+            if not class_rules.entry_allowed(TIED, TIED_SUB, name, meth):   # not the same in every tied class (P0.4)
+                tried.add((type(sub).__name__, meth))
+                _skip_tied(f"entry:{name or '(root)'}.{meth}"); continue
             tried.add((type(sub).__name__, meth))
             try:
                 msig = inspect.signature(fn).parameters
@@ -813,10 +844,11 @@ if ((P_names - used_params) or (persist_bufs - used_buffers)) and any(v["ok"] fo
     base_kw = dict(max(ok_kws2, key=len)) if ok_kws2 else {}
     extras = [{}]
     pv = base_kw.get("pixel_values")
-    if "bool_masked_pos" in sig_f:
+    _sh = lambda p: p in sig_f and (class_rules.shared_input(TIED_FWD, p) or _skip_tied(f"train.{p}"))   # P0.4
+    if _sh("bool_masked_pos"):
         extras = [{"bool_masked_pos": mask_positions(base_kw, cfg)}]
     label_cands = [None]
-    if "labels" in sig_f:
+    if _sh("labels"):
         H_, W_ = (pv.shape[-2], pv.shape[-1]) if pv is not None and pv.dim() >= 4 else (64, 64)
         ids = base_kw.get("input_ids")
         label_cands = [
@@ -827,7 +859,7 @@ if ((P_names - used_params) or (persist_bufs - used_buffers)) and any(v["ok"] fo
             torch.zeros(1, dtype=torch.long),
         ]
     mask_cands = [{}]
-    if "mask_labels" in sig_f and "class_labels" in sig_f and pv is not None:
+    if _sh("mask_labels") and _sh("class_labels") and pv is not None:
         mask_cands = [{"mask_labels": [torch.zeros(1, pv.shape[-2], pv.shape[-1])], "class_labels": [torch.tensor([0])]}]
     m.train()
     done_train, errs = False, []

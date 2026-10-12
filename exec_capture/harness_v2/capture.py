@@ -182,7 +182,7 @@ def write(out_dir, repo, R, cap, model, cfg, build_attn, shipped=None):
         "class": R.get("class"), "model_type": R.get("model_type"),
         "decisions": {k: R.get(k) for k in ("class_selected_by_library", "class_selected_by_weights",
                                             "class_from_library_auto_mapping", "implementation_switches",
-                                            "data_size_caps")},
+                                            "data_size_caps", "class_ambiguous", "passes_skipped_class_ambiguous")},
         "build_attn_implementation": build_attn, "config": config,
         "max_position_embeddings": cap.get("max_position_embeddings"),
         "model": facts,

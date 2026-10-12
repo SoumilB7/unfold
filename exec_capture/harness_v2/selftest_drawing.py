@@ -120,11 +120,18 @@ def main():
         ok, why = drawn(bundle_of(**kw))
         print(f"{'ok  ' if ok else 'FAIL'} {name}: {'drawn' if ok else 'REFUSED ' + why[:200]}")
         if not ok: fails.append(name)
+    # P0.4: an executed class that is arbitrary among tied classes is stated on the page (never silent)
+    b = bundle_of(); b["decisions"] = {"class_ambiguous": {"tied": ["LlamaForCausalLM", "LlamaForSequenceClassification"]}}
+    w = [x for x in exec_to_ir.to_ir(exec_to_ir.recognize(b)).warnings if "arbitrary among" in x]
+    w0 = [x for x in exec_to_ir.to_ir(exec_to_ir.recognize(bundle_of())).warnings if "arbitrary among" in x]
+    ok = len(w) == 1 and not w0
+    print(f"{'ok  ' if ok else 'FAIL'} class_ambiguous warning: {len(w)} with the tie, {len(w0)} without")
+    if not ok: fails.append("class_ambiguous warning")
     for name, patch in MUTANTS.items():
         ok, why = drawn(bundle_of(patch))
         print(f"{'FAIL' if ok else 'ok  '} {name}: {'DRAWN (a false drawing)' if ok else 'refused: ' + why[:150]}")
         if ok: fails.append(name)
-    print(f"\n{len(MUTANTS) + 2 - len(fails)}/{len(MUTANTS) + 2} as expected")
+    print(f"\n{len(MUTANTS) + 3 - len(fails)}/{len(MUTANTS) + 3} as expected")
     sys.exit(1 if fails else 0)
 
 
