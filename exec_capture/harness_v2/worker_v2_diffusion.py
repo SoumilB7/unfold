@@ -8,6 +8,7 @@ os.environ.setdefault("TRANSFORMERS_VERBOSITY", "error"); os.environ.setdefault(
 HERE = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, HERE)
 import torch
 import noweights; noweights.install()
+import diffusion_rules
 torch.set_num_threads(int(os.environ.get("BENCH_THREADS", "2")))
 import transformers, diffusers
 from huggingface_hub import HfApi, hf_hub_download
@@ -186,7 +187,12 @@ save()
 container = torch.nn.ModuleDict(models)
 
 # ---- the pipeline's own __call__, recorded end to end ------------------------------------------------------
-def run_pipeline(height, width, prompt):
+GRADED_VARIANT = {}                                  # call label -> (kind, dim) of the attempt that completed
+
+
+def run_pipeline(height, width, prompt, label="first", only=None):
+    """One graded pipeline call. only=(kind, dim): repeat exactly that input variant (the stability call repeats the
+    first call's graded inputs, so the two calls are comparable); no ladder of its own."""
     kwargs = {}
     params = inspect.signature(pcls.__init__).parameters
     for k in params:
@@ -200,6 +206,7 @@ def run_pipeline(height, width, prompt):
         pipe = pcls(**kwargs)
     except Exception as e:
         rec.remove_hooks()
+        _net_fail(e, "pipeline assembly")                   # an outage is not evidence about the model (re-run)
         return rec, None, f"pipeline could not be assembled: {type(e).__name__}: {str(e)[:200]}", {}, {}
     rec.remove_hooks()                              # each call attempt below records with its own recorder
     sig = inspect.signature(pcls.__call__).parameters
@@ -258,38 +265,50 @@ def run_pipeline(height, width, prompt):
             if isinstance(v, list) and v and isinstance(v[0], Image.Image) and kind in ("rgba", "gray"):
                 return [conv(x) for x in v]
             return v
+        base = dict(ck)
+        if kind in ("steps4", "steps10"):                # a scheduler may need more than 2 steps (e.g. PNDM's PRK phase)
+            n_ = 4 if kind == "steps4" else 10
+            base["num_inference_steps"] = n_
+            if "prior_num_inference_steps" in base: base["prior_num_inference_steps"] = n_
         out = {}
         drop = set()
-        if kind == "novideo": drop = {k_ for k_ in ck if "video" in k_ and sig[k_].default is not inspect.Parameter.empty}
-        if kind == "noimage": drop = {k_ for k_ in ck if "image" in k_ and sig[k_].default is not inspect.Parameter.empty}
+        if kind == "novideo": drop = {k_ for k_ in base if "video" in k_ and sig[k_].default is not inspect.Parameter.empty}
+        if kind == "noimage": drop = {k_ for k_ in base if "image" in k_ and sig[k_].default is not inspect.Parameter.empty}
         if kind == "deflen": drop = {"max_sequence_length"}
         if kind == "deflen_frames": drop = {"max_sequence_length", "num_frames"}
-        for k_, v_ in ck.items():
+        for k_, v_ in base.items():
             if k_ in drop: continue
             if isinstance(v_, tuple) and v_ and v_[0] == "__EMBED__":
                 out[k_] = torch.zeros(1, dim or embed_dims[0])
             else:
                 out[k_] = conv(v_)
         return out
-    best = None
-    ladder = [("base", None)] + [("base", d) for d in embed_dims[1:4]]
-    tried = []
+    best, best_i = None, None
+    has_embed = any(isinstance(v, tuple) for v in ck.values())
+    ladder = [only] if only else diffusion_rules.initial_ladder(embed_dims, has_embed)
+    tried, tried_errors = [], []
     while ladder:
         kind, dim = ladder.pop(0)
         tried.append(f"{kind}:{dim}" if dim else kind)
         res = _attempt(pipe, _variant(kind, dim), sig)
-        if best is None or len(res[0].nodes) > len(best[0].nodes): best = res
+        nb = diffusion_rules.pick_attempt(best, res)              # a completed call is THE graded call
+        if nb is res: best_i = len(tried) - 1
+        best = nb
         err = res[2] or ""
-        if not err: break
-        if "has no len()" in err and not any(t.startswith("list") for t in tried): ladder = [("list", dim), ("nested", dim)] + ladder
-        elif ("channel" in err.lower()) and not any(t.startswith("rgba") for t in tried): ladder = [("rgba", dim), ("gray", dim)] + ladder
-        elif ("simultaneously" in err or "only one of" in err.lower()) and "novideo" not in tried:
-            ladder = [("novideo", dim), ("noimage", dim)] + ladder
-        elif "must match the size" in err and "deflen" not in tried:
-            ladder = [("deflen", dim), ("deflen_frames", dim)] + ladder
-        elif not any(isinstance(v, tuple) for v in ck.values()) and not ladder: break
-        if len(tried) >= 7: break
+        tried_errors.append(err[:240] or None)                    # why each candidate failed (None = completed)
+        if not err:
+            GRADED_VARIANT[label] = (kind, dim)
+            break
+        if only: break
+        ladder, stop = diffusion_rules.extend_ladder(err, tried, ladder, dim, "num_inference_steps" in sig, has_embed)
+        if stop or len(tried) >= diffusion_rules.MAX_ATTEMPTS: break
+    done = best is not None and not best[2]
     R.setdefault("pipeline_input_variants_tried", tried)
+    R.setdefault("pipeline_variants", {})[label] = {
+        "tried": tried, "errors": tried_errors, "graded": tried[best_i] if done else None,
+        # all attempts failed: the one kept as evidence (most ops recorded) supplies the stop reason and the ops
+        "graded_failed": tried[best_i] if not done and best_i is not None else None,
+        "repeats_first_call": bool(only)}
     R.setdefault("pipeline_call_args", {k: (type(v).__name__ if not isinstance(v, tuple) else "embed-zeros")
                                         for k, v in ck.items() if k in sig})
     return best
@@ -326,6 +345,7 @@ def _attempt(pipe, ck, sig):
         with torch.no_grad(), math_attention(), rec:
             out = pipe(**{k: v for k, v in ck.items() if k in sig})
     except Exception as e:
+        _net_fail(e, "pipeline call")                       # an outage is not evidence about the model (re-run)
         tb = traceback.extract_tb(e.__traceback__)
         lib = [f for f in tb if "site-packages/diffusers/" in f.filename or "site-packages/transformers/" in f.filename]
         f = lib[-1] if lib else tb[-1]
@@ -341,7 +361,8 @@ def _attempt(pipe, ck, sig):
 rec_a, out_a, stop_a, calls_a, steps_a = run_pipeline(128, 128, "a photo of a cat")
 R["pipeline_call"] = {"stopped_at": stop_a, "component_calls": calls_a, "scheduler": steps_a}
 save()
-rec_b, out_b, stop_b, _, _ = run_pipeline(128, 128, "a watercolor painting of a lighthouse at dusk, soft light")
+rec_b, out_b, stop_b, _, _ = run_pipeline(128, 128, "a watercolor painting of a lighthouse at dusk, soft light", "stability",
+                                          only=GRADED_VARIANT.get("first"))
 extra = {}
 for cn, m in models.items():                               # entry points the generation path never used
     # (whether or not the pipeline call reached this component: a call that stopped early never touched it)
@@ -521,17 +542,26 @@ for cn, m in models.items():
     opq = collections.Counter(n.func for r in recs for n in r.nodes if n.module.split(".")[0] == cn and __import__("dag").OPAQUE.search(n.func))
     checks["T4_no_opaque_ops"] = {"pass": not opq, "opaque_ops": dict(opq)}
     sa, sb = norm(rec_a.nodes, cn), norm(rec_b.nodes, cn)
+    d2_ran = True
     if cn in direct:                                      # structure stability from the two direct runs
         d1, d2 = direct[cn]
-        sa = norm(d1.nodes, cn); sb = norm(d2.nodes, cn) if d2 is not None else []
-    checks["T5_stable_structure"] = {"pass": bool(sa) and sa == sb, "ops_a": len(sa), "ops_b": len(sb)}
+        sa = norm(d1.nodes, cn); sb = norm(d2.nodes, cn) if d2 is not None else []; d2_ran = d2 is not None
+    _pv = R.get("pipeline_variants") or {}
+    checks["T5_stable_structure"] = diffusion_rules.t5_check(
+        sa, sb, cn in direct, d2_ran, stop_a, stop_b,
+        (_pv.get("first") or {}).get("graded"), (_pv.get("stability") or {}).get("graded"))
     C["checks"] = checks
-    C["failed_checks"] = [k for k, v in checks.items() if not v["pass"]]
-    C["verdict"] = "FULL" if not C["failed_checks"] else ("PARTIAL" if used else "FAIL")
+    C["failed_checks"], C["not_evaluated_checks"] = diffusion_rules.component_checks(checks)
+    C["verdict"] = diffusion_rules.component_verdict(C["failed_checks"], C["not_evaluated_checks"], used)
     verdicts.append(C["verdict"])
     sub = [n for n in rec_a.nodes if n.module.split(".")[0] == cn]
     C["ops"] = len(sub)
 R["stability_run_stopped_at"] = stop_b
+_ne = {cn: C["not_evaluated_checks"] for cn, C in R["components"].items() if C.get("not_evaluated_checks")}
+if _ne:   # a check that could not be evaluated is an unknown, listed with its reason (INTENT.md: never FULL)
+    UNKNOWNS.append({"predicate": "G5", "what": "component checks not evaluated",
+                     "items": [f"{cn}: {k} ({(R['components'][cn]['checks'][k].get('note') or '')[:120]})"
+                               for cn, ks in _ne.items() for k in ks], "count": sum(map(len, _ne.values()))})
 if stop_a and stop_a.startswith("pipeline could not be assembled"):
     errs = {cn: C.get("error") for cn, C in R["components"].items() if C.get("error")}
     if any("not in installed libraries" in (e or "") for e in errs.values()):
@@ -540,11 +570,9 @@ if stop_a and stop_a.startswith("pipeline could not be assembled"):
         verdicts = ["FAIL"]; R["reason"] = "repo incomplete (component files missing): " + "; ".join(f"{k}: {v[:80]}" for k, v in errs.items())[:350]
     else:
         verdicts = ["FAIL"]; R["reason"] = stop_a[:350]
-if stop_a and not R.get("reason"):
-    R["reason"] = f"pipeline call stopped: {stop_a[:300]}"
-R["verdict"] = ("OUT" if verdicts == ["OUT"] else "FULL" if verdicts and all(v == "FULL" for v in verdicts)
-                else ("PARTIAL" if any(v in ("PARTIAL", "FULL") for v in verdicts) else "FAIL"))   # FAIL only if nothing was captured
-R["failed_components"] = {cn: R["components"][cn]["failed_checks"] for cn in models if R["components"][cn].get("failed_checks")}
+# an unsuccessful graded call (first OR stability) never receives an overall FULL (EXECUTION_PLAN P0.1); component
+# results stay as they are and are reported separately
+diffusion_rules.finalize(R, verdicts, stop_a, stop_b, list(models))
 # one checkpoint revision (INTENT.md G6): what the run's cache actually holds
 R["revision_pin"] = dict(noweights.PIN_LOG, outcome=noweights.revision_outcome())
 _bad = {r_: o for r_, o in R["revision_pin"]["outcome"].items() if not o["ok"]}

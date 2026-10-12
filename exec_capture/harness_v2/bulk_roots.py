@@ -37,19 +37,19 @@ def features(R):
     comps = {cn: C.get("checks") or {} for cn, C in (R.get("components") or {}).items() if C.get("checks") and C.get("verdict") != "FULL"}
     for cn, cks in ([("", ck)] if not diff else list(comps.items())):
         t1 = cks.get("T1_weights", {})
-        if t1 and not t1.get("pass", True):
+        if t1 and t1.get("pass", True) is False:
             if t1.get("no_ground_truth"): fs.append(("T1", "no_ground_truth", "", ""))
             if t1.get("library_declared_unbuilt_numel") or t1.get("library_declared_unbuilt"): fs.append(("T1", "declared_unbuilt", "", ""))
             if t1.get("shipped_but_not_built_by_model"): fs.append(("T1", "ckpt_part_not_in_class", "", ""))
             if t1.get("shipped_weights_unused"): fs.append(("T1", "shipped_unused", "", ""))
         t2 = cks.get("T2_modules", {})
-        if t2 and not t2.get("pass", True):
+        if t2 and t2.get("pass", True) is False:
             for g in list((t2.get("never_executed_groups") or {}))[:2]:
                 leaf = [p for p in g.split(".") if p not in ("N",)]
                 fs.append(("T2_never_ran", (leaf[-1] if leaf else g)[:30], (cn + ":" if cn else "") + ".".join(leaf[:2])[:40], ""))
         for k in ("T3_closed_dataflow", "T4_no_opaque_ops", "T5_stable_structure"):
             v = cks.get(k, {})
-            if v and not v.get("pass", True): fs.append((k[:2], "note" if v.get("note") else "diff", "", ""))
+            if v and v.get("pass", True) is False: fs.append((k[:2], "note" if v.get("note") else "diff", "", ""))
     return fs
 
 ftab = collections.Counter(); ex = collections.defaultdict(list); per_model = {}

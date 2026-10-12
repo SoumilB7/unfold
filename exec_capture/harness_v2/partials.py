@@ -10,6 +10,8 @@ Cause taxonomy (per failed check; a model can have several):
   T3 external_tensor          REAL  a tensor enters from outside PyTorch (e.g. numpy-built attention pattern)
   T5 input_dependent          REAL  op structure differs for two same-shape inputs (early exit, routing loops)
   pipeline_component          (diffusion) per-component version of the above
+  pipeline call_stopped       UNCLEAR the graded pipeline call (first or stability) did not complete (P0.1)
+A check with pass None was not evaluated (an unknown, not a failure): it yields no cause.
 """
 import json, glob, os, re, collections
 
@@ -25,7 +27,7 @@ def classify_checks(checks, passes=None, notes=None):
     t1 = checks.get("T1_weights", {})
     t2 = checks.get("T2_modules", {})
     never = set((t2.get("never_executed_groups") or {}).keys())
-    if t1 and not t1.get("pass", True):
+    if t1 and t1.get("pass", True) is False:
         if t1.get("no_ground_truth"):
             out.append(("T1", "no_ground_truth", "GAP", "weights not in safetensors/.bin", 0))
         if t1.get("library_declared_unbuilt_numel") or t1.get("library_declared_unbuilt"):
@@ -38,15 +40,15 @@ def classify_checks(checks, passes=None, notes=None):
             owner_n = owner.replace(".*", ".N")
             ran = not any(owner_n.startswith(ng) or ng.startswith(owner_n) for ng in never)
             out.append(("T1", "unused_weight_module_ran" if ran else "unused_path_not_run", "REAL" if ran else "GAP?", g, n))
-    if t2 and not t2.get("pass", True):
+    if t2 and t2.get("pass", True) is False:
         for g, c in list((t2.get("never_executed_groups") or {}).items())[:4]:
             out.append(("T2", "path_not_run", "GAP?", g, c))
     t3 = checks.get("T3_closed_dataflow", {})
-    if t3 and not t3.get("pass", True):
+    if t3 and t3.get("pass", True) is False:
         ex = (t3.get("examples") or [[""]])[0]
         out.append(("T3", "external_tensor", "REAL", " ".join(map(str, ex))[:90], t3.get("external_nonscalar_tensors", 0)))
     t5 = checks.get("T5_stable_structure", {})
-    if t5 and not t5.get("pass", True):
+    if t5 and t5.get("pass", True) is False:          # None = not evaluated (e.g. truncated pipeline runs): no cause
         if t5.get("note"):
             out.append(("T5", "second_input_not_run", "GAP", t5["note"], 0))
         else:
@@ -54,7 +56,7 @@ def classify_checks(checks, passes=None, notes=None):
             out.append(("T5", "input_dependent", "REAL", f"{fd.get('a')} vs {fd.get('b')}"[:90], 0))
     for k in ("T4_no_opaque_ops",):
         v = checks.get(k, {})
-        if v and not v.get("pass", True):
+        if v and v.get("pass", True) is False:
             out.append(("T4", "opaque_op", "REAL", str(v.get("opaque_ops"))[:80], 0))
     return out
 
@@ -75,6 +77,11 @@ for f in glob.glob(os.path.join(RES, "**", "*.json"), recursive=True):
         for cn, C in R["components"].items():
             if C.get("checks") and C.get("verdict") != "FULL":
                 causes += [(c[0], c[1], c[2], f"{cn}: {c[3]}", c[4]) for c in classify_checks(C["checks"])]
+        pf = (R.get("failed_components") or {}).get("(pipeline)")
+        if pf:   # the graded pipeline call itself did not complete (P0.1): name it with where it stopped
+            st = R.get("pipeline_stop") or {}
+            causes.append(("pipeline", "call_stopped", "UNCLEAR",
+                           f"{','.join(pf)}: {(st.get('first') or st.get('stability') or R.get('reason') or '')[:100]}", 0))
     else:
         causes = classify_checks(R.get("checks") or {}, R.get("passes"), R.get("input_notes"))
         # a modality pass that errored means its tower never got input: unused weights there are a harness gap
