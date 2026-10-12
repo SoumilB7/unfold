@@ -18,10 +18,10 @@ torch.manual_seed(0)
 ORIG_ROT, ORIG_NORM, ORIG_HALF = LL.apply_rotary_pos_emb, LL.LlamaRMSNorm.forward, LL.rotate_half
 
 
-def bundle_of(patch=None, rope=None):
+def bundle_of(patch=None, rope=None, head_dim=16):
     LL.apply_rotary_pos_emb, LL.LlamaRMSNorm.forward, LL.rotate_half = ORIG_ROT, ORIG_NORM, ORIG_HALF
     c = transformers.LlamaConfig(vocab_size=32, hidden_size=64, intermediate_size=96, num_hidden_layers=3,
-                                 num_attention_heads=4, num_key_value_heads=2, head_dim=16, max_position_embeddings=128,
+                                 num_attention_heads=4, num_key_value_heads=2, head_dim=head_dim, max_position_embeddings=128,
                                  **({"rope_parameters": rope} if rope else {}))
     m = transformers.LlamaForCausalLM._from_config(c, attn_implementation="eager", dtype=torch.float32).eval()
     if patch: patch(m)
@@ -120,6 +120,32 @@ def main():
         ok, why = drawn(bundle_of(**kw))
         print(f"{'ok  ' if ok else 'FAIL'} {name}: {'drawn' if ok else 'REFUSED ' + why[:200]}")
         if not ok: fails.append(name)
+    # short frequency tables (tiny test models): head_dim 4 -> a 2-entry table still proves its base; one entry cannot
+    L3 = {"rope_type": "llama3", "rope_theta": 500000.0, "factor": 8.0, "low_freq_factor": 1.0,
+          "high_freq_factor": 4.0, "original_max_position_embeddings": 64}
+    def theta_of(b):
+        try:
+            return exec_to_ir.recognize(b)["theta"], ""
+        except exec_to_ir.NotDrawn as e:
+            return None, str(e)
+    th, why = theta_of(bundle_of(head_dim=4))
+    ok = th is not None and abs(th - 10000) < 1
+    print(f"{'ok  ' if ok else 'FAIL'} control (head_dim 4, 2-entry table): {'drawn, theta ' + str(th) if th else 'REFUSED ' + why[:150]}")
+    if not ok: fails.append("control (head_dim 4)")
+    th, why = theta_of(bundle_of(rope=L3, head_dim=4))
+    ok = th is not None and abs(th - 500000) < 50
+    print(f"{'ok  ' if ok else 'FAIL'} control (head_dim 4, llama3 scaling): {'drawn, theta ' + str(th) if th else 'REFUSED ' + why[:150]}")
+    if not ok: fails.append("control (head_dim 4, llama3)")
+    def l3_short_mut(m):                               # the scaled entry no longer follows the declared llama3 rescale
+        m.model.rotary_emb.inv_freq.__setitem__(1, m.model.rotary_emb.inv_freq[1] * 1.3)
+    th, why = theta_of(bundle_of(l3_short_mut, rope=L3, head_dim=4))
+    ok = th is None
+    print(f"{'ok  ' if ok else 'FAIL'} head_dim 4 llama3, frequency 1 x1.3: {'refused: ' + why[:120] if ok else 'DRAWN (a false drawing)'}")
+    if not ok: fails.append("head_dim 4 llama3 mutant")
+    th, why = theta_of(bundle_of(head_dim=2))
+    ok = th is None and "one value" in why
+    print(f"{'ok  ' if ok else 'FAIL'} head_dim 2 (one-entry table) refused with the true reason: {why[:150] or 'DRAWN'}")
+    if not ok: fails.append("head_dim 2 reason")
     # P0.4: an executed class that is arbitrary among tied classes is stated on the page (never silent)
     b = bundle_of(); b["decisions"] = {"class_ambiguous": {"tied": ["LlamaForCausalLM", "LlamaForSequenceClassification"]}}
     w = [x for x in exec_to_ir.to_ir(exec_to_ir.recognize(b)).warnings if "arbitrary among" in x]
@@ -131,7 +157,7 @@ def main():
         ok, why = drawn(bundle_of(patch))
         print(f"{'FAIL' if ok else 'ok  '} {name}: {'DRAWN (a false drawing)' if ok else 'refused: ' + why[:150]}")
         if ok: fails.append(name)
-    print(f"\n{len(MUTANTS) + 3 - len(fails)}/{len(MUTANTS) + 3} as expected")
+    print(f"\n{len(MUTANTS) + 7 - len(fails)}/{len(MUTANTS) + 7} as expected")
     sys.exit(1 if fails else 0)
 
 

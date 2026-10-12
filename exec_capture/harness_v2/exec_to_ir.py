@@ -699,7 +699,12 @@ def _recognize(bundle):
         if len(per_layer) > 1:
             raise NotDrawn(f"layers rotate with different frequency tables ({sorted(per_layer)}): per-layer RoPE is "
                            "not drawn yet")
-        names = [n_ for n_ in _theta_bufs(layer_ids[0]) if n_ in bufs and len(bufs[n_]["values"]) > 2]
+        # a frequency table needs entry 0 (must be 1) and entry 1 (gives the base): 2 entries suffice (head_dim 4)
+        fed = [n_ for n_ in _theta_bufs(layer_ids[0]) if n_ in bufs]
+        names = [n_ for n_ in fed if len(bufs[n_]["values"]) >= 2]
+        if fed and not names:
+            raise NotDrawn(f"the buffers feeding the rotation ({fed[:3]}) hold one value each: one entry cannot show the "
+                           "frequency base, so the rotation is not drawn")
         if len(names) != 1:
             raise NotDrawn(f"the rotation reads {len(names)} recorded frequency tables ({names[:3]}): its "
                            "frequencies cannot be checked, so the rotation is not drawn")
