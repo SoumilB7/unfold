@@ -130,6 +130,7 @@ def _report(A, cls, aux_keys=(), **kw):
         return r
     def traced_finalize(model_, load_config, loading_info):
         pre.update(missing=set(loading_info.missing_keys), unexpected=set(loading_info.unexpected_keys),
+                   mismatched={str(x[0]) if isinstance(x, (tuple, list)) else str(x) for x in loading_info.mismatched_keys},
                    conversion_errors={k: str(v)[-300:] for k, v in loading_info.conversion_errors.items()},
                    quantizer=type(load_config.hf_quantizer).__name__ if load_config.hf_quantizer else None)
         tr = loadtrace.InitTracer(); tracer_box["t"] = tr
@@ -137,9 +138,24 @@ def _report(A, cls, aux_keys=(), **kw):
             return orig_fin(model_, load_config, loading_info)
     CML.set_param_for_module = recording_spf
     MU.PreTrainedModel._finalize_model_loading = staticmethod(traced_finalize)
-    try:
+    def _load(ignore):
         with torch.device("meta"):
-            model, info = cls.from_pretrained(d, output_loading_info=True, device_map="meta", ignore_mismatched_sizes=True, **kw)
+            return cls.from_pretrained(d, output_loading_info=True, device_map="meta", ignore_mismatched_sizes=ignore, **kw)
+    refusal, refused_keys = None, set()
+    try:
+        try:
+            model, info = _load(False)                     # exactly as a user loads it (EXECUTION_PLAN P0.5)
+        except RuntimeError as e:
+            if not pre.get("mismatched"):
+                raise
+            # the library itself refuses this checkpoint for this class (mismatched shapes). A forced load follows only
+            # as diagnostic evidence (which keys it discards, how it fills them): it never certifies anything.
+            refused_keys = set(pre["mismatched"])
+            refusal = {"error": f"{type(e).__name__}: {str(e)[:300]}", "mismatched": sorted(refused_keys)[:50],
+                       "count": len(refused_keys)}
+            for box in (opened, renamed_to, set_ids, pre, tracer_box): box.clear()
+            tie_unchecked.clear()
+            model, info = _load(True)
     finally:
         MU.safe_open = orig
         CML.rename_source_key = orig_rename
@@ -223,6 +239,19 @@ def _report(A, cls, aux_keys=(), **kw):
             if hit is not None and free[hit] == rest_read[k]:       # exactly the target's size, one key per target
                 tie_dups.append(k); del rest_read[k]; free.pop(hit)
     rest_state = {k: n for k, n in state.items() if k not in read}
+    # quantized codes the installed library does not interpret (no quantizer), from the checkpoint headers alone
+    # (config.json may not say: metadata can live elsewhere, or be stale)
+    float_params = {n_ for n_, p_ in model.named_parameters(remove_duplicate=False) if p_.is_floating_point()}
+    qev = quantized_evidence(read, {k: renamed_to.get(k) or {k} for k in read}, float_params, set(sd),
+                             {b.rsplit(".", 1)[-1] for b in buffer_names}, aux, declared)
+    # refused keys the quantized codes do not explain (an unrelated float mismatch is still the library's refusal)
+    ev_keys = {k for k, _ in qev}
+    _srcs = {}
+    for s_, names in renamed_to.items():
+        for n_ in names: _srcs.setdefault(n_, set()).add(s_)
+    refusal_unexplained = sorted(k for k in (refused_keys if refusal else ()) if not ((_srcs.get(k) or {k}) & ev_keys))
+    quantizer = pre.get("quantizer")
+    load_state = load_state_of(qev, quantizer, refusal)
     try:
         provenance = _provenance(model, info, set_ids, pre, tracer_box.get("t"), tie_unchecked, headers, opened, d)
     except Exception as e:                  # a bug here must not throw away the library's load report: say so instead
@@ -241,7 +270,12 @@ def _report(A, cls, aux_keys=(), **kw):
             "missing_param_numel": sum(pshape.get(k, 0) for k in info.get("missing_keys", [])),
             "reported_sources": {k: sorted(v) for k, v in src_of.items()},
             "tie_value_check_unevaluable": tie_unchecked, "tie_unchecked_shipped": sorted(tie_dups),
-            "stub_disk_kb": du, "provenance": provenance}
+            "stub_disk_kb": du, "provenance": provenance,
+            # load authority state (P0.5): loaded | refused | quantized_interpretation_unknown; a refused load's fields
+            # come from the forced diagnostic recovery (evidence only)
+            "load_state": load_state, "refusal": refusal, "forced_diagnostic_recovery": refusal is not None,
+            "quantized_evidence": [list(x) for x in qev[:20]], "quantized_evidence_count": len(qev),
+            "refusal_unexplained_by_quantization": refusal_unexplained[:50]}
 
 
 def _provenance(model, info, set_ids, pre, tracer, tie_unchecked, headers, opened, d):
@@ -255,7 +289,11 @@ def _provenance(model, info, set_ids, pre, tracer, tie_unchecked, headers, opene
     kept_ids = {id(sd[k]) for k in kept}
     tied = dict(getattr(model, "all_tied_weights_keys", None) or {})
     nonloaded = {}
+    mism = set(pre.get("mismatched") or ())      # filled only by a forced diagnostic load (the library refused these)
     for k, t in sd.items():
+        if k in mism:
+            nonloaded[k] = {"kind": "param" if k in pnames else "buffer", "numel": t.numel(), "class": "MISMATCHED_DISCARDED"}
+            continue
         if k in kept:
             w = tracer.writes.get(id(t), []) if tracer else []
             if any(kd == "random" for _, _, kd in w):   # loaded, then re-randomised in place by the library's init code
@@ -277,6 +315,18 @@ def _provenance(model, info, set_ids, pre, tracer, tie_unchecked, headers, opene
             st, fns = loadtrace.classify(tracer.writes.get(id(t), []) if tracer else [])
             c = "INIT_" + st if st not in ("UNINITIALIZED", "UNPROVEN") else st
             nonloaded[k] = {"kind": kind, "class": c, "numel": t.numel(), "init_fns": fns[:6]}
+    # a tied alias the library replaced by its source carries the SOURCE's provenance when the source itself was not
+    # loaded (e.g. a shipped alias head replaced by an unshipped, re-initialised source: random, not "shipped twice")
+    # (random / unproven / discarded sources pass their class on; a source filled by deterministic or computed init means
+    #  the shipped alias values were discarded for non-checkpoint values: never certified, an unknown; classes are read
+    #  from a snapshot, so the result does not depend on iteration order)
+    orig = {k: v["class"] for k, v in nonloaded.items()}
+    for k, v in nonloaded.items():
+        src = v.get("tie_source")
+        if orig[k] in ("TIED_REPLACED", "TIED_BOTH_SHIPPED_VALUE_UNVERIFIED") and src in orig \
+                and orig[src] not in ("TIED_REPLACED", "TIED_BOTH_SHIPPED_VALUE_UNVERIFIED"):
+            inherit = orig[src] in RANDOM_CLASSES + ("UNPROVEN", "MISMATCHED_DISCARDED")
+            v["class"], v["inherited_from"] = (orig[src] if inherit else "TIED_ALIAS_DISCARDED"), src
     # weight files the library never opened: a file whose every tensor shape is already among the read tensors'
     # shapes (multiset inclusion) only duplicates them (e.g. a second export); anything else is unexamined weight
     read_named = {(k, s) for f in opened for k, (s, _) in headers.get(f, {}).items()}
@@ -307,6 +357,64 @@ def _provenance(model, info, set_ids, pre, tracer, tie_unchecked, headers, opene
 
 
 RANDOM_CLASSES = ("INIT_RANDOM", "UNINITIALIZED")
+QUANT_INT = ("I8", "U8", "I16", "U16", "I32", "U32")      # integer formats packed weights use (I64 / BOOL are tables)
+
+
+def quantized_evidence(read, targets, float_params, state_names, buffer_parts, aux, ignorable=lambda k: False):
+    """Checkpoint tensors that are quantized codes, from headers and the library's own placement, never from names of
+    models or quantization methods:
+      - an integer tensor (I8..U32) that lands in a floating parameter, or lands nowhere and is not a stored table
+        of a buffer slot the model has;
+      - an FP8 tensor that lands in a floating parameter or nowhere while its module ships an auxiliary (scale) tensor
+        (unscaled FP8 converts exactly; scaled FP8 read as plain floats is the codes, not the values).
+    read: {file key: (shape, dtype)}; targets: {file key: model names the library mapped it to}; float_params: floating
+    parameter names; state_names: every state-dict name; buffer_parts: last name parts of the model's buffers;
+    aux: the harness's auxiliary keys; ignorable(k): the library DECLARES it ignores k (_keys_to_ignore_on_load_*), so it
+    is not the model's weight. An integer/bool 1x1xNxN table is a stored mask, not codes. Returns [(file key, why)]."""
+    aux_mods = {a.rpartition(".")[0] for a in aux}
+    out = []
+    for k in sorted(read):
+        s_, d_ = read[k]
+        if k in aux or ignorable(k):
+            continue
+        if len(s_) == 4 and s_[0] == s_[1] == 1 and s_[2] == s_[3] and (d_ in QUANT_INT or d_ in ("I64", "BOOL")):
+            continue                                       # a stored square mask (e.g. a causal attention.bias)
+        lands = targets.get(k) or {k}
+        into_float = any(t in float_params for t in lands)
+        nowhere = not any(t in state_names for t in lands)
+        if not (into_float or nowhere):
+            continue                                       # lands in a buffer / integer slot: a stored table
+        where = "into a floating parameter" if into_float else "placed nowhere"
+        if d_ in QUANT_INT and not (nowhere and k.rsplit(".", 1)[-1] in buffer_parts):
+            out.append((k, f"{d_} codes {where}"))
+        elif str(d_).startswith("F8") and k.rpartition(".")[0] in aux_mods:
+            out.append((k, f"{d_} {where}, with a scale tensor in the same module"))
+    return out
+
+
+def load_state_of(quantized_ev, quantizer, refusal):
+    """quantized codes with no quantizer -> quantized_interpretation_unknown (whatever else happened: a refusal of
+    packed codes is a consequence); else the library's own refusal -> refused; else loaded."""
+    if quantized_ev and not quantizer:
+        return "quantized_interpretation_unknown"
+    return "refused" if refusal else "loaded"
+
+
+def authority(rep):
+    """What a library load report may certify (P0.5). Returns {"certifies": bool, "state", "unknown": text or None}.
+    loaded: certifies. refused: the report is the forced diagnostic recovery; it still names the discarded keys (the
+    refusal fails T1 through g1_assess's library_refuses_load), it certifies nothing else on its own.
+    quantized_interpretation_unknown: no quantizer for quantized codes: the load is not the checkpoint's meaning."""
+    if not rep or "error" in rep:
+        return {"certifies": False, "state": None, "unknown": None, "fail": {}}
+    st = rep.get("load_state", "loaded")
+    if st == "quantized_interpretation_unknown":
+        ev = rep.get("quantized_evidence") or []
+        un = rep.get("refusal_unexplained_by_quantization") or []
+        return {"certifies": False, "state": st, "fail": ({"library_refuses_load": list(un)} if un else {}),
+                "unknown": f"the installed library has no quantizer for this checkpoint's quantized tensors "
+                           f"({rep.get('quantized_evidence_count', len(ev))}: e.g. {', '.join(e[0] + ' ' + e[1] for e in ev[:2])})"}
+    return {"certifies": True, "state": st, "unknown": None, "fail": {}}
 TIE_UNVERIFIED = ("TIED_BOTH_SHIPPED_VALUE_UNVERIFIED", "TIED_REPLACED")
 
 
@@ -326,7 +434,9 @@ def g1_assess(prov, used, exec_shapes, buffer_group):
     nl = prov.get("nonloaded") or {}
     rnd = sorted(k for k, v in nl.items() if v["class"] in RANDOM_CLASSES)
     fail = {"random_init_executed": [k for k in rnd if k in used],                 # random values flow into the run
-            "conversion_errors": sorted(prov.get("conversion_errors") or {})}
+            "conversion_errors": sorted(prov.get("conversion_errors") or {}),
+            # the library refuses the default load (mismatched shapes): its own refusal, not a random fill (P0.5)
+            "library_refuses_load": sorted(k for k, v in nl.items() if v["class"] == "MISMATCHED_DISCARDED")}
     unknowns = []
     def unk(pred, what, items):
         if items: unknowns.append({"predicate": pred, "what": what, "items": list(items)[:20], "count": len(items)})
@@ -336,6 +446,8 @@ def g1_assess(prov, used, exec_shapes, buffer_group):
     unk("G1", "tied tensors shipped twice: the library ties them only if their values are equal (not checkable without "
         f"the weights; config.json tie_word_embeddings={prov.get('raw_tie_word_embeddings')}, library "
         f"{prov.get('library_tie_word_embeddings')})", sorted(k for k, v in nl.items() if v["class"] in TIE_UNVERIFIED))
+    unk("G1", "shipped tensors discarded for their tie source's non-checkpoint initialisation (the tie source is not "
+        "shipped)", sorted(k for k, v in nl.items() if v["class"] == "TIED_ALIAS_DISCARDED"))
     unk("G1", "weight files the library never opens that are not duplicates of what it reads",
         [f"{x['file']} ({x['tensors']} tensors)" for x in prov.get("files_not_opened") or [] if not x["duplicate"]])
     ls = prov.get("state_shapes") or {}

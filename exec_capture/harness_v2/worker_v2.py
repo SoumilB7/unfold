@@ -319,6 +319,7 @@ def _lib_score(rep):
     """(file side, model side): file tensors the library cannot place (unexpected / mismatched, not integer tables;
     silently dropped), and parameters it leaves uninitialized. None when there is no report."""
     if not rep or "error" in rep: return None
+    if not libload.authority(rep)["certifies"]: return None   # a load that certifies nothing decides nothing (P0.5)
     srcs = rep.get("reported_sources", {})
     def _int_table(k):                                # integer/bool tables and counters (renamed or not)
         ss = srcs.get(k) or [k]
@@ -1030,6 +1031,20 @@ if T:
                 fail("FAIL", f"network: library load report unavailable ({network_error(e)}: {str(e)[:120]})", "library load")
         if LIB and "error" in LIB:                 # e.g. no safetensors files: say so instead of looking like a legacy row
             R["library_load_report_error"] = f"not run: {LIB['error']}"
+    # what the library load may certify (P0.5): loaded / refused (forced diagnostic evidence) / quantized codes the
+    # installed library cannot interpret (not certified: the matcher path below, with the diagnostic kept)
+    _AUTH_ST = libload.authority(LIB) if LIB is not None else {"certifies": False, "state": None, "unknown": None, "fail": {}}
+    if LIB and "error" not in LIB:
+        R["library_load_state"] = LIB.get("load_state")
+        if LIB.get("refusal"):
+            R["library_load_refusal"] = LIB["refusal"]
+    if _AUTH_ST["unknown"]:
+        R["library_load_report_error"] = "not certified: " + _AUTH_ST["unknown"]
+        R["library_load_diagnostic"] = {"state": _AUTH_ST["state"], "quantized_evidence": LIB.get("quantized_evidence"),
+                                        "forced_diagnostic_recovery": LIB.get("forced_diagnostic_recovery"),
+                                        "mismatched": LIB.get("mismatched", [])[:10], "unexpected": len(LIB.get("unexpected", [])),
+                                        "missing": LIB.get("missing", [])[:20], "unaccounted_numel": LIB.get("unaccounted_numel")}
+        LIB = None                                 # evidence kept above; it certifies nothing
     if not LIB or "error" in LIB:
         R["t1_authority"] = "name matcher (no library load report)"
         UNKNOWNS.append({"predicate": "G1", "what": "no library load: which shipped tensors the library consumes, and how "
@@ -1097,7 +1112,7 @@ if T:
         if LIB.get("read_keys"):
             rk = set(LIB["read_keys"])
             R["checkpoint_numel_in_files_library_reads"] = sum(numel(T[k][0]) for k in rk if k in T)
-    _g1f = (G1 or {}).get("fail") or {}
+    _g1f = dict((G1 or {}).get("fail") or {}, **(_AUTH_ST.get("fail") or {}))   # + a refusal the codes do not explain
     _g1l = (G1 or {}).get("leftovers") or {}
     _t1_old = not unused and not un_c and not unbuilt
     checks["T1_weights"] = {
