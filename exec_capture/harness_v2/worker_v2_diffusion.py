@@ -151,7 +151,7 @@ for name, spec in idx.items():
         if cls is not None and inspect.isclass(cls) and issubclass(cls, diffusers.ModelMixin):
             with zero_storage():
                 m = cls.from_config(cls.load_config(repo, subfolder=sub))
-            models[name] = m.float().eval()
+            models[name] = __import__("lowcost").normalise_learned(__import__("lowcost").uniform_float32(m.eval()))   # F07-3
         elif cls is not None and inspect.isclass(cls) and issubclass(cls, transformers.PreTrainedModel):
             # the class the index names, with ITS config type (diffusers loads getattr(lib, class).from_pretrained)
             cc = getattr(cls, "config_class", None)
@@ -164,7 +164,7 @@ for name, spec in idx.items():
                     m = cls._from_config(cfg, attn_implementation="eager", dtype=torch.float32)
                 except (TypeError, ValueError):
                     m = cls._from_config(cfg, dtype=torch.float32)
-            models[name] = m.eval()
+            models[name] = __import__("lowcost").normalise_learned(__import__("lowcost").uniform_float32(m.eval()))   # F07-3
         elif cls is not None:
             objs[name] = cls.from_pretrained(repo, subfolder=sub)
         else:
@@ -582,6 +582,9 @@ if stop_a and stop_a.startswith("pipeline could not be assembled"):
 # results stay as they are and are reported separately
 diffusion_rules.finalize(R, verdicts, stop_a, stop_b, list(models))
 # one checkpoint revision (INTENT.md G6): what the run's cache actually holds
+_zs_unk, _zs_notes = __import__("dag").zero_storage_findings([x for x in models.values() if isinstance(x, torch.nn.Module)])      # F07: zero-weight execution faithfulness (G2)
+UNKNOWNS.extend(_zs_unk)
+if _zs_notes: R["zero_storage_notes"] = _zs_notes
 R["revision_pin"] = dict(noweights.PIN_LOG, outcome=noweights.revision_outcome())
 _bad = {r_: o for r_, o in R["revision_pin"]["outcome"].items() if not o["ok"]}
 if _bad:

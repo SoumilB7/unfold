@@ -4,14 +4,199 @@ Every tensor is mapped to the op that produced it; every op records its input ed
 (op -> op, param, buffer, model input, or EXTERNAL = appeared from outside the recording),
 the module it ran inside, and its scalar constants. Nothing is inferred from names or source text.
 """
-import re, math, weakref, collections
+import re, math, cmath, numbers, weakref, collections
 import torch
 from torch.utils._python_dispatch import TorchDispatchMode
 from torch.utils._pytree import tree_flatten, tree_map
-from lowcost import ZERO_PTRS, HEAVY, BIAS_FIRST
+import lowcost
+from lowcost import ZERO_PTRS, ZERO_REG
+aten = torch.ops.aten
 
 OPAQUE = re.compile(r"(scaled_dot_product|flash|_efficient_attention|cudnn|_fused|fused_|mkldnn_rnn|_cufft)")
 CONTROL_SINKS = {"_local_scalar_dense", "is_nonzero", "equal", "item"}
+
+
+# ---- F07: the zero-skip returns an op's EXACT result without arithmetic, one rule per op (dossier
+#      model-benchmark/_reruns/p2a1_f07). Z(t) = known all-zero (registered zero storage, or by value); F(t) = no inf/nan.
+COW_EVENTS = []          # forward-pass writes that gave a whole zero-storage weight its own storage (F07-1)
+NONFINITE_EVENTS = []    # ops that turned finite inputs into NaN / inf (zero-weight artefact, F07-3)
+ZSW_EVENTS = []          # forward-pass writes through a view of shared zero storage (refused; a G2 unknown)
+
+
+class ZeroStorageWrite(RuntimeError):
+    """A forward-pass write into shared zero storage through a view / alias that cannot be given its own storage."""
+
+
+def is_reg(t):
+    return isinstance(t, torch.Tensor) and t.numel() > 1 and t.untyped_storage().data_ptr() in ZERO_REG
+
+
+def known_zero(t):
+    if not isinstance(t, torch.Tensor) or t.numel() == 0:
+        return False
+    if is_reg(t):
+        return True
+    return t.numel() > 1 and not bool(torch.any(t))
+
+
+def finite(t):
+    if t is None or not isinstance(t, torch.Tensor) or not (t.is_floating_point() or t.is_complex()) or is_reg(t):
+        return True
+    return bool(torch.isfinite(t).all())
+
+
+def product_zero(a, b):
+    """a contracted with b is exactly zero: one factor is all-zero and the other has no inf / nan (0 * inf = nan)."""
+    return (known_zero(a) and finite(b)) or (known_zero(b) and finite(a))
+
+
+def _meta(func, args, kwargs):
+    """The real op's output metadata (shape, dtype, strides), or None when even shape inference rejects the call: the
+    caller then executes it for real (so the user's error is raised, never replaced by zeros)."""
+    m = tree_map(lambda x: x.to("meta") if isinstance(x, torch.Tensor) else x, (args, kwargs))
+    try:
+        return func(*m[0], **m[1])
+    except RuntimeError:
+        if func is not aten._grouped_mm.default:  # only grouped expert matmul's meta kernel needs bf16
+            return None
+        orig = next((a.dtype for a in tree_flatten(args)[0] if isinstance(a, torch.Tensor) and a.is_floating_point()), torch.float32)
+        mb = tree_map(lambda x: x.to("meta", torch.bfloat16) if isinstance(x, torch.Tensor) and x.is_floating_point() else
+                      (x.to("meta") if isinstance(x, torch.Tensor) else x), (args, kwargs))
+        try:
+            o = func(*mb[0], **mb[1])
+        except RuntimeError:
+            return None
+        return o.to(orig) if o.is_floating_point() else o
+
+
+def _zeros_like_meta(mo):
+    return torch.empty_strided(mo.shape, mo.stride(), dtype=mo.dtype).zero_()       # the real op's strides
+
+
+def _filled_like_meta(mo, value):
+    return torch.empty_strided(mo.shape, mo.stride(), dtype=mo.dtype).copy_(value.expand(mo.shape))
+
+
+SKIP_OPS = {aten.mm.default, aten.bmm.default, aten._grouped_mm.default, aten.addmm.default, aten.baddbmm.default,
+            aten.embedding.default, aten.convolution.default}
+
+
+def _one_dtype(args, kwargs):
+    """All floating / complex tensor operands share one dtype (a mixed-dtype call raises in real torch: never skip it)."""
+    return len({a.dtype for a in tree_flatten((args, kwargs))[0]
+                if isinstance(a, torch.Tensor) and (a.is_floating_point() or a.is_complex())}) <= 1
+
+
+def exact_zero_result(func, args, kwargs):
+    """The op's exact result when a zero operand determines it, else None (= execute normally)."""
+    if not _one_dtype(args, kwargs):
+        return None
+    r = _exact_zero_result(func, args, kwargs)
+    return r
+
+
+def _exact_zero_result(func, args, kwargs):
+    A = list(args) + [None] * 4
+    if func in (aten.mm.default, aten.bmm.default):
+        if not product_zero(A[0], A[1]):
+            return None
+        mo = _meta(func, args, kwargs)
+        return None if mo is None else _zeros_like_meta(mo)
+    if func is aten._grouped_mm.default:
+        if kwargs.get("bias", A[3]) is not None or not product_zero(A[0], A[1]):
+            return None
+        mo = _meta(func, args, kwargs)
+        return None if mo is None else _zeros_like_meta(mo)
+    if func in (aten.addmm.default, aten.baddbmm.default):
+        c, a, b = A[0], A[1], A[2]
+        beta, alpha = kwargs.get("beta", 1), kwargs.get("alpha", 1)
+        if not isinstance(alpha, numbers.Number) or not cmath.isfinite(alpha) or not isinstance(beta, numbers.Number):
+            return None
+        if not (c.is_floating_point() or c.is_complex()) and not float(beta).is_integer():
+            return None                           # integer bias x fractional beta: torch's own rounding (execute)
+        if not product_zero(a, b):
+            return None                           # a zero bias alone never zeroes the product
+        mo = _meta(func, args, kwargs)
+        if mo is None:
+            return None
+        # beta == 0 ignores c (even nan); + 0.0 gives torch's sign of zero (-0.0 bias -> +0.0, as x*0 + c*beta does)
+        return _zeros_like_meta(mo) if beta == 0 else _filled_like_meta(mo, c * beta + 0.0)
+    if func is aten.embedding.default:
+        w, idx = A[0], A[1]
+        if not is_reg(w):
+            return None                           # registered zero tables only (a -0.0 table by value keeps its sign)
+        if idx.is_floating_point() or idx.is_complex():
+            return None                           # the real op rejects non-integer indices
+        if idx.numel() and (int(idx.min()) < 0 or int(idx.max()) >= w.shape[0]):
+            return None                           # the real op raises
+        mo = _meta(func, args, kwargs)
+        return None if mo is None else _zeros_like_meta(mo)
+    if func is aten.convolution.default:
+        x, w, b = A[0], A[1], A[2]
+        if not product_zero(x, w):
+            return None
+        mo = _meta(func, args, kwargs)
+        if mo is None:
+            return None
+        return _zeros_like_meta(mo) if b is None else _filled_like_meta(mo, b.reshape((1, -1) + (1,) * (mo.dim() - 2)) + 0.0)
+    return None
+
+
+def zero_storage_findings(models=()):
+    """(G2 unknowns, notes) from this process's zero-storage execution (F07 rulings, Soumil 2026-10-13): non-finite
+    values created from finite inputs; non-finite values held by the built models; build-time writes that could not be
+    applied (over the size cap, or through an alias of storage no Parameter owns); writes refused through a view; zero
+    storage changed outside the recorder. Copy-on-write and alias writes into Parameters (zero by design) are notes."""
+    unk = []
+    held = []
+    pptrs = set()
+    for m in models:
+        for n_, p_ in m.named_parameters(remove_duplicate=False):
+            pptrs.add(p_.untyped_storage().data_ptr())
+        for n_, t_ in list(m.named_parameters(remove_duplicate=False)) + list(m.named_buffers(remove_duplicate=False)):
+            # NaN is never a legitimate stored value; +-inf is (e.g. Gemma-4 clippable-linear clamp-bound buffers the
+            # library's own init sets), so only NaN held by the build is a zero-weight artefact (learned params are reset)
+            if (t_.is_floating_point() or t_.is_complex()) and t_.numel() and not is_reg(t_) and bool(torch.isnan(t_).any()):
+                held.append(n_)
+    if held:
+        unk.append({"predicate": "G2", "what": "the zero-storage build holds NaN values a real model does not",
+                    "items": held[:20], "count": len(held)})
+    alias_unowned = [d for d, p in lowcost.BUILD_ALIAS_WRITES if p not in pptrs] if models else []
+    if alias_unowned:
+        unk.append({"predicate": "G2", "what": "build-time writes through an alias of zero storage no Parameter owns (a "
+                    "computed buffer left as zeros)", "items": alias_unowned[:20], "count": len(alias_unowned)})
+    if ZSW_EVENTS:
+        unk.append({"predicate": "G2", "what": "forward-pass writes through a view of shared zero storage were refused "
+                    "(the pass could not run faithfully)", "items": ZSW_EVENTS[:20], "count": len(ZSW_EVENTS)})
+    if NONFINITE_EVENTS:
+        unk.append({"predicate": "G2", "what": "the zero-weight execution produced non-finite values from finite inputs "
+                    "(a real model never computes these): values downstream differ from the checkpoint's",
+                    "items": sorted(set(NONFINITE_EVENTS))[:20], "count": len(NONFINITE_EVENTS)})
+    if lowcost.BUILD_UNAPPLIED:
+        unk.append({"predicate": "G2", "what": "build-time writes into zero storage could not be applied (computed values "
+                    "left as zeros)", "items": lowcost.BUILD_UNAPPLIED[:20], "count": len(lowcost.BUILD_UNAPPLIED)})
+    if not lowcost.registry_intact():
+        unk.append({"predicate": "G2", "what": "shared zero storage was changed outside the recorder: weights sharing it "
+                    "were not zero", "items": [], "count": 0})
+    notes = {"copy_on_write": COW_EVENTS[:20], "build_alias_writes_left_zero": [d for d, _ in lowcost.BUILD_ALIAS_WRITES][:20],
+             "learned_params_reset_to_zero": sorted(set(lowcost.BUILD_PARAMS_RESET))[:20]}
+    return unk, {k: v for k, v in notes.items() if v}
+
+
+ALLOC_OPS = {"empty", "empty_like", "new_empty", "new_empty_strided", "empty_strided", "empty_permuted"}
+METADATA_INPLACE = {"unsqueeze_", "squeeze_", "t_", "transpose_", "as_strided_", "detach_", "swapdims_", "swapaxes_",
+                    "requires_grad_"}                # change a view's metadata, never its values
+
+
+def _write_targets(func, args, kwargs):
+    if func.overloadpacket.__name__ in METADATA_INPLACE:
+        return []
+    out = []
+    for i, sa in enumerate(func._schema.arguments):
+        if sa.alias_info is not None and sa.alias_info.is_write:
+            tgt = args[i] if i < len(args) else kwargs.get(sa.name)
+            out += [t for t in (tgt if isinstance(tgt, (list, tuple)) else [tgt]) if isinstance(t, torch.Tensor)]
+    return out
 
 
 class Node:
@@ -38,7 +223,6 @@ class DagRecorder(TorchDispatchMode):
         self.used_params, self.used_buffers, self.used_inputs = set(), set(), set()
         self.external = []          # (shape, dtype, module) for tensors of unknown origin
         self.skipped = 0
-        self.zero_act = set()        # storage pointers of activations known to be exactly zero (outputs of skipped ops)
         self.stack = ["(root)"]
         self._hooks = []
         for name, mod in model.named_modules():
@@ -57,13 +241,13 @@ class DagRecorder(TorchDispatchMode):
             h.remove()
 
     ZERO_KEEP = {"mul_", "div_", "zero_", "neg_", "relu_", "abs_", "clamp_", "clamp_min_", "clamp_max_", "tanh_", "sin_",
-                 "sqrt_", "fill_", "masked_fill_"}
+                 "sqrt_", "fill_", "masked_fill_", "embedding_renorm_"}     # (zero rows have norm 0: renorm keeps them)
 
     def _zero_preserving_inplace(self, func, args, kwargs):
         name = func.overloadpacket.__name__
         if name not in self.ZERO_KEEP or not args or not isinstance(args[0], torch.Tensor) or args[0].numel() <= 1:
             return False
-        if args[0].untyped_storage().data_ptr() not in ZERO_PTRS:
+        if args[0].untyped_storage().data_ptr() not in ZERO_REG:
             return False
         others = list(args[1:]) + list(kwargs.values())
         def val(x):
@@ -79,6 +263,8 @@ class DagRecorder(TorchDispatchMode):
                 return bool(torch.isfinite(x).all()) and bool((x != 0).all())
             return x is not None and val(x) != 0 and math.isfinite(val(x))
         if name in ("clamp_", "clamp_min_", "clamp_max_"):
+            if any(isinstance(val(x), torch.Tensor) for x in others):
+                return False                            # tensor bounds: not decided here (execute)
             lo = val(others[0]) if others else None
             hi = val(others[1]) if len(others) > 1 else None
             if name == "clamp_max_": lo, hi = None, lo
@@ -96,16 +282,16 @@ class DagRecorder(TorchDispatchMode):
     def __torch_dispatch__(self, func, types, args=(), kwargs=None):
         kwargs = kwargs or {}
         mod = self.stack[-1]
-        ins, consts, zero_operand = [], [], False
+        ins, consts, reads_weight = [], [], False
         for a in tree_flatten((args, kwargs))[0]:
             if isinstance(a, torch.Tensor):
                 k = id(a)
                 if k in self.producer:
                     ins.append(("op", self.producer[k]))
                 elif k in self.param_names:
-                    ins.append(("param", self.param_names[k])); self.used_params.add(self.param_names[k])
+                    ins.append(("param", self.param_names[k])); self.used_params.add(self.param_names[k]); reads_weight = True
                 elif k in self.buffer_names:
-                    ins.append(("buffer", self.buffer_names[k])); self.used_buffers.add(self.buffer_names[k])
+                    ins.append(("buffer", self.buffer_names[k])); self.used_buffers.add(self.buffer_names[k]); reads_weight = True
                 elif k in self.input_names:
                     ins.append(("input", self.input_names[k])); self.used_inputs.add(self.input_names[k])
                 elif k in self.const_names:
@@ -113,66 +299,55 @@ class DagRecorder(TorchDispatchMode):
                 else:
                     ins.append(("external", tuple(a.shape), str(a.dtype)))
                     self.external.append((tuple(a.shape), str(a.dtype), mod, str(func)))
-                if a.numel() > 1:
-                    sp = a.untyped_storage().data_ptr()
-                    if sp in ZERO_PTRS or sp in self.zero_act:
-                        zero_operand = True
             elif isinstance(a, (int, float, bool)) and not isinstance(a, bool):
                 consts.append(a)
-        if self.skip and not zero_operand and func in HEAVY:
-            # value check: an activation operand that is entirely zero makes the result exactly zero,
-            # provided every other tensor operand is finite (0 * inf would really be NaN)
-            ts = [a for a in tree_flatten((args, kwargs))[0] if isinstance(a, torch.Tensor) and a.is_floating_point()]
-            zs = [a for a in ts if a.numel() > 4096 and not bool(torch.any(a))]
-            if zs and all(bool(torch.isfinite(a).all()) for a in ts if all(a is not z for z in zs)):
-                zero_operand = True
-        if self.skip and zero_operand and func in HEAVY:
-            self.skipped += 1
-            m = tree_map(lambda x: x.to("meta") if isinstance(x, torch.Tensor) else x, (args, kwargs))
-            try:
-                meta_out = func(*m[0], **m[1])
-            except RuntimeError:
-                # some kernels (e.g. grouped expert matmul) only accept bf16 even for shape inference:
-                # infer the shape in bf16, return exact zeros in the original dtype
-                orig = next((a.dtype for a in tree_flatten(args)[0] if isinstance(a, torch.Tensor) and a.is_floating_point()), torch.float32)
-                mb = tree_map(lambda x: x.to("meta", torch.bfloat16) if isinstance(x, torch.Tensor) and x.is_floating_point() else
-                              (x.to("meta") if isinstance(x, torch.Tensor) else x), (args, kwargs))
-                meta_out = tree_map(lambda o: o.to(orig) if isinstance(o, torch.Tensor) and o.is_floating_point() else o, func(*mb[0], **mb[1]))
-            first_zero = args[0].numel() > 1 and (args[0].untyped_storage().data_ptr() in ZERO_PTRS or args[0].untyped_storage().data_ptr() in self.zero_act)
-            if func in BIAS_FIRST and not first_zero:
-                out = (args[0] * kwargs.get("beta", 1)).expand(meta_out.shape).contiguous()
+        try:
+            targets = _write_targets(func, args, kwargs)
+        except Exception:
+            targets = []
+        out = None
+        reg_targets = [t for t in targets if is_reg(t)]
+        if reg_targets:
+            if self._zero_preserving_inplace(func, args, kwargs):
+                # an in-place op on zero-storage weights whose result is provably still zero (e.g. RWKV rescales weights
+                # with div_ at inference): skip the write (the storage is shared), keep the op in the graph
+                self.skipped += 1
+                out = args[0]
             else:
-                out = tree_map(lambda o: torch.zeros(o.shape, dtype=o.dtype) if isinstance(o, torch.Tensor) else o, meta_out)
-                for o in tree_flatten(out)[0]:
-                    if isinstance(o, torch.Tensor) and o.numel() > 1:
-                        p = o.untyped_storage().data_ptr(); self.zero_act.add(p)
-                        try:
-                            weakref.finalize(o, self.zero_act.discard, p)
-                        except TypeError:
-                            pass
-        elif self._zero_preserving_inplace(func, args, kwargs):
-            # an in-place op on zero-storage weights whose result is provably still zero (e.g. RWKV rescales weights
-            # with div_ at inference): skip the write (the storage is shared and read-only), keep the op in the graph
-            self.skipped += 1
-            out = args[0]
-        else:
+                for t in reg_targets:             # F07-1 copy-on-write: a whole weight gets its own storage
+                    if id(t) in self.param_names or id(t) in self.buffer_names:
+                        torch.Tensor.set_(t, torch.zeros(t.shape, dtype=t.dtype))
+                        COW_EVENTS.append(f"{func.overloadpacket.__name__} into {self.param_names.get(id(t)) or self.buffer_names.get(id(t))}")
+                    else:
+                        ZSW_EVENTS.append(f"{func.overloadpacket.__name__} in {mod}")
+                        raise ZeroStorageWrite(f"{func} writes into shared zero storage through a view in {mod}")
+        elif self.skip and func in SKIP_OPS:
+            out = exact_zero_result(func, args, kwargs)
+            if out is not None:
+                self.skipped += 1
+        if out is None:
             out = func(*args, **kwargs)
+            # F07-3: non-finite values created from finite inputs (a zero-weight artefact a real model never computes):
+            # NaN by any op (e.g. 0/0 normalising a zero embedding); inf only by an op reading a weight (an attention
+            # mask legitimately writes -inf). Registered zero storage cannot hold either (registry_intact covers it).
+            fo = [] if func.overloadpacket.__name__ in ALLOC_OPS else [   # (allocation = uninitialised memory, no value)
+                o for o in tree_flatten(out)[0] if isinstance(o, torch.Tensor) and o.is_floating_point() and o.numel()
+                and not is_reg(o)]
+            bad = any(bool(torch.isnan(o).any()) for o in fo) or (reads_weight and any(bool(torch.isinf(o).any()) for o in fo))
+            # a literal non-finite argument excuses only its own kind (masked_fill(-inf) may write inf; it never makes NaN)
+            lits = [c for c in tree_flatten((args, kwargs))[0] if isinstance(c, float) and not math.isfinite(c)]
+            bad = (not any(math.isnan(c) for c in lits) and any(bool(torch.isnan(o).any()) for o in fo)) or (
+                reads_weight and not any(math.isinf(c) for c in lits) and any(bool(torch.isinf(o).any()) for o in fo))
+            if bad and all(finite(a) for a in tree_flatten((args, kwargs))[0] if isinstance(a, torch.Tensor)):
+                NONFINITE_EVENTS.append(f"{func.overloadpacket.__name__} in {mod}")
         outs = [o for o in tree_flatten(out)[0] if isinstance(o, torch.Tensor)]
         idx = len(self.nodes)
         self.nodes.append(Node(str(func.overloadpacket.__name__), mod, ins, consts, len(outs),
                                tuple(outs[0].shape) if outs else None))
         for o in outs:
             self._track(o, idx)
-        # in-place / out= mutation: the mutated argument now carries this op's value
-        try:
-            for i, sa in enumerate(func._schema.arguments):
-                if sa.alias_info is not None and sa.alias_info.is_write:
-                    tgt = args[i] if i < len(args) else kwargs.get(sa.name)
-                    if isinstance(tgt, torch.Tensor):
-                        self._track(tgt, idx)
-                        self.zero_act.discard(tgt.untyped_storage().data_ptr())      # written in place: no longer known-zero
-        except Exception:
-            pass
+        for t in targets:                         # in-place / out= mutation: the argument now carries this op's value
+            self._track(t, idx)
         return out
 
     def output_nodes(self, outputs):

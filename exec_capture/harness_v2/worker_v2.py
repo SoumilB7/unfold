@@ -442,7 +442,8 @@ def _fresh():
             mm = cls._from_config(cfg, attn_implementation="eager", dtype=torch.float32); BUILD_ATTN = "eager"
         except (TypeError, ValueError):
             mm = cls._from_config(cfg, dtype=torch.float32); BUILD_ATTN = "library default"
-    return mm.eval()
+    _lc = __import__("lowcost")                    # one float32 build (sub-configs may declare bf16); learned weights
+    return _lc.normalise_learned(_lc.uniform_float32(mm.eval()))  # executed as zeros (F07-3)
 t = time.time()
 try:
     m = _fresh()
@@ -1236,6 +1237,9 @@ if failed == ["T1_weights"] and _t1.get("leftovers_eligible"):
                                        + " / declared-ignore list" + ("; vLLM witness credit for the tensors it runs" if R.get("executed_by_witness") else "")
                                        + ("; buffers measured never read in any mode (not declared by the library)"
                                           if _t1.get("buffers_never_read_in_any_mode") else "")}
+_zs_unk, _zs_notes = __import__("dag").zero_storage_findings([m] if "m" in globals() and isinstance(globals()["m"], torch.nn.Module) else [])      # F07: zero-weight execution faithfulness (G2)
+UNKNOWNS.extend(_zs_unk)
+if _zs_notes: R["zero_storage_notes"] = _zs_notes
 R["revision_pin"] = dict(noweights.PIN_LOG, outcome=noweights.revision_outcome())
 _bad = {r_: o for r_, o in R["revision_pin"]["outcome"].items() if not o["ok"]}
 if _bad:                                  # what the cache actually holds: a read went to another revision

@@ -181,6 +181,10 @@ def main():
         "worker_v2: the R-REFUSE FAIL is set before the promotion": 0 <= W2.find('R["reason"] = (f"library refuses this checkpoint') < W2.find('if R["verdict"] in ("FULL", "FULL_LEFTOVERS") and UNKNOWNS:'),
         "worker_v2: R-REFUSE judges the declared (default) class": "_decl_rep = LIB if cls is DECLARED_CLS else" in W2,
         "worker_v2: a candidate the library refuses is never selected": "if libload.refuses(_rc):" in W2,
+        "worker_v2: the executed build is one float32 build with learned params normalised (F07)": 'normalise_learned(_lc.uniform_float32(mm.eval()))' in W2,
+        "worker_v2_diffusion: both component builds normalise learned params (F07-3)": WD.count("normalise_learned(") == 2,
+        "worker_v2: zero-storage faithfulness unknowns (F07)": "zero_storage_findings(" in W2 and W2.find("zero_storage_findings(") < W2.find('if R["verdict"] in ("FULL", "FULL_LEFTOVERS") and UNKNOWNS:'),
+        "worker_v2_diffusion: zero-storage faithfulness unknowns (F07)": "zero_storage_findings(" in WD and WD.find("zero_storage_findings(") < WD.find('if R["verdict"] == "FULL" and UNKNOWNS:'),
     }
     for k, v in wiring.items():
         check(f"S-2 wiring: {k}", v, True)
