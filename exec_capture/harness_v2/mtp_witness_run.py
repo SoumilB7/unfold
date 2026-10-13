@@ -4,6 +4,8 @@ import os, sys, json, re, time, resource, traceback
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import vllm_witness as W
 from lowcost import fetch_headers
+import witness_io
+PRODUCER_ID = witness_io.witness_producer_id()   # hashed once, when the recorder's code is loaded (F14)
 
 OUT = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "results_v2", "_witness", "vllm")
 
@@ -14,15 +16,22 @@ def norm(nodes):
 
 STAGE = {"now": "headers"}
 REG = {}
+CUR = {}                                         # the record being built: an error keeps everything already shown (F14)
 
 
 def one(repo):
-    R = {"repo": repo, "executed_by": "vLLM (source, no compiled extension; custom ops on their pure-PyTorch path)", "t0": time.time()}
-    import vllm, noweights
+    R = CUR["R"] = {"repo": repo, "executed_by": "vLLM (source, no compiled extension; custom ops on their pure-PyTorch path)", "t0": time.time()}
+    import vllm, noweights, witness_io
     from huggingface_hub import HfApi
+    # identity (G6, F14): what made this record; the grader uses no statement from a record without it
+    R["schema"] = witness_io.WITNESS_SCHEMA
+    R["producer_id"] = PRODUCER_ID
+    R["vllm_version"] = getattr(vllm, "__version__", None)           # unknown stays unknown (an identity gap)
+    R["vllm_source_id"] = witness_io.vllm_source_id(vllm)
+    R["runtime"] = witness_io.runtime()
+    R["settings"] = dict(W.SETTINGS, env={k: os.environ[k] for k in sorted(os.environ) if k.startswith("VLLM_")})
     R["revision"] = HfApi().model_info(repo).sha             # the witness is bound to one checkpoint revision (G6)
     noweights.pin(repo, R["revision"])
-    R["vllm_version"] = getattr(vllm, "__version__", "0.30.0-source")
     R["notes"] = ["standard attention: vLLM FlexAttention backend, computed by torch's reference flex implementation (sdpa_dense)",
                   "KV-cache write: pure-PyTorch scatter registered as _C_cache_ops.reshape_and_cache_flash (vLLM's kernel is not compiled)",
                   "MoE: vLLM's reference experts (BatchedPrepareAndFinalize + NaiveBatchedExperts) instead of the compiled CPU grouped GEMM"]
@@ -33,9 +42,16 @@ def one(repo):
         from transformers import AutoConfig
         from vllm.config.speculative import SpeculativeConfig
         hc = AutoConfig.from_pretrained(repo, trust_remote_code=False)
-        before = list(getattr(hc, "architectures", None) or [])
-        after = list(getattr(SpeculativeConfig.hf_config_override(copy.deepcopy(hc)), "architectures", None) or [])
-        R["vllm_mtp_arch"] = next((a for a in after if "MTP" in a and a not in before), None); REG["arch"] = R["vllm_mtp_arch"]
+        snap = lambda c: {"architectures": list(getattr(c, "architectures", None) or []),
+                          "model_type": getattr(c, "model_type", None), "n_predict": getattr(c, "n_predict", None)}
+        before, after = snap(hc), snap(SpeculativeConfig.hf_config_override(copy.deepcopy(hc)))
+        # vLLM's own evidence: its MTP override replaces the architecture with its draft module's (never a name test).
+        # The whole before/after is recorded: an override that changes the config without adding an architecture is
+        # not a "no MTP module" answer (the grader re-derives that)
+        R["registry_override"] = {"before": before, "after": after}
+        R["vllm_mtp_arch"] = next((a for a in after["architectures"] if a not in before["architectures"]), None)
+        REG["arch"] = R["vllm_mtp_arch"]
+        R["registry_checked"] = True              # vLLM's registry decision completed
     except Exception as e:
         R["vllm_mtp_arch"] = None; R["registry_error"] = f"{type(e).__name__}: {str(e)[:160]}"
     STAGE["now"] = "headers"
@@ -46,15 +62,20 @@ def one(repo):
     model, vcfg, dcfg, arch = W.build(repo)
     R["vllm_class"] = arch
     STAGE["now"] = "run"
-    md = W.attention_metadata(model, dcfg, 8)
-    rec_a, out_a = W.run_forward(model, dcfg, 8, md)
-    md = W.attention_metadata(model, dcfg, 8)
-    rec_b, _ = W.run_forward(model, dcfg, 8, md)                 # T5: same shape, different values
+    n_tok = W.SETTINGS["n_tokens"]; seed_a, seed_b = W.SETTINGS["run_seeds"]
+    md = W.attention_metadata(model, dcfg, n_tok)
+    rec_a, out_a = W.run_forward(model, dcfg, n_tok, md, seed_a)
+    md = W.attention_metadata(model, dcfg, n_tok)
+    rec_b, _ = W.run_forward(model, dcfg, n_tok, md, seed_b)      # T5: same shape, different values (own seed)
     import torch
+    R["inputs"] = {"a": {"seed": rec_a.seed, "n_tokens": n_tok, "fingerprints": rec_a.input_fingerprints},
+                   "b": {"seed": rec_b.seed, "n_tokens": n_tok, "fingerprints": rec_b.input_fingerprints}}
+    R["distinct_inputs"] = all(rec_a.input_fingerprints[k] != rec_b.input_fingerprints[k]
+                               for k in rec_a.input_fingerprints if k not in witness_io.WITNESS_STRUCTURAL_INPUTS)
     R["ops"] = len(rec_a.nodes)
     R["attention_ops"] = sum(1 for n in rec_a.nodes if "attn" in n.module.rsplit(".", 1)[-1])
     R["stable_structure"] = norm(rec_a.nodes) == norm(rec_b.nodes)
-    from common import ckpt_split
+    from witness_io import ckpt_split
     Wl, Aux, _packed = ckpt_split(T)                              # learned tensors vs auxiliary (quant scales), as the main harness
     R["auxiliary_tensors_not_fed"] = len(Aux)
     mp = W.checkpoint_mapping(model, dcfg, Wl)                    # every learned checkpoint tensor through vLLM's own loader
@@ -72,6 +93,8 @@ def one(repo):
     R["mtp_loaded_not_used"] = sorted(k for k in mtp if mp.get(k) and not all(t in used for t in mp[k]))
     R["mtp_executed"] = sorted(k for k in mtp if mp.get(k) and all(t in used for t in mp[k]))
     # closure against the library's declared-unbuilt list is decided in the main environment (apply_witness.py)
+    # (input distinctness is recorded separately and re-derived by the grader: an undistinct pair is a G5a unknown there,
+    #  not a failed run)
     R["closed"] = bool(R["executed_checkpoint_keys"]) and not R["loaded_not_used_keys"] and R["stable_structure"] and not R["mapping_error"]
     R["op_kinds"] = sorted({n.func for n in rec_a.nodes})
     # transparency (INTENT.md G4): full op names, every op transparent by registry evidence, nothing from outside
@@ -84,19 +107,38 @@ def one(repo):
     R["external_nonscalar"] = _a["external_nonscalar"]
     R["ir_torch_wrap"] = False
     R["transparent"] = bool(R["op_full"]) and not R["opaque_ops"] and R["external_nonscalar"] == 0
+    R["revision_pin"] = _pin_log()
     return R
+
+
+def _pin_log():
+    """What the hub reads of this run named (noweights.PIN_LOG): shows the record's revision, not only declares it."""
+    try:
+        import noweights
+        return {"pinned": noweights.PIN_LOG["pinned"], "other_revision": list(noweights.PIN_LOG["other_revision"])}
+    except Exception:
+        return None
 
 
 if __name__ == "__main__":
     os.makedirs(OUT, exist_ok=True)
     for repo in sys.argv[1:]:
-        t = time.time(); REG.clear()
+        t = time.time(); REG.clear(); CUR.clear(); STAGE["now"] = "identity"
+        import noweights
+        noweights.PIN_LOG.update(pinned=0, other_revision=[])     # each record's pin log is its own repo's
         try:
             R = one(repo)
         except Exception as e:
             tb = traceback.extract_tb(e.__traceback__)
-            R = {"repo": repo, "closed": False, "failed_stage": STAGE["now"], "vllm_mtp_arch": REG.get("arch"), "error": f"{type(e).__name__}: {str(e)[:300]}",
-                 "where": f"{tb[-1].filename.split('vllm-0.30.0/')[-1]}:{tb[-1].lineno}" if tb else ""}
+            # the partial record keeps its identity and the registry result (registry_checked / registry_error), so
+            # "the registry answered no MTP, then the build failed" stays distinct from "the registry never answered"
+            R = CUR.get("R") or {"repo": repo}
+            if "arch" in REG:                     # only an answer the registry actually gave (never a default None)
+                R.setdefault("vllm_mtp_arch", REG["arch"])
+            if "revision" in R:
+                R["revision_pin"] = _pin_log()
+            R.update({"closed": False, "failed_stage": STAGE["now"], "error": f"{type(e).__name__}: {str(e)[:300]}",
+                      "where": f"{tb[-1].filename.split('vllm-0.30.0/')[-1]}:{tb[-1].lineno}" if tb else ""})
         R["secs"] = round(time.time() - t, 1); R["peak_rss_gb"] = round(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1e9, 2)
         R.pop("t0", None)
         json.dump(R, open(os.path.join(OUT, repo.replace("/", "__") + ".json"), "w"), indent=1)

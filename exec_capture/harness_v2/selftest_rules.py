@@ -116,9 +116,15 @@ def main():
     #      runtime is known to run (the keys vLLM's loader maps); a missing / errored record is an unknown, not a failure;
     #      a "no MTP module" record is not cited for tensors it says nothing about ----
     rc = getattr(CM, "runtime_credit_needed", None)
+    import inspect
+    _bind = rc is not None and len(inspect.signature(rc).parameters) >= 4     # F14: bound to revision + witness code
+    BOUND = {"schema": 2, "revision": "r" * 40, "producer_id": "pid", "vllm_version": "0.30.0", "vllm_source_id": "src",
+             "runtime": {"torch": "x"}, "registry_checked": True, "revision_pin": {"pinned": 1, "other_revision": []},
+             "registry_override": {"before": {"architectures": ["X"]}, "after": {"architectures": ["X"]}}}
+    # these DB-3 controls test the credit logic on BOUND records; the F14 binding controls are in selftest_witness.py
     def db3(unbuilt, wit):
         if rc:
-            need, unk = rc(unbuilt, wit)
+            need, unk = rc(unbuilt, {**BOUND, **wit} if wit else wit, "r" * 40, "pid") if _bind else rc(unbuilt, wit)
             return {"needs_credit": sorted(need), "unknown": bool(unk), "cites_runtime": bool(need)}
         no_rt = bool(wit) and not wit.get("vllm_mtp_arch") and not wit.get("registry_error") and "vllm_mtp_arch" in wit
         return {"needs_credit": [] if no_rt else sorted(unbuilt), "unknown": False, "cites_runtime": True}   # HEAD
@@ -166,7 +172,7 @@ def main():
         "worker_v2: both split_library_ignored calls pass the quantized keys": W2.count("split_library_ignored(") == 2 and "split_library_ignored(mm, W0, ren0, QW)" in W2 and "split_library_ignored(m, W, ren, QW)" in W2,
         "worker_v2: matcher masks use the common rule": "masks = [c for c in un_c if common.stored_constant(" in W2,
         "worker_v2: no call to the old looks_like_stored_buffer rule": "looks_like_stored_buffer(*" not in W2,
-        "worker_v2: leftover eligibility uses runtime_credit_needed": "common.runtime_credit_needed(unbuilt, WIT)" in W2,
+        "worker_v2: leftover eligibility uses runtime_credit_needed": "common.runtime_credit_needed(unbuilt, WIT" in W2,
         "worker_v2: class-selection candidate errors consult network_error": W2.count("if network_error(e):") >= 2,
         "worker_v2: _last_resort applies after_grading_exception": "common.after_grading_exception(R, UNKNOWNS" in W2,
         "worker_v2: T1 loaded set uses loaded_params": "libload.loaded_params(" in W2,

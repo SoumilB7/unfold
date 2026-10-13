@@ -991,22 +991,18 @@ if T:
         _ex = set(WIT.get("executed_checkpoint_keys") or [])
         witnessed = [k for k in unbuilt if k in _ex]
         if len(witnessed) == len(unbuilt):
-            # credit is proven only if the witness recording itself is transparent (INTENT.md G4): full op names, no
-            # opaque op, nothing entering from outside. Older records (op_kinds only) or opaque runs: credit unknown.
-            _proven = (WIT.get("transparent") is True and R.get("revision") is not None
-                       and WIT.get("revision") == R.get("revision"))                  # same checkpoint
+            # credit is proven only if the witness recording is transparent (G4), shown stable on different inputs (G5a)
+            # and bound to this revision and the current witness code (G6, F14); otherwise each gap is an unknown
+            _wunk = common.witness_execution_credit(WIT, R.get("revision"))
             R["executed_by_witness"] = {"runtime": WIT.get("executed_by"), "vllm_class": WIT.get("vllm_class"),
+                                        "vllm_version": WIT.get("vllm_version"), "vllm_source_id": WIT.get("vllm_source_id"),
+                                        "revision": WIT.get("revision"), "producer_id": WIT.get("producer_id"),
                                         "tensors": len(witnessed), "notes": WIT.get("notes"),
-                                        "credit": "proven" if _proven else "unknown",
+                                        "credit": "unknown" if _wunk else "proven",
                                         "opaque_ops": WIT.get("opaque_ops") if "op_full" in WIT else "not recorded (old witness record)",
                                         "external_nonscalar": WIT.get("external_nonscalar")}
-            if not _proven:
-                UNKNOWNS.append({"predicate": "G4", "what": "tensors executed only in the vLLM witness, whose recording is "
-                                 "not shown transparent and bound to this revision (" + (
-                                     "recorded for revision " + str(WIT.get("revision")) + ", graded " + str(R.get("revision"))
-                                     if WIT.get("transparent") is True else
-                                     "opaque ops or tensors from outside the recording" if "op_full" in WIT
-                                     else "old record without full op names") + ")",
+            for _p, _why in _wunk:
+                UNKNOWNS.append({"predicate": _p, "what": "tensors executed only in the vLLM witness, whose recording: " + _why,
                                  "items": witnessed[:20], "count": len(witnessed)})
             unbuilt = []
         else:
@@ -1015,11 +1011,14 @@ if T:
     # witness credit; the library's own declaration certifies the rest; a missing / errored record is an unknown
     # (fully witnessed tensors were credited above, with the G4 transparency check, and removed from `unbuilt`; a
     #  partial witness gives no credit here: a tensor that needs runtime credit and is still listed keeps leftovers out)
-    _need, _rt_unk = common.runtime_credit_needed(unbuilt, WIT)
+    _need, _rt_unk = common.runtime_credit_needed(unbuilt, WIT, R.get("revision"))
     no_runtime = not _need                        # (name kept: no remaining declared-unbuilt tensor needs runtime credit)
     R["runtime_credit"] = {"needed": len(_need)}
+    if unbuilt and not _need and not _rt_unk and WIT:                          # F14: the scoped statement that certified them
+        R["runtime_credit"]["statement"] = (common.no_mtp_statement(WIT) if not WIT.get("vllm_mtp_arch")
+                                            else common.loader_statement(WIT, len(unbuilt)))
     if _rt_unk:
-        UNKNOWNS.append({"predicate": "G3", "what": _rt_unk, "items": sorted(unbuilt)[:20], "count": len(unbuilt)})
+        UNKNOWNS.append({"predicate": _rt_unk[0], "what": _rt_unk[1], "items": sorted(unbuilt)[:20], "count": len(unbuilt)})
     unb = sum(numel(W_UNBUILT[k][0]) for k in unbuilt)
     # ---- library authority (safetensors repos): which shipped keys the library consumes, from its own from_pretrained
     #      on sparse header stubs (file choice, renames, merges/splits, ignore lists all the library's). Replaces the
@@ -1234,7 +1233,9 @@ if failed == ["T1_weights"] and _t1.get("leftovers_eligible"):
                       "silently_dropped": R.get("library_silent_drops"),
                       "buffers_never_read_in_any_mode": _t1.get("buffers_never_read_in_any_mode") or None,
                       "certification": ("transformers load report" if R.get("t1_authority") == "library_load_report" else "no load report")
-                                       + " / declared-ignore list" + ("; vLLM witness credit for the tensors it runs" if R.get("executed_by_witness") else "")
+                                       + " / declared-ignore list" + (f"; vLLM witness credit ({R['executed_by_witness'].get('credit')}) for the tensors it runs"
+                                                                       if R.get("executed_by_witness") else "")
+                                       + ("; " + R["runtime_credit"]["statement"] if (R.get("runtime_credit") or {}).get("statement") else "")
                                        + ("; buffers measured never read in any mode (not declared by the library)"
                                           if _t1.get("buffers_never_read_in_any_mode") else "")}
 _zs_unk, _zs_notes = __import__("dag").zero_storage_findings([m] if "m" in globals() and isinstance(globals()["m"], torch.nn.Module) else [])      # F07: zero-weight execution faithfulness (G2)

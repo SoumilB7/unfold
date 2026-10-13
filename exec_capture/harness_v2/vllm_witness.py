@@ -102,6 +102,13 @@ def _reference_moe():
     UM.make_unquantized_moe_kernel = make_ref
 
 
+# the witness's run settings (recorded on every record, F14); build() and run_forward() use exactly these
+SETTINGS = {"dtype": "float32", "load_format": "dummy", "speculative_config": {"method": "mtp", "num_speculative_tokens": 1},
+            "compilation_config": {"custom_ops": ["none"], "mode": 0}, "attention_config": {"backend": "FLEX_ATTENTION"},
+            "enforce_eager": True, "quantization_config": "dropped (storage, not architecture)", "n_tokens": 8,
+            "run_seeds": [0, 1]}
+
+
 def build(repo):
     from vllm.ir import op as irop
     irop.set_default_torch_wrap(False)    # vLLM's worker setting (worker_base.py): IR ops run their PyTorch body
@@ -119,11 +126,12 @@ def build(repo):
                 try: delattr(c, "quantization_config")
                 except Exception: c.quantization_config = None
         return cfg
-    args = EngineArgs(model=repo, revision=noweights.PIN.get(repo), skip_tokenizer_init=True, enforce_eager=True, load_format="dummy", hf_overrides=_drop_quant,
-                      dtype="float32", trust_remote_code=False,
-                      speculative_config={"method": "mtp", "num_speculative_tokens": 1},
-                      compilation_config={"custom_ops": ["none"], "mode": 0},   # every custom op on its pure-PyTorch path
-                      attention_config={"backend": "FLEX_ATTENTION"})          # vLLM's pure-PyTorch attention backend
+    args = EngineArgs(model=repo, revision=noweights.PIN.get(repo), skip_tokenizer_init=True, enforce_eager=SETTINGS["enforce_eager"],
+                      load_format=SETTINGS["load_format"], hf_overrides=_drop_quant,
+                      dtype=SETTINGS["dtype"], trust_remote_code=False,
+                      speculative_config=dict(SETTINGS["speculative_config"]),
+                      compilation_config=dict(SETTINGS["compilation_config"]),  # every custom op on its pure-PyTorch path
+                      attention_config=dict(SETTINGS["attention_config"]))      # vLLM's pure-PyTorch attention backend
     vcfg = args.create_engine_config()
     s = socket.socket(); s.bind(("127.0.0.1", 0)); port = s.getsockname()[1]; s.close()
     with set_current_vllm_config(vcfg):
@@ -254,17 +262,16 @@ def _tensors_in(o, path, out, depth=0, seen=None):
     return out
 
 
-def run_forward(model, dcfg, n_tokens=8, attn_metadata=None):
+def run_forward(model, dcfg, n_tokens, attn_metadata, run_index):
+    """One recorded forward on run `run_index`'s own inputs (witness_io.witness_inputs: seed = run index); the recorder
+    carries the fingerprints of exactly what the forward received (F14)."""
     from vllm.forward_context import set_forward_context
     from vllm.config import set_current_vllm_config
-    from dag import DagRecorder, analyse
+    import witness_io
     hf = dcfg.model_config.hf_config
     H = getattr(hf, "hidden_size", None) or hf.get_text_config().hidden_size
-    g = torch.Generator().manual_seed(0)
-    ids = torch.randint(0, 1000, (n_tokens,), generator=g)
-    pos = torch.arange(n_tokens)
-    hid = torch.randn(n_tokens, H, generator=g) * 0.02          # the target model's last hidden states (values only)
-    inputs = {"input_ids": ids, "positions": pos, "hidden_states": hid}
+    inputs = witness_io.witness_inputs(n_tokens, H, run_index)   # hidden_states: the target model's last hidden states (values only)
+    fingerprints = witness_io.input_fingerprints(inputs)
     _flex_visible_to_recorder()
     for m in model.modules():                            # vLLM's direct-call path: attention is not one opaque op
         if hasattr(m, "use_direct_call"):
@@ -279,6 +286,7 @@ def run_forward(model, dcfg, n_tokens=8, attn_metadata=None):
         if callable(getattr(model, "compute_logits", None)):   # the MTP's own output head (vLLM applies it separately)
             model.compute_logits(out[0] if isinstance(out, (tuple, list)) else out)
     rec.remove_hooks()
+    rec.input_fingerprints, rec.seed = fingerprints, int(run_index)
     return rec, out
 
 

@@ -6,9 +6,10 @@ Matching is generic: exact name, else unique same-shape suffix match, else
 per-expert tensors summed into a fused tensor with the same prefix. No model names.
 """
 import re, math, collections
+from witness_io import (AUX, INT_DTYPES, ckpt_split, runtime, WITNESS_SCHEMA, WITNESS_FILES,  # noqa: F401
+                        WITNESS_STRUCTURAL_INPUTS, witness_producer_id, vllm_source_id, witness_inputs,
+                        input_fingerprints)                     # (re-exported: the recorder's code, F14)
 
-AUX = re.compile(r"(\.biases|inv_freq|position_ids|num_batches_tracked|_scales|weight_global_scale|input_global_scale|_scale_inv|weight_scale(_2)?|input_scale|output_scale|k_scale|v_scale|zero_point|\.g_idx|\.qzeros|\.scales|\.SCB|absmax|quant_map|quant_state|nested_|_blocks_scale)$")
-INT_DTYPES = {"I8", "U8", "I16", "U16", "I32", "U32", "I64", "U64"}
 
 
 # the code that decides a verdict (INTENT.md G6). Drawing code (exec_to_ir), reports and self-tests are not in it, so
@@ -16,7 +17,7 @@ INT_DTYPES = {"I8", "U8", "I16", "U16", "I32", "U32", "I64", "U64"}
 GRADING_FILES = ("worker_v2.py", "worker_v2_diffusion.py", "run_batch.py", "dag.py", "common.py", "libload.py",
                  "loadtrace.py", "lowcost.py", "inputs.py", "gguf_parts.py", "noweights.py", "synth.py", "opclass.py",
                  "mtp_witness_run.py", "vllm_witness.py", "capture.py", "class_rules.py",
-                 "diffusion_rules.py")      # capture.py records graded passes
+                 "diffusion_rules.py", "witness_io.py")      # capture.py records graded passes
 
 
 def grading_id():
@@ -30,20 +31,7 @@ def grading_id():
     return h.hexdigest()[:12]
 
 
-def runtime():
-    """Library versions and run settings that can change a verdict (recorded beside grading_id)."""
-    import sys, os, platform, importlib
-    v = {"python": sys.version.split()[0], "platform": platform.platform()}
-    for m in ("torch", "transformers", "diffusers", "huggingface_hub", "safetensors", "numpy", "tokenizers", "accelerate",
-              "compressed_tensors", "bitsandbytes", "gptqmodel", "awq", "gguf", "torchvision", "sentencepiece", "PIL",
-              "mistral_common", "vllm", "scipy"):
-        try:
-            v[m] = importlib.import_module(m).__version__
-        except Exception:
-            pass
-    v["settings"] = {k: os.environ[k] for k in sorted(os.environ)
-                     if k.startswith("BENCH_") or k in ("HF_ENDPOINT", "HF_HUB_OFFLINE", "HF_HUB_DISABLE_XET", "TRANSFORMERS_OFFLINE")}
-    return v
+
 
 
 def module_pattern(name):
@@ -58,35 +46,7 @@ def top_groups(named_numel, n=6):
     return [(g, v) for g, v in agg.most_common(n)]
 
 
-def ckpt_split(T):
-    """T: {name: (shape, dtype)} -> (weights, aux, packed_flag). Packed-quantized names are
-    normalized to the plain weight name (qweight/weight_packed/_blocks -> weight)."""
-    weights, aux = {}, {}
-    packed = any(d in INT_DTYPES for k, (s, d) in T.items()
-                 if not AUX.search(k) and re.search(r"(weight|qweight|weight_packed|_blocks)$", k))
-    def quant_scale(k):
-        if not k.endswith(".scale"):
-            return False
-        sib = T.get(k[: -len(".scale")] + ".weight")
-        return sib is not None and (sib[1] in INT_DTYPES or str(sib[1]).startswith("F8"))
-    def packed_bookkeeping(k):
-        """compressed-tensors' pack-quantized schema: <m>.weight_shape (1-D integer, length = the packed tensor's rank)
-        and <m>.weight_g_idx sit next to an integer <m>.weight_packed (P0.6 B3); a same-named tensor elsewhere is a weight."""
-        for suf in (".weight_shape", ".weight_g_idx"):
-            if k.endswith(suf):
-                sib = T.get(k[: -len(suf)] + ".weight_packed")
-                s_, d_ = T[k]
-                return (sib is not None and sib[1] in INT_DTYPES and d_ in INT_DTYPES
-                        and (suf != ".weight_shape" or (len(s_) == 1 and s_[0] == len(sib[0]))))
-        return False
-    for k, (s, d) in T.items():
-        if AUX.search(k) or quant_scale(k) or packed_bookkeeping(k):
-            aux[k] = (tuple(s), d); continue
-        if packed:
-            k = re.sub(r"\.(qweight|weight_packed)$", ".weight", k)
-            k = re.sub(r"_blocks$", "", k)
-        weights[k] = (tuple(s), d)
-    return weights, aux, packed
+
 
 
 def library_rename(model):
@@ -314,21 +274,107 @@ def after_grading_exception(R, unknowns, err):
     return R
 
 
-def runtime_credit_needed(unbuilt, wit):
+# ---- F14 (Soumil 2026-10-13): a vLLM witness record counts only when it names what made it (schema, checkpoint
+#      revision, the recorder's own code, vLLM version + source, library versions) and its two stability runs are shown
+#      to have received different inputs. Records without that identity give an unknown, never credit or absence. ----
+WITNESS_IDENTITY = ("schema", "revision", "producer_id", "vllm_version", "vllm_source_id", "runtime", "revision_pin")
+
+
+def distinct_inputs(fa, fb, structural=WITNESS_STRUCTURAL_INPUTS):
+    """Both runs fingerprinted the same input names and EVERY value input (not a function of the token count) differs.
+    Missing or malformed fingerprints show nothing: not distinct."""
+    if not isinstance(fa, dict) or not isinstance(fb, dict) or not fa or set(fa) != set(fb):
+        return False
+    value = set(fa) - set(structural)
+    return bool(value) and all(isinstance(fa[k], str) and fa[k] and fa[k] != fb[k] for k in value)
+
+
+def witness_identity_gaps(wit, revision, producer=None):
+    """What a witness record lacks to be bound to the row graded at `revision` and to the current recorder code
+    (empty = bound). The revision must also be SHOWN: the record's pin log names no read of another revision."""
+    if not isinstance(wit, dict):
+        return ["not a witness record"]
+    producer = witness_producer_id() if producer is None else producer
+    gaps = [f"no {k}" for k in WITNESS_IDENTITY if not wit.get(k)]
+    if wit.get("schema") and wit["schema"] != WITNESS_SCHEMA:
+        gaps.append(f"schema {wit['schema']} (current {WITNESS_SCHEMA})")
+    if revision is None:
+        gaps.append("graded revision unknown")
+    elif wit.get("revision") and wit["revision"] != revision:
+        gaps.append(f"recorded for revision {wit['revision']}, graded {revision}")
+    if wit.get("producer_id") and wit["producer_id"] != producer:
+        gaps.append("made by another version of the witness code")
+    if wit.get("runtime") and not (isinstance(wit["runtime"], dict) and wit["runtime"].get("torch")):
+        gaps.append("library versions malformed")
+    pin = wit.get("revision_pin")
+    if pin and not (isinstance(pin, dict) and isinstance(pin.get("other_revision"), list)):
+        gaps.append("revision pin log malformed")
+    elif pin and pin["other_revision"]:
+        gaps.append("hub reads named another revision (" + ", ".join(map(str, pin["other_revision"][:3])) + ")")
+    elif pin and not (isinstance(pin.get("pinned"), int) and pin["pinned"] > 0):
+        gaps.append("no hub read was pinned to the revision")
+    return gaps
+
+
+def witness_execution_credit(wit, revision, producer=None):
+    """Why a closed witness's execution credit is not proven: [(predicate, why)], empty = proven. The producer's own
+    `stable_structure` is not trusted alone: input distinctness is re-derived from the fingerprints."""
+    out = []
+    gaps = witness_identity_gaps(wit, revision, producer)
+    if gaps:
+        out.append(("G6", "the record is not bound to this checkpoint and the current witness code (" + ", ".join(gaps) + ")"))
+    ins = wit.get("inputs") if isinstance(wit.get("inputs"), dict) else {}
+    fp = lambda r: ins.get(r).get("fingerprints") if isinstance(ins.get(r), dict) else None
+    if wit.get("stable_structure") is not True or not distinct_inputs(fp("a"), fp("b")):
+        out.append(("G5a", "its two runs are not shown to have the same structure on different inputs"))
+    if wit.get("transparent") is not True:
+        out.append(("G4", "opaque ops or tensors from outside the recording" if "op_full" in wit
+                    else "old record without full op names"))
+    return out
+
+
+def no_mtp_statement(wit):
+    """The scoped wording of a bound "no MTP module" record (never "no runtime executes it")."""
+    return (f"vLLM {wit.get('vllm_version')} (source {wit.get('vllm_source_id')}) has no MTP module for this config "
+            f"at revision {wit.get('revision')}")
+
+
+def loader_statement(wit, n):
+    """The scoped wording when vLLM has an MTP module but its own loader maps none of the n remaining tensors."""
+    return (f"vLLM {wit.get('vllm_version')} (source {wit.get('vllm_source_id')})'s MTP loader maps none of these {n} "
+            f"tensors at revision {wit.get('revision')}")
+
+
+def runtime_credit_needed(unbuilt, wit, revision=None, producer=None):
     """DB-3, reading B (Soumil 2026-10-12): which declared-unbuilt tensors need runtime (vLLM witness) credit before the
     library's own "unused" declaration can certify them as leftovers. Only tensors a runtime is known to run do: the
     checkpoint keys vLLM's own loader maps (executed or loaded) when vLLM has an MTP module for this config; all of
     them when it has one but the witness never mapped (a failed run); none when vLLM has no MTP module (nothing runs
     them). A missing or errored witness record is an unknown, not a failure; a failed witness run (not closed / a mapping
-    error) needs credit for every one. Witness keys are compared under ckpt_split names. Returns (need, unknown or None)."""
+    error) needs credit for every one. Witness keys are compared under ckpt_split names.
+    F14: no statement of a record counts unless it is bound (witness_identity_gaps); an unbound record says nothing
+    (like no record) and is a G6 unknown. A "no MTP module" answer also needs the registry stage shown completed.
+    Returns (need, (predicate, what) or None)."""
     unbuilt = set(unbuilt)
     if not unbuilt:
         return set(), None
     if not wit or "vllm_mtp_arch" not in wit:
-        return set(), "no runtime witness record: whether a runtime executes the declared-unbuilt tensors is not established"
+        return set(), ("G3", "no runtime witness record: whether a runtime executes the declared-unbuilt tensors is not established")
+    gaps = witness_identity_gaps(wit, revision, producer)
+    if gaps:
+        return set(), ("G6", "the runtime witness record is not bound (" + ", ".join(gaps) + ")")
     if wit.get("registry_error"):
-        return set(), f"the runtime registry could not be read ({str(wit['registry_error'])[:120]})"
+        return set(), ("G3", f"the runtime registry could not be read ({str(wit['registry_error'])[:120]})")
     if not wit.get("vllm_mtp_arch"):
+        if wit.get("registry_checked") is not True:
+            return set(), ("G6", "the runtime's \"no MTP module\" answer is not shown (registry stage not completed)")
+        ov = wit.get("registry_override")
+        if not (isinstance(ov, dict) and isinstance(ov.get("before"), dict) and isinstance(ov.get("after"), dict)):
+            return set(), ("G6", "the runtime's \"no MTP module\" answer is not shown (its registry evidence is not recorded)")
+        if ov["before"] != ov["after"]:
+            return set(), ("G3", "vLLM's MTP override changed this config (" + ", ".join(
+                k for k in sorted(set(ov["before"]) | set(ov["after"])) if ov["before"].get(k) != ov["after"].get(k))
+                + ") without naming an MTP module: whether vLLM runs the declared-unbuilt tensors is not established")
         return set(), None
     if not wit.get("closed") or wit.get("mapping_error"):
         return unbuilt, None                      # a failed witness run proves nothing about what vLLM runs: all of them

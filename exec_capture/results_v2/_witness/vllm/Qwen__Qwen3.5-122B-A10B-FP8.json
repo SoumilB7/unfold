@@ -1,16 +1,101 @@
 {
  "repo": "Qwen/Qwen3.5-122B-A10B-FP8",
  "executed_by": "vLLM (source, no compiled extension; custom ops on their pure-PyTorch path)",
- "revision": "a099dee70ccfcd8d5dda56aaa0b60cb8ecadabc9",
+ "schema": 2,
+ "producer_id": "b52460f2be1c",
  "vllm_version": "0.30.0",
+ "vllm_source_id": "65d9e4beec54b27c",
+ "runtime": {
+  "python": "3.12.10",
+  "platform": "macOS-27.0.1-arm64-arm-64bit",
+  "torch": "2.14.1",
+  "transformers": "5.18.0",
+  "huggingface_hub": "1.33.0",
+  "safetensors": "0.8.0",
+  "numpy": "2.5.3",
+  "tokenizers": "0.23.2",
+  "compressed_tensors": "0.19.0",
+  "torchvision": "0.29.1",
+  "sentencepiece": "0.2.2",
+  "PIL": "12.3.0",
+  "vllm": "0.30.0",
+  "settings": {}
+ },
+ "settings": {
+  "dtype": "float32",
+  "load_format": "dummy",
+  "speculative_config": {
+   "method": "mtp",
+   "num_speculative_tokens": 1
+  },
+  "compilation_config": {
+   "custom_ops": [
+    "none"
+   ],
+   "mode": 0
+  },
+  "attention_config": {
+   "backend": "FLEX_ATTENTION"
+  },
+  "enforce_eager": true,
+  "quantization_config": "dropped (storage, not architecture)",
+  "n_tokens": 8,
+  "run_seeds": [
+   0,
+   1
+  ],
+  "env": {
+   "VLLM_CPU_KVCACHE_SPACE": "1",
+   "VLLM_TARGET_DEVICE": "cpu"
+  }
+ },
+ "revision": "a099dee70ccfcd8d5dda56aaa0b60cb8ecadabc9",
  "notes": [
   "standard attention: vLLM FlexAttention backend, computed by torch's reference flex implementation (sdpa_dense)",
   "KV-cache write: pure-PyTorch scatter registered as _C_cache_ops.reshape_and_cache_flash (vLLM's kernel is not compiled)",
   "MoE: vLLM's reference experts (BatchedPrepareAndFinalize + NaiveBatchedExperts) instead of the compiled CPU grouped GEMM"
  ],
+ "registry_override": {
+  "before": {
+   "architectures": [
+    "Qwen3_5MoeForConditionalGeneration"
+   ],
+   "model_type": "qwen3_5_moe",
+   "n_predict": null
+  },
+  "after": {
+   "architectures": [
+    "Qwen3_5MoeMTP"
+   ],
+   "model_type": "qwen3_5_mtp",
+   "n_predict": 1
+  }
+ },
  "vllm_mtp_arch": "Qwen3_5MoeMTP",
+ "registry_checked": true,
  "checkpoint_mtp_tensors": 1560,
  "vllm_class": "Qwen3_5MoeMTP",
+ "inputs": {
+  "a": {
+   "seed": 0,
+   "n_tokens": 8,
+   "fingerprints": {
+    "hidden_states": "767c4f8049b187f4",
+    "input_ids": "9d4a5e782da5a298",
+    "positions": "d8465b2bc9f30e40"
+   }
+  },
+  "b": {
+   "seed": 1,
+   "n_tokens": 8,
+   "fingerprints": {
+    "hidden_states": "94b5de01750f0018",
+    "input_ids": "71149044c1672206",
+    "positions": "d8465b2bc9f30e40"
+   }
+  }
+ },
+ "distinct_inputs": true,
  "ops": 947,
  "attention_ops": 124,
  "stable_structure": true,
@@ -2528,6 +2613,10 @@
  "external_nonscalar": 0,
  "ir_torch_wrap": false,
  "transparent": true,
- "secs": 22.1,
- "peak_rss_gb": 1.69
+ "revision_pin": {
+  "pinned": 44,
+  "other_revision": []
+ },
+ "secs": 19.3,
+ "peak_rss_gb": 1.82
 }
