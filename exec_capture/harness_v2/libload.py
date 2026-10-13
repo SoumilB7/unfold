@@ -133,7 +133,7 @@ def _report(A, cls, aux_keys=(), **kw):
                    mismatched={str(x[0]) if isinstance(x, (tuple, list)) else str(x) for x in loading_info.mismatched_keys},
                    conversion_errors={k: str(v)[-300:] for k, v in loading_info.conversion_errors.items()},
                    quantizer=type(load_config.hf_quantizer).__name__ if load_config.hf_quantizer else None)
-        tr = loadtrace.InitTracer(); tracer_box["t"] = tr
+        tr = loadtrace.InitTracer(loaded=set_ids); tracer_box["t"] = tr   # knows what the loader set (F03)
         with tr:
             return orig_fin(model_, load_config, loading_info)
     CML.set_param_for_module = recording_spf
@@ -278,6 +278,14 @@ def _report(A, cls, aux_keys=(), **kw):
             "refusal_unexplained_by_quantization": refusal_unexplained[:50]}
 
 
+def _final(tracer, t):
+    """(class, write log) of a tensor the loader did not set, from the ordered provenance tracker (F03)."""
+    import loadtrace
+    if tracer is None:
+        return "UNINITIALIZED", []
+    return tracer.final_class(t), [f for f, _, _ in tracer.writes.get(id(loadtrace._root(t)), [])]
+
+
 def _provenance(model, info, set_ids, pre, tracer, tie_unchecked, headers, opened, d):
     """G1/G2 evidence from the library's own load: every state-dict tensor the library did not fill from the checkpoint,
     with how it was filled (loadtrace classes), what the library silenced, conversion errors, weight files it never
@@ -295,26 +303,36 @@ def _provenance(model, info, set_ids, pre, tracer, tie_unchecked, headers, opene
             nonloaded[k] = {"kind": "param" if k in pnames else "buffer", "numel": t.numel(), "class": "MISMATCHED_DISCARDED"}
             continue
         if k in kept:
-            w = tracer.writes.get(id(t), []) if tracer else []
-            if any(kd == "random" for _, _, kd in w):   # loaded, then re-randomised in place by the library's init code
+            # F03: any change of a loaded tensor after loading is evidence (re-randomised, partly zeroed, rescaled, ...)
+            w = tracer.writes.get(id(loadtrace._root(t)), []) if tracer else []
+            lc = tracer.final_class(t, loaded=True) if tracer else "LOADED"
+            if lc != "LOADED":
                 nonloaded[k] = {"kind": "param" if k in pnames else "buffer", "numel": t.numel(),
-                                "init_fns": ["(overwritten after load)"] + [f for f, _, _ in w][:5], "class": "INIT_RANDOM"}
+                                "init_fns": ["(changed after load)"] + [f for f, _, _ in w][:5],
+                                "class": {"RANDOM": "INIT_RANDOM"}.get(lc, lc)}
             continue
         kind = "param" if k in pnames else "buffer"
         if k in set_ids and (k in tied and tied[k] in sd and sd[tied[k]] is t):   # replaced by its tie source
             c = "TIED_BOTH_SHIPPED_VALUE_UNVERIFIED" if tie_unchecked else "TIED_REPLACED"
             nonloaded[k] = {"kind": kind, "class": c, "numel": t.numel(), "tie_source": tied.get(k)}
         elif k in set_ids and id(t) not in kept_ids:   # loaded, then replaced by something that is not its tie
-            st, fns = loadtrace.classify(tracer.writes.get(id(t), []) if tracer else [])
-            st = st or "UNINITIALIZED"
+            st, fns = _final(tracer, t)
             nonloaded[k] = {"kind": kind, "class": "INIT_" + st if st not in ("UNINITIALIZED", "UNPROVEN") else st,
                             "numel": t.numel(), "init_fns": ["(replaced after load)"] + fns[:5]}
         elif id(t) in kept_ids:
             continue                                            # tied alias of a loaded tensor: the same values
         else:
-            st, fns = loadtrace.classify(tracer.writes.get(id(t), []) if tracer else [])
+            st, fns = _final(tracer, t)
             c = "INIT_" + st if st not in ("UNINITIALIZED", "UNPROVEN") else st
             nonloaded[k] = {"kind": kind, "class": c, "numel": t.numel(), "init_fns": fns[:6]}
+    # non-persistent buffers (not in the state dict) are assessed too (F03-5): certified only if computed / constant
+    for n_, b_ in model.named_buffers(remove_duplicate=False):
+        if n_ in sd or n_ in nonloaded:
+            continue
+        st, fns = _final(tracer, b_)
+        if st not in ("DETERMINISTIC", "COMPUTED", "CKPT_DERIVED"):
+            nonloaded[n_] = {"kind": "buffer_nonpersistent", "class": "INIT_" + st if st not in ("UNINITIALIZED", "UNPROVEN") else st,
+                             "numel": b_.numel(), "init_fns": fns[:6]}
     for k, v in nonloaded.items():               # did the loader ever write this name from the checkpoint (P0.6 D2-C14)
         v["set_by_loader"] = k in set_ids
     # a tied alias the library replaced by its source carries the SOURCE's provenance when the source itself was not
@@ -327,7 +345,7 @@ def _provenance(model, info, set_ids, pre, tracer, tie_unchecked, headers, opene
         src = v.get("tie_source")
         if orig[k] in ("TIED_REPLACED", "TIED_BOTH_SHIPPED_VALUE_UNVERIFIED") and src in orig \
                 and orig[src] not in ("TIED_REPLACED", "TIED_BOTH_SHIPPED_VALUE_UNVERIFIED"):
-            inherit = orig[src] in RANDOM_CLASSES + ("UNPROVEN", "MISMATCHED_DISCARDED")
+            inherit = orig[src] in RANDOM_CLASSES + ("UNPROVEN", "MISMATCHED_DISCARDED", "LOADED_MODIFIED", "LOADED_OVERWRITTEN")
             v["class"], v["inherited_from"] = (orig[src] if inherit else "TIED_ALIAS_DISCARDED"), src
     # weight files the library never opened: a file whose every tensor shape is already among the read tensors'
     # shapes (multiset inclusion) only duplicates them (e.g. a second export); anything else is unexamined weight
@@ -455,15 +473,20 @@ def g1_assess(prov, used, exec_shapes, buffer_group):
                               "items": [], "count": 0}]}
     nl = prov.get("nonloaded") or {}
     rnd = sorted(k for k, v in nl.items() if v["class"] in RANDOM_CLASSES)
-    fail = {"random_init_executed": [k for k in rnd if k in used],                 # random values flow into the run
+    fail = {"random_init_executed": [k for k in rnd if k in used and nl[k]["class"] == "INIT_RANDOM"],   # random values
+            "uninitialized_executed": [k for k in rnd if k in used and nl[k]["class"] == "UNINITIALIZED"],  # allocation garbage
             "conversion_errors": sorted(prov.get("conversion_errors") or {}),
             # the library refuses the default load (mismatched shapes): its own refusal, not a random fill (P0.5)
             "library_refuses_load": sorted(k for k, v in nl.items() if v["class"] == "MISMATCHED_DISCARDED")}
     unknowns = []
     def unk(pred, what, items):
         if items: unknowns.append({"predicate": pred, "what": what, "items": list(items)[:20], "count": len(items)})
-    unk("G1", "learned tensors the checkpoint does not ship, randomly initialised by the library, read by no recorded op",
+    unk("G1", "learned tensors the checkpoint does not ship, randomly initialised or left uninitialised by the library, read "
+        "by no recorded op",
         [k for k in rnd if k not in used])
+    # F03-1 (Soumil 2026-10-13): shipped values the library changed while loading (padding rows zeroed, rescaled, ...)
+    unk("G1", "shipped tensors the library changed after loading them (the executed values are not the shipped ones)",
+        sorted(k for k, v in nl.items() if v["class"] in ("LOADED_MODIFIED", "LOADED_OVERWRITTEN")))
     unk("G1", "tensors filled by a copy of unknown provenance during the library's load", sorted(k for k, v in nl.items() if v["class"] == "UNPROVEN"))
     unk("G1", "tied tensors shipped twice: the library ties them only if their values are equal (not checkable without "
         f"the weights; config.json tie_word_embeddings={prov.get('raw_tie_word_embeddings')}, library "
