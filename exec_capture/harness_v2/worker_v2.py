@@ -26,6 +26,8 @@ import common
 from common import grading_id, runtime, ckpt_split, match, library_rename, split_library_ignored, looks_like_stored_buffer, top_groups, numel, INT_DTYPES, buffer_names
 from dag import DagRecorder, analyse, tied_alias_modules, math_attention, clear_library_caches
 from inputs import build_passes, mask_positions
+import attempts                                   # F13: one recorder per attempt; a failed attempt credits nothing
+ATTEMPT_LEDGER = []                               # every attempt of every stage (entry point, inputs, flags, ok / error)
 
 repo, out_path = sys.argv[1], sys.argv[2]
 HDR_CACHE = os.environ.get("BENCH_HEADER_CACHE", os.path.join(HERE, "..", "cache_v2", "headers"))
@@ -506,37 +508,37 @@ def _schedule():
         yield "stability:" + first_ok, variants[first_ok]
 for label, kw in _schedule():
     model_for_pass = _fresh() if label.startswith("stability:") else m
-    clear_library_caches()
     if EMIT and not label.startswith("stability:"):
         import capture
-        rec = capture.CaptureRecorder(model_for_pass, kw)
+        _recorder = capture.CaptureRecorder
     else:
-        rec = DagRecorder(model_for_pass, kw)
+        _recorder = DagRecorder
     t = time.time()
+    rec, _ledger = None, []
     try:
         _target = model_for_pass
         if "sub=" in label:                                   # a sub-model pass of a wrapper without forward
             _target = model_for_pass.get_submodule(label.split("sub=", 1)[1].split("|", 1)[0])
         def _call(kw):
+            # each attempt records alone (F13); the retry without use_cache only after a use_cache TypeError
             try:
-                return _target(**kw, use_cache=False)
+                return attempts.run(model_for_pass, model_for_pass, kw, lambda: _target(**kw, use_cache=False), _ledger,
+                                    {"entry": label, "use_cache": False}, recorder=_recorder)
             except TypeError as te:
                 if "use_cache" not in str(te) and "unexpected keyword" not in str(te): raise
-                return _target(**kw)
+                return attempts.run(model_for_pass, model_for_pass, kw, lambda: _target(**kw), _ledger,
+                                    {"entry": label}, recorder=_recorder)
         _exec_kw, _retried = kw, False
-        with torch.no_grad(), math_attention(), rec:
-            try:
-                out = _call(kw)
-            except (ValueError, RuntimeError):
-                squeezed = {k: (v.squeeze(1) if isinstance(v, torch.Tensor) and k.startswith("pixel_values") and v.dim() == 5 and v.shape[1] == 1 else v)
-                            for k, v in kw.items()}
-                if all(squeezed[k] is kw[k] for k in kw): raise
-                for k, v in squeezed.items():
-                    if isinstance(v, torch.Tensor): rec.input_names[id(v)] = k
-                out = _call(squeezed); _exec_kw, _retried = squeezed, True
-                R.setdefault("input_notes", []).append(f"{label}: processor gave 5-D pixel tensor with singleton group dim; retried squeezed")
+        try:
+            rec, out = _call(kw)
+        except (ValueError, RuntimeError):
+            squeezed = {k: (v.squeeze(1) if isinstance(v, torch.Tensor) and k.startswith("pixel_values") and v.dim() == 5 and v.shape[1] == 1 else v)
+                        for k, v in kw.items()}                # outside every recorder: the worker's op, not the model's
+            if all(squeezed[k] is kw[k] for k in kw): raise
+            rec, out = _call(squeezed); _exec_kw, _retried = squeezed, True
+            R.setdefault("input_notes", []).append(f"{label}: processor gave 5-D pixel tensor with singleton group dim; retried squeezed")
         a = analyse(rec, out)
-        pass_res[label] = {"ok": True, "secs": round(time.time() - t, 2), **{k: v for k, v in a.items() if k != "structure_signature"}}
+        pass_res[label] = {"ok": True, "secs": round(time.time() - t, 2), "attempts": _ledger, **{k: v for k, v in a.items() if k != "structure_signature"}}
         sigs[label] = (a["structure_signature"], [(n.module, n.func) for n in rec.nodes])
         if EMIT and not label.startswith("stability:") and "sub=" not in label:
             try:
@@ -598,53 +600,55 @@ for label, kw in _schedule():
         tb = traceback.extract_tb(e.__traceback__)
         lib = [f for f in tb if "site-packages/transformers/" in f.filename]
         f = lib[-1] if lib else (tb[-1] if tb else None)
-        pass_res[label] = {"ok": False, "error": f"{type(e).__name__}: {str(e)[:220]}",
+        pass_res[label] = {"ok": False, "error": f"{type(e).__name__}: {str(e)[:220]}", "attempts": _ledger,
                            "where": f"{f.filename.split('site-packages/')[-1]}:{f.lineno} ({(f.line or '').strip()[:90]})" if f else ""}
     finally:
-        rec.remove_hooks()
+        if rec is not None: rec.remove_hooks()
+        ATTEMPT_LEDGER.extend(_ledger)
     save()
 # ---- 3a. extra input variants (e.g. a second image resolution) only while weights remain unused ----------
 for label, kw in extra_passes:
     if not ({n for n, _ in m.named_parameters()} - used_params) or not _optional_ok(label):
         break
-    clear_library_caches()
-    rec = DagRecorder(m, kw)
+    rec, _ledger = None, []
     try:
-        with torch.no_grad(), math_attention(), rec, _limit():
+        with _limit():
             try:
-                out = m(**kw, use_cache=False)
+                rec, out = attempts.run(m, m, kw, lambda: m(**kw, use_cache=False), _ledger, {"entry": label, "use_cache": False})
             except TypeError:
-                out = m(**kw)
+                rec, out = attempts.run(m, m, kw, lambda: m(**kw), _ledger, {"entry": label})
         a = analyse(rec, out)
-        pass_res[label] = {"ok": True, **{k: v for k, v in a.items() if k != "structure_signature"}}
+        pass_res[label] = {"ok": True, "attempts": _ledger, **{k: v for k, v in a.items() if k != "structure_signature"}}
         used_params |= rec.used_params; used_buffers |= rec.used_buffers; called |= rec.called
     except Exception as e:
-        pass_res[label] = {"ok": False, "error": f"{type(e).__name__}: {str(e)[:180]}"}
+        pass_res[label] = {"ok": False, "error": f"{type(e).__name__}: {str(e)[:180]}", "attempts": _ledger}
     finally:
-        rec.remove_hooks()
+        if rec is not None: rec.remove_hooks()
+        ATTEMPT_LEDGER.extend(_ledger)
 
 # ---- 3a2. more execution modes (values/inputs only, never structure), only while weights remain unused ------
 def _run_mode(label, kw, model=None):
     global used_params, used_buffers, called
     if not _optional_ok(label): return
     mdl = model or m
-    clear_library_caches()
-    rec = DagRecorder(mdl, {k: v for k, v in kw.items() if isinstance(v, torch.Tensor)})
+    tkw = {k: v for k, v in kw.items() if isinstance(v, torch.Tensor)}
+    rec, _ledger = None, []
     try:
-        with torch.no_grad(), math_attention(), rec, _limit():
+        with _limit():
             try:
-                out = mdl(**kw, use_cache=False)
+                rec, out = attempts.run(mdl, mdl, tkw, lambda: mdl(**kw, use_cache=False), _ledger, {"entry": label, "use_cache": False})
             except TypeError:
-                out = mdl(**kw)
+                rec, out = attempts.run(mdl, mdl, tkw, lambda: mdl(**kw), _ledger, {"entry": label})
         a = analyse(rec, out)
         before = len(used_params)
         used_params |= rec.used_params; used_buffers |= rec.used_buffers; called |= rec.called
-        pass_res[label] = {"ok": True, "newly_used_params": len(used_params) - before,
+        pass_res[label] = {"ok": True, "newly_used_params": len(used_params) - before, "attempts": _ledger,
                            **{k: v for k, v in a.items() if k not in ("structure_signature",)}}
     except Exception as e:
-        pass_res[label] = {"ok": False, "error": f"{type(e).__name__}: {str(e)[:180]}"}
+        pass_res[label] = {"ok": False, "error": f"{type(e).__name__}: {str(e)[:180]}", "attempts": _ledger}
     finally:
-        rec.remove_hooks()
+        if rec is not None: rec.remove_hooks()
+        ATTEMPT_LEDGER.extend(_ledger)
 def _unused_now():
     return {n for n, _ in m.named_parameters()} - used_params
 sig_m = inspect.signature(m.forward).parameters
@@ -689,6 +693,7 @@ if base and _unused_now() and S_.get("router_params"):
     #       router weights (the weights feeding topk/argmax/sort in the recording) and the token embeddings
     #       (so tokens differ) small random values, and use the longest input so every expert can get tokens.
     hooks = []
+    _router_snap = attempts.Snapshot(m)                 # the state before the router weights are randomised (F13)
     emb_ids = set()
     for pn in S_.get("embedding_params", []):
         try: emb_ids.add(id(m.get_parameter(pn)))
@@ -718,6 +723,9 @@ if base and _unused_now() and S_.get("router_params"):
     R["router_params_randomised"] = (S_["router_params"] + S_.get("embedding_params", []))[:20]
     _run_mode("mode:router_random", S_.get("long_kw", base))
     for h in hooks: h.remove()
+    _lost = _router_snap.restore()                      # F13: later passes run the tested (zero-weight) state again
+    ATTEMPT_LEDGER.append({"entry": "mode:router_random (randomised weights put back)", "ok": not _lost,
+                           **({"state_not_restored": _lost[:20]} if _lost else {})})
 
 # ---- 3b. generate(): parts that only run inside the generation loop (codecs, multi-stage generators) ------
 _gen_wanted = hasattr(m, "generate") and (not any(v["ok"] for l, v in pass_res.items() if not l.startswith("stability:")) or _unused_now())
@@ -727,41 +735,40 @@ if hasattr(m, "generate") and class_rules.shared(TIED, "generate") and (not any(
     ok_kws = [kw for l, kw in passes if pass_res.get(l, {}).get("ok")] or [kw for _, kw in passes]
     gkw = dict(max(ok_kws, key=len)) if ok_kws else {}      # the pass that already combines the most modalities
     gkw = {k: v for k, v in gkw.items() if k not in ("decoder_input_ids", "labels")}
-    clear_library_caches()
-    rec = DagRecorder(m, gkw)
+    rec, _ledger = None, []
     t = time.time()
     try:
-        with torch.no_grad(), math_attention(), rec, _limit():
-            def _gen(kw):
+        with _limit():
+            def _gen(kw):                               # each attempt records alone (F13)
                 try:
-                    return m.generate(**kw, max_new_tokens=2, min_new_tokens=2, do_sample=False)
+                    return attempts.run(m, m, kw, lambda: m.generate(**kw, max_new_tokens=2, min_new_tokens=2, do_sample=False),
+                                        _ledger, {"entry": "generate", "max_new_tokens": 2})
                 except TypeError as te:
                     if "unexpected keyword" not in str(te): raise
-                    return m.generate(**kw)               # e.g. forecasting models: horizon comes from the config
+                    return attempts.run(m, m, kw, lambda: m.generate(**kw), _ledger, {"entry": "generate"})   # e.g. forecasting models: horizon comes from the config
             try:
-                out = _gen(gkw)
+                rec, out = _gen(gkw)
             except Exception as first_err:
-                out, fallback_ok = None, False          # retry with each other working input set
+                fallback_ok = False                     # retry with each other working input set
                 for kw in sorted(ok_kws, key=len, reverse=True):
                     kw2 = {k: v for k, v in kw.items() if k not in ("decoder_input_ids", "labels")}
                     if kw2 == gkw: continue
-                    for k, v in kw2.items():                     # the retry's inputs are model inputs too
-                        if isinstance(v, torch.Tensor): rec.input_names[id(v)] = k
                     try:
-                        out = _gen(kw2); fallback_ok = True; break
+                        rec, out = _gen(kw2); fallback_ok = True; break
                     except Exception:
                         continue
                 if not fallback_ok: raise first_err
         a = analyse(rec, out)
-        pass_res["generate"] = {"ok": True, "secs": round(time.time() - t, 2), **{k: v for k, v in a.items() if k != "structure_signature"}}
+        pass_res["generate"] = {"ok": True, "secs": round(time.time() - t, 2), "attempts": _ledger, **{k: v for k, v in a.items() if k != "structure_signature"}}
         used_params |= rec.used_params; used_buffers |= rec.used_buffers; called |= rec.called
     except Exception as e:
         tb = traceback.extract_tb(e.__traceback__)
         f = next((x for x in reversed(tb) if "site-packages/transformers/" in x.filename), tb[-1] if tb else None)
-        pass_res["generate"] = {"ok": False, "error": f"{type(e).__name__}: {str(e)[:200]}",
+        pass_res["generate"] = {"ok": False, "error": f"{type(e).__name__}: {str(e)[:200]}", "attempts": _ledger,
                                 "where": f"{f.filename.split('site-packages/')[-1]}:{f.lineno}" if f else ""}
     finally:
-        rec.remove_hooks()
+        if rec is not None: rec.remove_hooks()
+        ATTEMPT_LEDGER.extend(_ledger)
     save()
 # ---- 3c. entry points: sub-modules with encode()/decode() that never ran (codecs, VAEs inside a model) ------
 def _exercised_prefix(prefix):
@@ -781,10 +788,9 @@ for name, sub in m.named_modules():
     ekw = {k: v for k, v in all_kw.items() if k in esig}
     if not ekw or not _optional_ok(f"entry:{name}"):
         continue
-    clear_library_caches()
-    rec = DagRecorder(m, ekw)
+    rec, _ledger = None, []
     try:
-        with torch.no_grad(), math_attention(), rec, _limit():
+        def _encdec(sub=sub, ekw=ekw):
             enc = sub.encode(**ekw)
             if callable(getattr(sub, "decode", None)):
                 dsig = inspect.signature(sub.decode).parameters
@@ -792,13 +798,17 @@ for name, sub in m.named_modules():
                 dkw = {k: v for k, v in dict(fields).items() if k in dsig and v is not None}
                 if "padding_mask" in dsig and "padding_mask" in ekw: dkw.setdefault("padding_mask", ekw["padding_mask"])
                 if dkw: sub.decode(**dkw)
+            return enc
+        with _limit():
+            rec, enc = attempts.run(m, m, ekw, _encdec, _ledger, {"entry": f"entry:{name}"})
         a = analyse(rec, enc)
-        pass_res[f"entry:{name}"] = {"ok": True, **{k: v for k, v in a.items() if k != "structure_signature"}}
+        pass_res[f"entry:{name}"] = {"ok": True, "attempts": _ledger, **{k: v for k, v in a.items() if k != "structure_signature"}}
         used_params |= rec.used_params; used_buffers |= rec.used_buffers; called |= rec.called
     except Exception as e:
-        pass_res[f"entry:{name}"] = {"ok": False, "error": f"{type(e).__name__}: {str(e)[:180]}"}
+        pass_res[f"entry:{name}"] = {"ok": False, "error": f"{type(e).__name__}: {str(e)[:180]}", "attempts": _ledger}
     finally:
-        rec.remove_hooks()
+        if rec is not None: rec.remove_hooks()
+        ATTEMPT_LEDGER.extend(_ledger)
 # public methods the model's own classes define (e.g. predict_contacts), run when their module owns weights
 # nothing has read yet; discovered by reflection, arguments filled by name from the inputs that already ran
 BLOCK_VERBS = ("save", "push", "load", "resize", "set", "tie", "init", "prune", "from", "to", "register", "enable", "disable",
@@ -836,20 +846,20 @@ for name, sub in m.named_modules():
                 elif prm.default is prm.empty: ok = False; break
             if not ok or not mkw:
                 continue
-            clear_library_caches()
-            rec = DagRecorder(m, mkw)
+            rec, _ledger = None, []
             try:
-                with torch.no_grad(), math_attention(), rec, _limit():
-                    res = getattr(sub, meth)(**mkw)
+                with _limit():
+                    rec, res = attempts.run(m, m, mkw, lambda: getattr(sub, meth)(**mkw), _ledger, {"entry": f"entry:{name or '(root)'}.{meth}"})
                 a = analyse(rec, res)
                 before = len(used_params)
                 used_params |= rec.used_params; used_buffers |= rec.used_buffers; called |= rec.called
-                pass_res[f"entry:{name or '(root)'}.{meth}"] = {"ok": True, "newly_used_params": len(used_params) - before,
+                pass_res[f"entry:{name or '(root)'}.{meth}"] = {"ok": True, "newly_used_params": len(used_params) - before, "attempts": _ledger,
                                                                  **{k: v for k, v in a.items() if k != "structure_signature"}}
             except Exception as e:
-                pass_res[f"entry:{name or '(root)'}.{meth}"] = {"ok": False, "error": f"{type(e).__name__}: {str(e)[:180]}"}
+                pass_res[f"entry:{name or '(root)'}.{meth}"] = {"ok": False, "error": f"{type(e).__name__}: {str(e)[:180]}", "attempts": _ledger}
             finally:
-                rec.remove_hooks()
+                if rec is not None: rec.remove_hooks()
+                ATTEMPT_LEDGER.extend(_ledger)
 # ---- 3d. training pass: weights the model builds but only training uses (masking vectors, denoising queries,
 #          loss weights, mask tokens). Extra inputs are chosen by what the forward ACCEPTS, never by model name.
 sig_f = inspect.signature(m.forward).parameters
@@ -878,35 +888,36 @@ if ((P_names - used_params) or (persist_bufs - used_buffers)) and any(v["ok"] fo
     if _sh("mask_labels") and _sh("class_labels") and pv is not None:
         mask_cands = [{"mask_labels": [torch.zeros(1, pv.shape[-2], pv.shape[-1])], "class_labels": [torch.tensor([0])]}]
     m.train()
-    done_train, errs = False, []
+    done_train, errs, train_ledger = False, [], []
     for ex in extras:
         for mk in mask_cands:
             for lab in label_cands:
                 kw = dict(base_kw, **ex, **mk)
                 if lab is not None: kw["labels"] = lab
                 if not _optional_ok("train"): break
-                clear_library_caches()
-                rec = DagRecorder(m, {k: v for k, v in kw.items() if isinstance(v, torch.Tensor)})
+                rec, _ledger = None, []
                 try:
-                    with torch.no_grad(), math_attention(), rec, _limit():
-                        out = m(**kw)
+                    with _limit():
+                        rec, out = attempts.run(m, m, {k: v for k, v in kw.items() if isinstance(v, torch.Tensor)},
+                                                lambda: m(**kw), _ledger, {"entry": "train", "labels": type(lab).__name__})
                     newly = (rec.used_params - used_params)
                     a = analyse(rec, out)
                     pass_res["train"] = {"ok": True, "extra_inputs": sorted(set(ex) | set(mk) | ({"labels"} if lab is not None else set())),
-                                         "newly_used_params": len(newly), "ops": a["ops"],
+                                         "newly_used_params": len(newly), "ops": a["ops"], "attempts": train_ledger,
                                          "note": "training-mode pass: counts toward T1/T2 only (loss/matching code may route through Python)"}
                     used_params |= rec.used_params; used_buffers |= rec.used_buffers; called |= rec.called
                     done_train = True
                 except Exception as e:
                     errs.append(f"{type(e).__name__}: {str(e)[:90]}")
                 finally:
-                    rec.remove_hooks()
+                    if rec is not None: rec.remove_hooks()
+                    ATTEMPT_LEDGER.extend(_ledger); train_ledger.extend(_ledger)
                 if done_train: break
             if done_train: break
         if done_train: break
     m.eval()
     if not done_train:
-        pass_res["train"] = {"ok": False, "error": " | ".join(errs[:3])}
+        pass_res["train"] = {"ok": False, "error": " | ".join(errs[:3]), "attempts": train_ledger}
     save()
 R["passes"] = pass_res
 ok_passes = [l for l, v in pass_res.items() if v["ok"] and not l.startswith("stability:") and l != "train"]
@@ -914,37 +925,39 @@ if not ok_passes and not ROOT_NO_FORWARD:
     # every processor-built pass failed: synthesize the forward's inputs by argument name with sizes from the config
     # (synth.py); the first candidate that executes becomes the pass, a second run with other values gives T5
     import synth
-    tried = []
+    tried, synth_ledger = [], []
     for label, kw in synth.candidates(m, limit=40):
-        clear_library_caches()
-        rec = DagRecorder(m, synth.flat_tensors(kw, "synth"))
+        rec, _ledger = None, []
         try:
-            with torch.no_grad(), math_attention(), rec, _limit():
-                out = m(**kw)
+            with _limit():
+                rec, out = attempts.run(m, m, synth.flat_tensors(kw, "synth"), lambda: m(**kw), _ledger, {"entry": f"synth:{label}"})
             a = analyse(rec, out)
-            pass_res["synth"] = {"ok": True, "inputs": label, **{k: v for k, v in a.items() if k != "structure_signature"}}
+            pass_res["synth"] = {"ok": True, "inputs": label, "attempts": synth_ledger, **{k: v for k, v in a.items() if k != "structure_signature"}}
             sigs["synth"] = (a["structure_signature"], [(n.module, n.func) for n in rec.nodes])
             used_params |= rec.used_params; used_buffers |= rec.used_buffers; called |= rec.called
             passes.append(("synth", kw))
             kw2 = next(k2 for lb, k2 in synth.candidates(m, limit=40, seed=1) if lb == label)
-            m2 = _fresh(); rec2 = DagRecorder(m2, synth.flat_tensors(kw2, "synth"))
+            m2, rec2, _l2 = _fresh(), None, []
             try:
-                with torch.no_grad(), math_attention(), rec2, _limit():
-                    o2 = m2(**kw2)
+                with _limit():
+                    rec2, o2 = attempts.run(m2, m2, synth.flat_tensors(kw2, "synth"), lambda: m2(**kw2), _l2,
+                                            {"entry": f"stability:synth:{label}"})
                 sigs["stability:synth"] = (analyse(rec2, o2)["structure_signature"], [(n.module, n.func) for n in rec2.nodes])
-                pass_res["stability:synth"] = {"ok": True}
+                pass_res["stability:synth"] = {"ok": True, "attempts": _l2}
             except Exception as e:
-                pass_res["stability:synth"] = {"ok": False, "error": f"{type(e).__name__}: {str(e)[:120]}"}
+                pass_res["stability:synth"] = {"ok": False, "error": f"{type(e).__name__}: {str(e)[:120]}", "attempts": _l2}
             finally:
-                rec2.remove_hooks()
+                if rec2 is not None: rec2.remove_hooks()
+                ATTEMPT_LEDGER.extend(_l2)
             R.setdefault("input_notes", []).append(f"inputs synthesized by argument name ({label}); processor-built passes all failed")
             break
         except Exception as e:
             tried.append(f"{label}: {type(e).__name__}: {str(e)[:90]}")
         finally:
-            rec.remove_hooks()
+            if rec is not None: rec.remove_hooks()
+            ATTEMPT_LEDGER.extend(_ledger); synth_ledger.extend(_ledger)
     if "synth" not in pass_res:
-        pass_res["synth"] = {"ok": False, "error": " | ".join(tried[:3])}
+        pass_res["synth"] = {"ok": False, "error": " | ".join(tried[:3]), "attempts": synth_ledger}
     R["passes"] = pass_res
     ok_passes = [l for l, v in pass_res.items() if v["ok"] and not l.startswith("stability:") and l != "train"]
 if not ok_passes:
@@ -1238,6 +1251,11 @@ if failed == ["T1_weights"] and _t1.get("leftovers_eligible"):
                                        + ("; " + R["runtime_credit"]["statement"] if (R.get("runtime_credit") or {}).get("statement") else "")
                                        + ("; buffers measured never read in any mode (not declared by the library)"
                                           if _t1.get("buffers_never_read_in_any_mode") else "")}
+_unr = attempts.unrestored(ATTEMPT_LEDGER)
+if _unr:                                  # F13: an attempt changed state that could not be put back afterwards
+    UNKNOWNS.append({"predicate": "G2", "what": "an attempt changed model state that could not be put back: the "
+                     "attempts after it may not have run the state being tested", "items": _unr[:20], "count": len(_unr)})
+R["attempt_ledger"] = attempts.ledger_record(ATTEMPT_LEDGER)
 _zs_unk, _zs_notes = __import__("dag").zero_storage_findings([m] if "m" in globals() and isinstance(globals()["m"], torch.nn.Module) else [])      # F07: zero-weight execution faithfulness (G2)
 UNKNOWNS.extend(_zs_unk)
 if _zs_notes: R["zero_storage_notes"] = _zs_notes

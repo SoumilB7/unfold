@@ -16,6 +16,8 @@ from lowcost import zero_storage
 import common
 from common import grading_id, runtime, ckpt_split, match, library_rename, split_library_ignored, looks_like_stored_buffer, top_groups, numel
 from dag import DagRecorder, tied_alias_modules, math_attention, clear_library_caches
+import attempts                                   # F13: every attempt in its own state window; failed calls credit nothing
+ATTEMPT_LEDGER = []
 
 repo, out_path = sys.argv[1], sys.argv[2]
 HDR_CACHE = os.environ.get("BENCH_HEADER_CACHE", os.path.join(HERE, "..", "cache_v2", "headers"))
@@ -316,8 +318,16 @@ def run_pipeline(height, width, prompt, label="first", only=None):
 
 
 def _attempt(pipe, ck, sig):
+    with attempts.isolated([container], ATTEMPT_LEDGER, {"entry": "pipeline", "call_args": sorted(k for k in ck if k in sig)},
+                           objects=[pipe, objs.get("scheduler")]) as entry:   # F13: state put back after it
+        res = _attempt_call(pipe, ck, sig)
+    if res[2]:
+        entry.update(ok=False, error=res[2][:160])
+    return res
+
+
+def _attempt_call(pipe, ck, sig):
     rec = DagRecorder(container, {})
-    clear_library_caches()
     hooks, calls = [], collections.Counter()
     for cn, m in models.items():                         # a component's call arguments are its inputs
         def pre(mod, args, kw, cn=cn):
@@ -365,6 +375,7 @@ def _attempt(pipe, ck, sig):
 
 rec_a, out_a, stop_a, calls_a, steps_a = run_pipeline(128, 128, "a photo of a cat")
 R["pipeline_call"] = {"stopped_at": stop_a, "component_calls": calls_a, "scheduler": steps_a}
+rec_ok = diffusion_rules.completed_call(rec_a, stop_a)     # F13-1: the first call is evidence only if it completed
 save()
 rec_b, out_b, stop_b, _, _ = run_pipeline(128, 128, "a watercolor painting of a lighthouse at dusk, soft light", "stability",
                                           only=GRADED_VARIANT.get("first"))
@@ -372,13 +383,14 @@ extra = {}
 for cn, m in models.items():                               # entry points the generation path never used
     # (whether or not the pipeline call reached this component: a call that stopped early never touched it)
     if callable(getattr(m, "encode", None)) and any(n.startswith("encoder") for n, _ in m.named_modules()) and not any(
-            n.module.startswith(cn + ".encoder") for n in rec_a.nodes):
+            n.module.startswith(cn + ".encoder") for n in (rec_ok.nodes if rec_ok else [])):
         ch = getattr(m.config, "in_channels", None) or getattr(m.config, "audio_channels", None) or 3
         errs = []
         for shape in ((1, ch, 128, 128), (1, ch, 8192), (1, ch, 5, 128, 128), (1, ch, 9, 128, 128)):  # image, audio, video
             r = DagRecorder(container, {})
             try:
-                with torch.no_grad(), math_attention(), r:
+                with attempts.isolated([container], ATTEMPT_LEDGER, {"entry": f"{cn}.encode", "shape": list(shape)}), \
+                        torch.no_grad(), math_attention(), r:
                     m.encode(torch.zeros(*shape))
                 extra[cn] = r; R["components"][cn]["encode_input_shape"] = list(shape); break
             except Exception as e:
@@ -393,7 +405,7 @@ for cn, m in models.items():
     dec_mods = [n for n, _ in m.named_modules() if n.startswith("decoder") and any(True for _ in _.parameters(recurse=False))]
     if not callable(getattr(m, "decode", None)) or not dec_mods:
         continue
-    ran = {c.split(".", 1)[1] for c in rec_a.called if c.startswith(cn + ".") and "." in c}
+    ran = {c.split(".", 1)[1] for c in (rec_ok.called if rec_ok else ()) if c.startswith(cn + ".") and "." in c}
     if all(d in ran for d in dec_mods):
         continue
     cfg_ = getattr(m, "config", None)
@@ -402,7 +414,8 @@ for cn, m in models.items():
     for shape in ((1, zc, 3, 16, 16), (1, zc, 16, 16), (1, zc, 64)):        # video (several frames), image, audio
         r = DagRecorder(container, {})
         try:
-            with torch.no_grad(), math_attention(), r:
+            with attempts.isolated([container], ATTEMPT_LEDGER, {"entry": f"{cn}.decode", "shape": list(shape)}), \
+                    torch.no_grad(), math_attention(), r:
                 m.decode(torch.zeros(*shape))
             extra[cn] = extra.get(cn, []) + [r] if isinstance(extra.get(cn), list) else ([extra[cn], r] if cn in extra else [r])
             R["components"][cn]["decode_input_shape"] = list(shape); break
@@ -422,7 +435,7 @@ direct = {}
 def _alarm(*_): raise TimeoutError("direct-run time limit")
 _sig.signal(_sig.SIGALRM, _alarm)
 for cn, m in models.items():
-    if any(c == cn or c.startswith(cn + ".") for c in rec_a.called) or not any(True for _ in m.parameters()):
+    if (rec_ok and any(c == cn or c.startswith(cn + ".") for c in rec_ok.called)) or not any(True for _ in m.parameters()):
         continue
     tried, ok = [], None
     # a part with no forward (e.g. a renderer or normalizer) is entered through its own public methods, found by
@@ -453,7 +466,7 @@ for cn, m in models.items():
         r = DagRecorder(container, synth.flat_tensors(kw, f"{cn}.arg"))     # synthesized tensors are named inputs
         _sig.alarm(240)
         try:
-            with torch.no_grad(), math_attention(), r:
+            with attempts.isolated([container], ATTEMPT_LEDGER, {"entry": f"{cn}.{label}"}), torch.no_grad(), math_attention(), r:
                 if ename != "forward": r.stack.append(cn)    # module hooks do not fire for a method call
                 try:
                     callee(**kw)
@@ -478,7 +491,7 @@ for cn, m in models.items():
     kw2 = dict(next(kw for lb, kw in synth.candidates(m, fn=(callee2.forward if ename == "forward" else callee2), limit=40, seed=1) if lb == slabel))
     r2 = DagRecorder(container, synth.flat_tensors(kw2, f"{cn}.arg"))
     try:
-        with torch.no_grad(), math_attention(), r2:
+        with attempts.isolated([container], ATTEMPT_LEDGER, {"entry": f"{cn}.{label} (stability)"}), torch.no_grad(), math_attention(), r2:
             if ename != "forward": r2.stack.append(cn)
             try:
                 callee2(**kw2)
@@ -491,7 +504,9 @@ for cn, m in models.items():
     direct[cn] = (r1, r2)
     extra[cn] = (extra[cn] if isinstance(extra.get(cn), list) else ([extra[cn]] if cn in extra else [])) + [r1] + method_runs
     R["components"][cn]["direct_run"] = {"inputs": label, "attempts_before": len(tried),
-                                        "reason": diffusion_rules.direct_run_reason(cn, getattr(rec_a, "stopped_in", {}) or {}, stop_a)}
+                                        "reason": diffusion_rules.direct_run_reason(
+                                            cn, getattr(rec_a, "stopped_in", {}) or {}, stop_a,
+                                            any(c == cn or c.startswith(cn + ".") for c in rec_a.called))}
 
 
 def norm(nodes, cn):
@@ -502,7 +517,7 @@ verdicts = []
 for cn, m in models.items():
     C = R["components"][cn]
     ex_ = extra.get(cn)
-    recs = [rec_a] + (ex_ if isinstance(ex_, list) else ([ex_] if ex_ is not None else []))
+    recs = ([rec_ok] if rec_ok else []) + (ex_ if isinstance(ex_, list) else ([ex_] if ex_ is not None else []))   # F13-1
     used = set().union(*[{p.split(".", 1)[1] for p in r.used_params | r.used_buffers if p.split(".")[0] == cn} for r in recs])
     called = set().union(*[{c.split(".", 1)[1] if "." in c else "(root)" for c in r.called if c.split(".")[0] == cn} for r in recs])
     checks = {}
@@ -562,7 +577,7 @@ for cn, m in models.items():
     C["failed_checks"], C["not_evaluated_checks"] = diffusion_rules.component_checks(checks)
     C["verdict"] = diffusion_rules.component_verdict(C["failed_checks"], C["not_evaluated_checks"], used)
     verdicts.append(C["verdict"])
-    sub = [n for n in rec_a.nodes if n.module.split(".")[0] == cn]
+    sub = [n for n in (rec_ok.nodes if rec_ok else []) if n.module.split(".")[0] == cn]   # ops of the credited call only
     C["ops"] = len(sub)
 R["stability_run_stopped_at"] = stop_b
 _ne = {cn: C["not_evaluated_checks"] for cn, C in R["components"].items() if C.get("not_evaluated_checks")}
@@ -594,6 +609,11 @@ if R.get("revision") is None:
     UNKNOWNS.append({"predicate": "G6", "what": "the checkpoint revision could not be pinned (" + (R.get("revision_error") or "unknown") + ")",
                      "items": [], "count": 0})
 UNKNOWNS.append(diffusion_rules.no_load_authority_unknown(list(models)))   # P0.2: G1 not established (no D1-A yet)
+_unr = attempts.unrestored(ATTEMPT_LEDGER)
+if _unr:                                  # F13: an attempt wrote into weights in place; later attempts ran on that state
+    UNKNOWNS.append({"predicate": "G2", "what": "an attempt changed model state that could not be put back: the "
+                     "attempts after it may not have run the state being tested", "items": _unr[:20], "count": len(_unr)})
+R["attempt_ledger"] = attempts.ledger_record(ATTEMPT_LEDGER)
 if R["verdict"] == "FULL" and UNKNOWNS:
     R["verdict"] = "FULL_UNVERIFIED"
 R["unknowns"] = UNKNOWNS

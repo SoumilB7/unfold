@@ -2,7 +2,7 @@
  "repo": "google-t5/t5-large",
  "executed_by": "vLLM (source, no compiled extension; custom ops on their pure-PyTorch path)",
  "schema": 2,
- "producer_id": "b52460f2be1c",
+ "producer_id": "7628516d7930",
  "vllm_version": "0.30.0",
  "vllm_source_id": "65d9e4beec54b27c",
  "runtime": {
@@ -75,13 +75,13 @@
  "registry_checked": true,
  "checkpoint_mtp_tensors": 0,
  "revision_pin": {
-  "pinned": 9,
+  "pinned": 8,
   "other_revision": []
  },
  "closed": false,
  "failed_stage": "config",
  "error": "NotImplementedError: Unsupported speculative method: 'mtp'",
  "where": "vllm/config/speculative.py:1369",
- "secs": 9.4,
+ "secs": 10.9,
  "peak_rss_gb": 0.51
 }

@@ -39,9 +39,10 @@ def one(repo):
     STAGE["now"] = "registry"
     try:
         import copy
-        from transformers import AutoConfig
+        from vllm.transformers_utils.config import get_config
         from vllm.config.speculative import SpeculativeConfig
-        hc = AutoConfig.from_pretrained(repo, trust_remote_code=False)
+        # the config exactly as vLLM's engine parses it (e.g. it fills a missing `architectures` from the model type)
+        hc = get_config(repo, trust_remote_code=False, revision=R["revision"])
         snap = lambda c: {"architectures": list(getattr(c, "architectures", None) or []),
                           "model_type": getattr(c, "model_type", None), "n_predict": getattr(c, "n_predict", None)}
         before, after = snap(hc), snap(SpeculativeConfig.hf_config_override(copy.deepcopy(hc)))
@@ -89,9 +90,13 @@ def one(repo):
         if names & used: used |= names
     R["executed_checkpoint_keys"] = sorted(k for k in T if mp.get(k) and all(t in used for t in mp[k]))
     R["loaded_not_used_keys"] = sorted(k for k in T if mp.get(k) and not all(t in used for t in mp[k]))
-    R["mtp_not_loaded"] = sorted(k for k in mtp if not mp.get(k))
-    R["mtp_loaded_not_used"] = sorted(k for k in mtp if mp.get(k) and not all(t in used for t in mp[k]))
-    R["mtp_executed"] = sorted(k for k in mtp if mp.get(k) and all(t in used for t in mp[k]))
+    # the MTP tensors under the names fed to vLLM's loader (ckpt_split names: packed weights normalised, auxiliary
+    # quantization tensors not fed and not listed)
+    _norm = (lambda k: re.sub(r"_blocks$", "", re.sub(r"\.(qweight|weight_packed)$", ".weight", k))) if _packed else (lambda k: k)
+    mtp_l = sorted({_norm(k) for k in mtp} & set(T))
+    R["mtp_not_loaded"] = sorted(k for k in mtp_l if not mp.get(k))
+    R["mtp_loaded_not_used"] = sorted(k for k in mtp_l if mp.get(k) and not all(t in used for t in mp[k]))
+    R["mtp_executed"] = sorted(k for k in mtp_l if mp.get(k) and all(t in used for t in mp[k]))
     # closure against the library's declared-unbuilt list is decided in the main environment (apply_witness.py)
     # (input distinctness is recorded separately and re-derived by the grader: an undistinct pair is a G5a unknown there,
     #  not a failed run)

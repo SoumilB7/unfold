@@ -42,7 +42,8 @@ def overall_verdict(component_verdicts, stop_a, stop_b):
 
 
 def component_verdict(failed, not_evaluated, used):
-    """A component's verdict: an observed failure -> PARTIAL (FAIL if the component never ran); otherwise a check
+    """A component's verdict: an observed failure -> PARTIAL (FAIL if no credited run of the component completed);
+    otherwise a check
     that could not be evaluated -> FULL_UNVERIFIED (never FULL); otherwise FULL."""
     if failed:
         return "PARTIAL" if used else "FAIL"
@@ -155,10 +156,18 @@ def components_on_traceback(tb, components):
     return out
 
 
-def direct_run_reason(cn, stopped_in, stop_first):
-    """Why a component was run directly, from the evidence (P0.6 F7)."""
+def completed_call(rec, stopped):
+    """F13-1 (Soumil 2026-10-13): the recorder of the first pipeline call counts as evidence only if the call completed;
+    nothing from a call that raised is credited (its components get their own direct runs)."""
+    return None if stopped else rec
+
+
+def direct_run_reason(cn, stopped_in, stop_first, ran_in_stopped=False):
+    """Why a component was run directly, from the evidence (P0.6 F7, F13-1)."""
     if cn in stopped_in:
         return f"the pipeline call raised inside this component ({stopped_in[cn]})"
+    if stop_first and ran_in_stopped:
+        return "this component ran inside a pipeline call that later raised: nothing from that call is credited (F13-1)"
     if stop_first:
         return "the pipeline call stopped before reaching this component"
     return "the pipeline call completed without calling this component's forward"

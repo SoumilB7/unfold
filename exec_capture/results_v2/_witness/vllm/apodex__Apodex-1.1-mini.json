@@ -2,7 +2,7 @@
  "repo": "apodex/Apodex-1.1-mini",
  "executed_by": "vLLM (source, no compiled extension; custom ops on their pure-PyTorch path)",
  "schema": 2,
- "producer_id": "b52460f2be1c",
+ "producer_id": "7628516d7930",
  "vllm_version": "0.30.0",
  "vllm_source_id": "65d9e4beec54b27c",
  "runtime": {
@@ -1838,9 +1838,9 @@
  "ir_torch_wrap": false,
  "transparent": true,
  "revision_pin": {
-  "pinned": 21,
+  "pinned": 20,
   "other_revision": []
  },
- "secs": 11.1,
- "peak_rss_gb": 1.89
+ "secs": 12.6,
+ "peak_rss_gb": 1.97
 }

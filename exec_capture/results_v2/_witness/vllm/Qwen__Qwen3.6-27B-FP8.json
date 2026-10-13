@@ -2,7 +2,7 @@
  "repo": "Qwen/Qwen3.6-27B-FP8",
  "executed_by": "vLLM (source, no compiled extension; custom ops on their pure-PyTorch path)",
  "schema": 2,
- "producer_id": "b52460f2be1c",
+ "producer_id": "7628516d7930",
  "vllm_version": "0.30.0",
  "vllm_source_id": "65d9e4beec54b27c",
  "runtime": {
@@ -121,15 +121,7 @@
   "mtp.pre_fc_norm_hidden.weight"
  ],
  "loaded_not_used_keys": [],
- "mtp_not_loaded": [
-  "mtp.layers.0.mlp.down_proj.weight_scale_inv",
-  "mtp.layers.0.mlp.gate_proj.weight_scale_inv",
-  "mtp.layers.0.mlp.up_proj.weight_scale_inv",
-  "mtp.layers.0.self_attn.k_proj.weight_scale_inv",
-  "mtp.layers.0.self_attn.o_proj.weight_scale_inv",
-  "mtp.layers.0.self_attn.q_proj.weight_scale_inv",
-  "mtp.layers.0.self_attn.v_proj.weight_scale_inv"
- ],
+ "mtp_not_loaded": [],
  "mtp_loaded_not_used": [],
  "mtp_executed": [
   "mtp.fc.weight",
@@ -286,9 +278,9 @@
  "ir_torch_wrap": false,
  "transparent": true,
  "revision_pin": {
-  "pinned": 71,
+  "pinned": 70,
   "other_revision": []
  },
- "secs": 14.3,
- "peak_rss_gb": 1.08
+ "secs": 16.2,
+ "peak_rss_gb": 1.25
 }

@@ -283,15 +283,16 @@ class DagRecorder(TorchDispatchMode):
         kwargs = kwargs or {}
         mod = self.stack[-1]
         ins, consts, reads_weight = [], [], False
+        p_read, b_read = [], []          # credited only once the op has completed (F13: an op that raises reads nothing)
         for a in tree_flatten((args, kwargs))[0]:
             if isinstance(a, torch.Tensor):
                 k = id(a)
                 if k in self.producer:
                     ins.append(("op", self.producer[k]))
                 elif k in self.param_names:
-                    ins.append(("param", self.param_names[k])); self.used_params.add(self.param_names[k]); reads_weight = True
+                    ins.append(("param", self.param_names[k])); p_read.append(self.param_names[k]); reads_weight = True
                 elif k in self.buffer_names:
-                    ins.append(("buffer", self.buffer_names[k])); self.used_buffers.add(self.buffer_names[k]); reads_weight = True
+                    ins.append(("buffer", self.buffer_names[k])); b_read.append(self.buffer_names[k]); reads_weight = True
                 elif k in self.input_names:
                     ins.append(("input", self.input_names[k])); self.used_inputs.add(self.input_names[k])
                 elif k in self.const_names:
@@ -340,6 +341,7 @@ class DagRecorder(TorchDispatchMode):
                 reads_weight and not any(math.isinf(c) for c in lits) and any(bool(torch.isinf(o).any()) for o in fo))
             if bad and all(finite(a) for a in tree_flatten((args, kwargs))[0] if isinstance(a, torch.Tensor)):
                 NONFINITE_EVENTS.append(f"{func.overloadpacket.__name__} in {mod}")
+        self.used_params.update(p_read); self.used_buffers.update(b_read)
         outs = [o for o in tree_flatten(out)[0] if isinstance(o, torch.Tensor)]
         idx = len(self.nodes)
         self.nodes.append(Node(str(func.overloadpacket.__name__), mod, ins, consts, len(outs),

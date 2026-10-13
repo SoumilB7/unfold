@@ -181,7 +181,7 @@ def main():
         "worker_v2_diffusion: split_library_ignored passes the quantized keys": "split_library_ignored(m, W, ren, QW)" in WD,
         "worker_v2_diffusion: _last_resort applies after_grading_exception": "common.after_grading_exception(R, UNKNOWNS" in WD,
         "worker_v2_diffusion: _attempt records the traceback components": "diffusion_rules.components_on_traceback(e.__traceback__, models)" in WD,
-        "worker_v2_diffusion: direct-run reason from evidence": "diffusion_rules.direct_run_reason(cn," in WD,
+        "worker_v2_diffusion: direct-run reason from evidence": "diffusion_rules.direct_run_reason(" in WD and 'getattr(rec_a, "stopped_in", {})' in WD,
         "worker_v2_diffusion: the P0.2 unknown is added BEFORE the FULL -> FULL_UNVERIFIED promotion":
             0 <= WD.find("UNKNOWNS.append(diffusion_rules.no_load_authority_unknown(") < WD.find('if R["verdict"] == "FULL" and UNKNOWNS:'),
         "worker_v2: the R-REFUSE FAIL is set before the promotion": 0 <= W2.find('R["reason"] = (f"library refuses this checkpoint') < W2.find('if R["verdict"] in ("FULL", "FULL_LEFTOVERS") and UNKNOWNS:'),

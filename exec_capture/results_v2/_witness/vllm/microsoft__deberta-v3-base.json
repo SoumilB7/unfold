@@ -2,7 +2,7 @@
  "repo": "microsoft/deberta-v3-base",
  "executed_by": "vLLM (source, no compiled extension; custom ops on their pure-PyTorch path)",
  "schema": 2,
- "producer_id": "b52460f2be1c",
+ "producer_id": "7628516d7930",
  "vllm_version": "0.30.0",
  "vllm_source_id": "65d9e4beec54b27c",
  "runtime": {
@@ -55,17 +55,33 @@
   "KV-cache write: pure-PyTorch scatter registered as _C_cache_ops.reshape_and_cache_flash (vLLM's kernel is not compiled)",
   "MoE: vLLM's reference experts (BatchedPrepareAndFinalize + NaiveBatchedExperts) instead of the compiled CPU grouped GEMM"
  ],
+ "registry_override": {
+  "before": {
+   "architectures": [
+    "DebertaV2Model"
+   ],
+   "model_type": "deberta-v2",
+   "n_predict": null
+  },
+  "after": {
+   "architectures": [
+    "DebertaV2Model"
+   ],
+   "model_type": "deberta-v2",
+   "n_predict": null
+  }
+ },
  "vllm_mtp_arch": null,
- "registry_error": "TypeError: 'NoneType' object is not subscriptable",
+ "registry_checked": true,
  "checkpoint_mtp_tensors": 0,
  "revision_pin": {
-  "pinned": 2,
+  "pinned": 1,
   "other_revision": []
  },
  "closed": false,
  "failed_stage": "config",
  "error": "ValidationError: 1 validation error for ModelConfig\n  Value error, Model architectures ['DebertaV2Model'] are not supported for now. Supported architectures: dict_keys(['AfmoeForCausalLM', 'ApertusForCausalLM', 'ArceeForCausalLM', 'AXK1ForCausalLM', 'BailingMoeForCausalLM', 'BailingMoeV2ForCausalLM', 'BailingMoeV2_5",
  "where": "/Users/soumil/Code/Projects/Understand/llmvisualizer/model-benchmark/.venv_vllm/lib/python3.12/site-packages/pydantic/_internal/_dataclasses.py:121",
- "secs": 4.2,
- "peak_rss_gb": 0.51
+ "secs": 6.0,
+ "peak_rss_gb": 0.5
 }

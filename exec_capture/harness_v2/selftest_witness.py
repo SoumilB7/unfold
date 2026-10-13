@@ -174,7 +174,8 @@ def main():
         fake_h = os.path.join(out, "harness_v2"); os.makedirs(fake_h)
         vdir = os.path.join(out, "vllm"); os.makedirs(vdir); open(os.path.join(vdir, "__init__.py"), "w").write("# stub\n")
         recs = {}
-        saved = {k: sys.modules.get(k) for k in ("vllm", "vllm.config", "vllm.config.speculative", "vllm_witness", "lowcost",
+        saved = {k: sys.modules.get(k) for k in ("vllm", "vllm.config", "vllm.config.speculative", "vllm.transformers_utils",
+                                                  "vllm.transformers_utils.config", "vllm_witness", "lowcost",
                                                   "noweights", "huggingface_hub", "transformers", "common")}
         try:
             for case in ("A", "B", "C", "D", "F", "V"):
@@ -204,6 +205,9 @@ def main():
                         if case == "B": raise OSError("We couldn't connect to 'https://huggingface.co' to load the config")
                         return types.SimpleNamespace(architectures=["FooForCausalLM"], model_type="foo")
                 m("transformers").AutoConfig = AutoConfig
+                m("vllm.transformers_utils")
+                m("vllm.transformers_utils.config").get_config = lambda repo, trust_remote_code, revision=None, **k: \
+                    AutoConfig.from_pretrained(repo)          # (vLLM's own config parser; stubbed)
                 m("lowcost").fetch_headers = lambda repo: ({"model.embed.weight": ((4, 4), "F32")}, None)
                 W = m("vllm_witness"); W.SETTINGS = {"n_tokens": 8, "run_seeds": [0, 1]}
                 def build(repo): raise NotImplementedError("Unsupported speculative method: 'mtp'")
@@ -259,6 +263,8 @@ def main():
         "mtp_witness_run: distinctness is recorded, not folded into closed (an undistinct pair is a G5a unknown)":
             'R["distinct_inputs"] = ' in MR and 'and R["distinct_inputs"]' not in MR,
         "mtp_witness_run: no name test on vLLM's arch": '"MTP" in a' not in MR,
+        "mtp_witness_run: the registry is asked on vLLM's own parsed config (F14 follow-up a)":
+            "get_config(repo, trust_remote_code=False, revision=R[\"revision\"])" in MR and "AutoConfig.from_pretrained" not in MR,
         "mtp_witness_run: the recorder imports its helpers from witness_io, not the grading rules": "common" not in MR,
         "vllm_witness: the recorder does not import the grading rules": "import common" not in VW,
         "worker_v2: the loader-branch statement is emitted": "common.loader_statement(WIT, len(unbuilt))" in W2,

@@ -2,7 +2,7 @@
  "repo": "deepseek-ai/DeepSeek-V4-Flash-Vision-Exp",
  "executed_by": "vLLM (source, no compiled extension; custom ops on their pure-PyTorch path)",
  "schema": 2,
- "producer_id": "b52460f2be1c",
+ "producer_id": "7628516d7930",
  "vllm_version": "0.30.0",
  "vllm_source_id": "65d9e4beec54b27c",
  "runtime": {
@@ -75,13 +75,13 @@
  "registry_checked": true,
  "checkpoint_mtp_tensors": 4708,
  "revision_pin": {
-  "pinned": 50,
+  "pinned": 49,
   "other_revision": []
  },
  "closed": false,
  "failed_stage": "config",
  "error": "ValidationError: 1 validation error for ModelConfig\n  Value error, This model does not support `--runner generate`. [type=value_error, input_value=ArgsKwargs((), {'model': ...nderer_num_workers': 1}), input_type=ArgsKwargs]\n    For further information visit https://errors.pydantic.dev/2.13/v/value_error",
  "where": "/Users/soumil/Code/Projects/Understand/llmvisualizer/model-benchmark/.venv_vllm/lib/python3.12/site-packages/pydantic/_internal/_dataclasses.py:121",
- "secs": 18.3,
- "peak_rss_gb": 0.46
+ "secs": 18.8,
+ "peak_rss_gb": 0.53
 }

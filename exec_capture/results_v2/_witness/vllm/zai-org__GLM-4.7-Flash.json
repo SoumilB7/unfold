@@ -2,7 +2,7 @@
  "repo": "zai-org/GLM-4.7-Flash",
  "executed_by": "vLLM (source, no compiled extension; custom ops on their pure-PyTorch path)",
  "schema": 2,
- "producer_id": "b52460f2be1c",
+ "producer_id": "7628516d7930",
  "vllm_version": "0.30.0",
  "vllm_source_id": "65d9e4beec54b27c",
  "runtime": {
@@ -75,13 +75,13 @@
  "registry_checked": true,
  "checkpoint_mtp_tensors": 0,
  "revision_pin": {
-  "pinned": 54,
+  "pinned": 53,
   "other_revision": []
  },
  "closed": false,
  "failed_stage": "config",
  "error": "RuntimeError: No Glm4MoE layer found in model.layers.",
  "where": "vllm/model_executor/models/glm4_moe.py:509",
- "secs": 11.6,
- "peak_rss_gb": 0.64
+ "secs": 13.0,
+ "peak_rss_gb": 0.65
 }
