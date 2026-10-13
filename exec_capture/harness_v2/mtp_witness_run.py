@@ -55,6 +55,9 @@ def one(repo):
         R["registry_checked"] = True              # vLLM's registry decision completed
     except Exception as e:
         R["vllm_mtp_arch"] = None; R["registry_error"] = f"{type(e).__name__}: {str(e)[:160]}"
+        _net = noweights.network_error(e)
+        if _net:                                  # (F14 e) the registry was not answered because of the network
+            R["registry_network_error"] = str(_net)[:200]
     STAGE["now"] = "headers"
     T, _ = fetch_headers(repo)
     mtp = {k: v for k, v in T.items() if k.startswith("mtp.") or ".mtp." in k}
@@ -97,7 +100,7 @@ def one(repo):
     R["mtp_not_loaded"] = sorted(k for k in mtp_l if not mp.get(k))
     R["mtp_loaded_not_used"] = sorted(k for k in mtp_l if mp.get(k) and not all(t in used for t in mp[k]))
     R["mtp_executed"] = sorted(k for k in mtp_l if mp.get(k) and all(t in used for t in mp[k]))
-    # closure against the library's declared-unbuilt list is decided in the main environment (apply_witness.py)
+    # closure against the library's declared-unbuilt list is decided by the grader (runtime_credit_needed)
     # (input distinctness is recorded separately and re-derived by the grader: an undistinct pair is a G5a unknown there,
     #  not a failed run)
     R["closed"] = bool(R["executed_checkpoint_keys"]) and not R["loaded_not_used_keys"] and R["stable_structure"] and not R["mapping_error"]
@@ -142,6 +145,13 @@ if __name__ == "__main__":
                 R.setdefault("vllm_mtp_arch", REG["arch"])
             if "revision" in R:
                 R["revision_pin"] = _pin_log()
+            try:                                  # a network / hub failure is never evidence about the model (F14 e)
+                import noweights as _nw
+                _net = _nw.network_error(e)
+            except Exception:
+                _net = None
+            if _net:
+                R["network_error"] = str(_net)[:200]
             R.update({"closed": False, "failed_stage": STAGE["now"], "error": f"{type(e).__name__}: {str(e)[:300]}",
                       "where": f"{tb[-1].filename.split('vllm-0.30.0/')[-1]}:{tb[-1].lineno}" if tb else ""})
         R["secs"] = round(time.time() - t, 1); R["peak_rss_gb"] = round(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1e9, 2)

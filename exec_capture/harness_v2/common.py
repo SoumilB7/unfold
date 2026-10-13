@@ -377,6 +377,8 @@ def runtime_credit_needed(unbuilt, wit, revision=None, producer=None):
                 + ") without naming an MTP module: whether vLLM runs the declared-unbuilt tensors is not established")
         return set(), None
     if not wit.get("closed") or wit.get("mapping_error"):
+        if wit.get("network_error"):              # (F14 e) cut short by the network: not evidence about vLLM (re-record)
+            return set(), ("G6", f"the runtime witness was cut short by a network failure ({str(wit['network_error'])[:100]}): re-record it")
         return unbuilt, None                      # a failed witness run proves nothing about what vLLM runs: all of them
     norm = lambda k: re.sub(r"_blocks$", "", re.sub(r"\.(qweight|weight_packed)$", ".weight", k))   # as ckpt_split names
     mapped = {norm(k) for k in (wit.get("executed_checkpoint_keys") or []) + (wit.get("loaded_not_used_keys") or [])}

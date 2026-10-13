@@ -43,6 +43,28 @@ def main():
     except Exception as e: cases["OSError wrapping a closed-client error"] = (e, True)
     try: torch.zeros(2, 3) @ torch.zeros(2, 3)
     except Exception as e: cases["model RuntimeError (torch shape)"] = (e, False)
+    # F14 e: pydantic (vLLM's config dataclasses) wraps an exception raised during validation WITHOUT a cause / context
+    try:
+        import pydantic
+        @pydantic.dataclasses.dataclass
+        class _Cfg:
+            x: int = 0
+            def __post_init__(self):
+                try:
+                    raise httpx.ConnectTimeout("handshake timed out")
+                except httpx.ConnectTimeout as ce:
+                    raise ValueError("Error parsing config") from ce
+        @pydantic.dataclasses.dataclass
+        class _Bad:
+            x: int = 0
+            def __post_init__(self):
+                raise ValueError("Model architectures ['X'] are not supported")
+        for nm, k_, want in (("pydantic-wrapped ValueError from ConnectTimeout", _Cfg, True),
+                             ("pydantic-wrapped model ValueError", _Bad, False)):
+            try: k_()
+            except Exception as e: cases[nm] = (e, want)
+    except ImportError:
+        pass
     try:
         req = httpx.Request("GET", "https://huggingface.co/x"); httpx.Response(404, request=req).raise_for_status()
     except Exception as e: cases["404 HTTPStatusError (a server answer)"] = (e, False)

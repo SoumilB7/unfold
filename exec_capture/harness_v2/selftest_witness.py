@@ -123,6 +123,10 @@ def main():
     check("VALID no record stays the G3 unknown", need(mtp, None), ([], "G3"))
     check("VALID closed MTP witness: credit needed for exactly what vLLM maps", need(mtp | {"t5.rel"}, good), (sorted(mtp), None))
     check("VALID failed MTP witness: every declared-unbuilt tensor needs credit", need(mtp, dict(good, closed=False)), (sorted(mtp), None))
+    check("NEG (F14 e) an MTP witness cut short by a network failure: G6 unknown, never 'needs credit for all' (PARTIAL)",
+          need(mtp, dict(good, closed=False, failed_stage="headers", network_error="ConnectTimeout: handshake timed out")), ([], "G6"))
+    check("VALID (F14 e) a bound 'no MTP' answer given before a later network failure is still the registry's answer",
+          need(mtp, dict(noarch, failed_stage="headers", network_error="ConnectTimeout")), ([], None))
     unbound = lambda w: {k: v for k, v in w.items() if k not in ("producer_id", "vllm_source_id", "schema", "revision_pin")}
     check("NEG UNBOUND failed MTP witness: G6 unknown, no credit demand (never PARTIAL from an unbound record)",
           need(mtp, unbound(dict(good, closed=False))), ([], "G6"))
@@ -174,11 +178,12 @@ def main():
         fake_h = os.path.join(out, "harness_v2"); os.makedirs(fake_h)
         vdir = os.path.join(out, "vllm"); os.makedirs(vdir); open(os.path.join(vdir, "__init__.py"), "w").write("# stub\n")
         recs = {}
+        _real_network_error = importlib.import_module("noweights").network_error     # the recorder's real classifier
         saved = {k: sys.modules.get(k) for k in ("vllm", "vllm.config", "vllm.config.speculative", "vllm.transformers_utils",
                                                   "vllm.transformers_utils.config", "vllm_witness", "lowcost",
                                                   "noweights", "huggingface_hub", "transformers", "common")}
         try:
-            for case in ("A", "B", "C", "D", "F", "V"):
+            for case in ("A", "B", "C", "D", "F", "V", "N", "W", "O", "R"):
                 for k in saved: sys.modules.pop(k, None)
                 sys.modules["common"] = CM
                 m = lambda n: sys.modules.setdefault(n, types.ModuleType(n))
@@ -187,13 +192,14 @@ def main():
                 class SpeculativeConfig:
                     @staticmethod
                     def hf_config_override(c, case=case):
-                        if case == "C": c.architectures = ["Qwen3_5MTP"]
+                        if case in ("C", "N", "W", "O"): c.architectures = ["Qwen3_5MTP"]
                         if case == "D": c.architectures = ["EagleMistralLarge3ForCausalLM"]     # vLLM's draft, no "MTP" in the name
                         if case == "V": c.model_type, c.n_predict = "deepseek_mtp", 1          # config changed, no arch added
                         return c
                 sp.SpeculativeConfig = SpeculativeConfig
                 nw = m("noweights"); nw.PIN_LOG = {"pinned": 7, "other_revision": ["stale"]}   # a previous repo's log
                 nw.pin = lambda repo, sha, nw=nw: nw.PIN_LOG.__setitem__("pinned", nw.PIN_LOG["pinned"] + 1)
+                nw.network_error = _real_network_error
                 class HfApi:
                     def model_info(self, repo, case=case):
                         if case == "F": raise ConnectionError("hub unreachable")
@@ -203,6 +209,9 @@ def main():
                     @staticmethod
                     def from_pretrained(repo, case=case, **k):
                         if case == "B": raise OSError("We couldn't connect to 'https://huggingface.co' to load the config")
+                        if case == "R":
+                            import httpx
+                            raise httpx.ConnectTimeout("handshake timed out")             # the registry stage hits the network
                         return types.SimpleNamespace(architectures=["FooForCausalLM"], model_type="foo")
                 m("transformers").AutoConfig = AutoConfig
                 m("vllm.transformers_utils")
@@ -210,7 +219,19 @@ def main():
                     AutoConfig.from_pretrained(repo)          # (vLLM's own config parser; stubbed)
                 m("lowcost").fetch_headers = lambda repo: ({"model.embed.weight": ((4, 4), "F32")}, None)
                 W = m("vllm_witness"); W.SETTINGS = {"n_tokens": 8, "run_seeds": [0, 1]}
-                def build(repo): raise NotImplementedError("Unsupported speculative method: 'mtp'")
+                def build(repo, case=case):
+                    if case == "N":
+                        import socket
+                        raise socket.gaierror("nodename nor servname provided")      # a network failure (by type)
+                    if case == "W":                                                    # vLLM wraps it: ValueError from ConnectTimeout
+                        import httpx
+                        try:
+                            raise httpx.ConnectTimeout("handshake timed out")
+                        except httpx.ConnectTimeout as ce:
+                            raise ValueError("Error parsing config for x") from ce
+                    if case == "O":                                                    # a repo fact, not the network
+                        raise OSError("x does not appear to have a file named config.json")
+                    raise NotImplementedError("Unsupported speculative method: 'mtp'")
                 W.build = build
                 sys.argv = ["mtp_witness_run.py", f"probe/case{case}"]
                 g = {"__name__": "__main__", "__file__": os.path.join(fake_h, "mtp_witness_run.py")}
@@ -220,7 +241,7 @@ def main():
             for k, v in saved.items():
                 if v is None: sys.modules.pop(k, None)
                 else: sys.modules[k] = v
-        A, B, C, D, F, V = (recs[k] for k in "ABCDFV")
+        A, B, C, D, F, V, N, Wr, O, Rg = (recs[k] for k in "ABCDFVNWOR")
         idk = ("schema", "revision", "producer_id", "vllm_version", "vllm_source_id", "runtime")
         check("NEG a failed run keeps its identity (schema, revision, producer, vLLM version + source, runtime)",
               all(A.get(k) for k in idk), True)
@@ -242,6 +263,16 @@ def main():
         check("NEG a draft arch vLLM substitutes without 'MTP' in its name is still its MTP module (evidence, not a name)",
               D.get("vllm_mtp_arch"), "EagleMistralLarge3ForCausalLM")
         check("NEG a failure before the registry is asked never writes a 'no MTP' answer", "vllm_mtp_arch" in F, False)
+        check("NEG (F14 e) the recorder marks a network failure by type on the failed record", bool(N.get("network_error")), True)
+        check("VALID (F14 e) a model error is not marked as a network failure", "network_error" in C, False)
+        check("NEG (F14 e) a network error vLLM wrapped (ValueError from ConnectTimeout) is still marked", bool(Wr.get("network_error")), True)
+        check("VALID (F14 e) a repo-fact OSError (missing config.json) is not marked as network", "network_error" in O, False)
+        check("NEG (F14 e) a network failure at the registry stage is marked for re-recording", bool(Rg.get("registry_network_error")), True)
+        if rc and takes_binding:
+            check("NEG (F14 e) that record is a G6 unknown for the grader", (rc(mtp, N, REV)[1] or ("",))[0], "G6")
+            check("NEG (F14 e) the wrapped network failure is a G6 unknown too", (rc(mtp, Wr, REV)[1] or ("",))[0], "G6")
+            check("VALID (F14 e) the repo-fact failure still needs credit for every MTP tensor (an observed failure)",
+                  sorted(rc(mtp, O, REV)[0]), sorted(mtp))
         if rc and takes_binding:
             check("NEG override changed model_type / n_predict without an arch (V4.1-like): recorded evidence gives a G3 unknown",
                   (rc(mtp, V, REV)[1] or ("",))[0], "G3")

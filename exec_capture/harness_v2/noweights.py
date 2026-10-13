@@ -206,8 +206,23 @@ def network_error(e):
         kinds += [LocalEntryNotFoundError, OfflineModeIsEnabled]
     except Exception:
         HfHubHTTPError = None
-    chain, x, hit = [], e, False
-    while x is not None and len(chain) < 10:
+    try:                                                  # pydantic (vLLM's config dataclasses) wraps an exception
+        from pydantic_core import ValidationError as _PydVE    # raised in validation without __cause__ / __context__:
+    except Exception:                                     # its own record of it is ctx["error"] (F14 e)
+        _PydVE = None
+    def _wrapped(x):
+        if _PydVE is not None and isinstance(x, _PydVE):
+            try:
+                return [d["ctx"]["error"] for d in x.errors() if isinstance((d.get("ctx") or {}).get("error"), BaseException)]
+            except Exception:
+                return []
+        return []
+    chain, todo, seen, hit = [], [e], set(), False
+    while todo and len(chain) < 10:
+        x = todo.pop(0)
+        if x is None or id(x) in seen:
+            continue
+        seen.add(id(x))
         chain.append(type(x).__name__)
         if isinstance(x, tuple(kinds)) or raised_in_http_client(x):
             hit = True
@@ -216,5 +231,5 @@ def network_error(e):
             if code is not None and (code >= 500 or code == 429): hit = True
         if "couldn't connect to" in str(x) or "We couldn't connect" in str(x):
             hit = True                                    # transformers' own wording for an unreachable hub
-        x = x.__cause__ or x.__context__
+        todo += [x.__cause__ or x.__context__] + _wrapped(x)
     return " <- ".join(chain) if hit else None
