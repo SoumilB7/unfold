@@ -50,9 +50,40 @@ def headers_read_names(opened, headers):
     return [k for f in opened for k in headers.get(f, {})]
 
 
+def hypothesis(repo, cls, aux_keys=(), config=None, load_kw=None):
+    """The COMPLETE load hypothesis a library load report is evidence for (F04): the repo (+ its pinned revision), the
+    class (module + qualified name, not its bare name), every from_pretrained keyword, the auxiliary-key classification
+    and the config the loader is given (its full serialisation, incl. attention implementation and dtype), plus the
+    installed library. Two requests share a report only if every field is equal."""
+    import hashlib, transformers, torch
+    rev = None
+    try:
+        import noweights
+        rev = noweights.ref(repo) if not (os.path.isabs(str(repo)) and os.path.isdir(str(repo))) else None
+    except Exception:
+        rev = None
+    cfg_txt = None
+    if config is not None:
+        try:
+            cfg_txt = config.to_json_string(use_diff=False)
+        except Exception:
+            cfg_txt = repr(sorted(vars(config).items(), key=lambda x: x[0]))
+        cfg_txt += f"|attn={getattr(config, '_attn_implementation_internal', None)}|dtype={getattr(config, 'dtype', None)}"
+        cfg_txt += "|" + json.dumps({k: v for k, v in (config_view(config) or {}).items()
+                                     if k.rsplit(".", 1)[-1].startswith(("_attn_implementation", "_experts_implementation"))},
+                                    sort_keys=True)          # (every sub-config's private implementation choice)
+    h = {"repo": str(repo), "revision_ref": rev, "class": f"{cls.__module__}.{cls.__qualname__}",
+         "load_kw": {k: str(v) for k, v in sorted((load_kw or {}).items())}, "aux_keys": sorted(aux_keys),
+         "config_sha": hashlib.sha256(cfg_txt.encode()).hexdigest()[:16] if cfg_txt is not None else None,
+         "transformers": transformers.__version__, "torch": torch.__version__}
+    h["key"] = hashlib.sha256(json.dumps(h, sort_keys=True, default=str).encode()).hexdigest()[:20]
+    return h
+
+
 class Authority:
-    """The repo mirrored ONCE as sparse stubs; report(cls) runs the library's from_pretrained for any class over the
-    same stubs (class selection compares candidates; the chosen class's report is reused for T1). close() deletes."""
+    """The repo mirrored ONCE as sparse stubs; report(cls, ...) runs the library's from_pretrained over the same stubs.
+    Reports are cached by the COMPLETE load hypothesis (F04: class, config, keywords, auxiliary keys, revision, library),
+    never by class name: a request with any different field gets its own load. close() deletes."""
     def __init__(self, repo):
         self.repo, self.d, self.headers, self.n, self.cache = repo, tempfile.mkdtemp(prefix="libload_"), {}, None, {}
 
@@ -71,13 +102,33 @@ class Authority:
                 self.n = mirror_sparse(self.repo, self.d, self.headers)
         return self.n
 
-    def report(self, cls, aux_keys=(), config=None):
-        """One report per class. `config` is the config the worker executes (copied: the loader must not change it)."""
+    def key(self, cls, aux_keys=(), config=None, **load_kw):
+        return hypothesis(self.repo, cls, aux_keys, config, load_kw)["key"]
+
+    def lookup(self, cls, aux_keys=(), config=None, **load_kw):
+        """The cached report for exactly this hypothesis, or None (never a report of another hypothesis)."""
+        return self.cache.get(self.key(cls, aux_keys, config, **load_kw))
+
+    def forget(self, cls, aux_keys=(), config=None, **load_kw):
+        self.cache.pop(self.key(cls, aux_keys, config, **load_kw), None)
+
+    def report(self, cls, aux_keys=(), config=None, **load_kw):
+        """One report per complete load hypothesis. `config` is copied (the loader must not change the caller's), and
+        the hypothesis is computed from the copy BEFORE the load (a load that mutates its config cannot re-key it)."""
         import copy
-        if cls.__name__ not in self.cache:
-            kw = {"config": copy.deepcopy(config)} if config is not None else {}
-            self.cache[cls.__name__] = _report(self, cls, aux_keys, **kw)
-        return self.cache[cls.__name__]
+        hyp = hypothesis(self.repo, cls, aux_keys, config, load_kw)
+        if hyp["key"] not in self.cache:
+            kw = dict(load_kw)
+            if config is not None:
+                kw["config"] = copy.deepcopy(config)
+            r = _report(self, cls, aux_keys, **kw)
+            if isinstance(r, dict):
+                r["hypothesis"] = hyp
+            self.cache[hyp["key"]] = r
+        r = self.cache[hyp["key"]]
+        if isinstance(r, dict) and r.get("hypothesis", hyp)["key"] != hyp["key"]:   # invariant: never cross-served
+            raise RuntimeError("authority cache served a report of another load hypothesis")
+        return r
 
     def close(self):
         if not getattr(self, "local", False):
@@ -92,6 +143,15 @@ def _report(A, cls, aux_keys=(), **kw):
     opened, orig = set(), MU.safe_open
     def recording_safe_open(path, *a, **k):                # observe which files the library reads; behaviour unchanged
         opened.add(os.path.relpath(str(path), d)); return orig(path, *a, **k)
+    # F04: the library's own conversion record: which file keys each target is built from, and with which operations
+    conversions, orig_add = {}, CML.WeightTransform.add_tensor
+    def recording_add(self_, target_key, source_key, source_pattern, future):
+        e = conversions.setdefault(target_key, {"sources": set(), "ops": [], "quant_op": None, "transform": type(self_).__name__})
+        e["sources"].add(source_key)
+        e["ops"] = [type(o).__name__ for o in (getattr(self_, "operations", None) or [])]
+        q = getattr(self_, "quantization_operation", None)
+        e["quant_op"] = type(q).__name__ if q is not None else None
+        return orig_add(self_, target_key, source_key, source_pattern, future)
     renamed_to, orig_rename = {}, CML.rename_source_key
     def recording_rename(source_key, *a, **k):             # observe the library's own key renames; behaviour unchanged
         out = orig_rename(source_key, *a, **k)
@@ -104,6 +164,7 @@ def _report(A, cls, aux_keys=(), **kw):
         return {"error": "no safetensors weight files"}
     MU.safe_open = recording_safe_open
     CML.rename_source_key = recording_rename
+    CML.WeightTransform.add_tensor = recording_add
     # tied weights shipped twice: the library compares their VALUES (torch.equal) to decide whether to tie, which
     # meta tensors cannot do. Keep the tie the config builds and record that the check could not run.
     tie_unchecked, orig_equal = [], torch.equal
@@ -153,12 +214,13 @@ def _report(A, cls, aux_keys=(), **kw):
             refused_keys = set(pre["mismatched"])
             refusal = {"error": f"{type(e).__name__}: {str(e)[:300]}", "mismatched": sorted(refused_keys)[:50],
                        "count": len(refused_keys)}
-            for box in (opened, renamed_to, set_ids, pre, tracer_box): box.clear()
+            for box in (opened, renamed_to, set_ids, pre, tracer_box, conversions): box.clear()
             tie_unchecked.clear()
             model, info = _load(True)
     finally:
         MU.safe_open = orig
         CML.rename_source_key = orig_rename
+        CML.WeightTransform.add_tensor = orig_add
         torch.equal = orig_equal
         CML.set_param_for_module = orig_spf
         MU.PreTrainedModel._finalize_model_loading = orig_fin_attr                # restored as the staticmethod it was
@@ -258,6 +320,16 @@ def _report(A, cls, aux_keys=(), **kw):
         import traceback
         provenance = {"error": f"{type(e).__name__}: {str(e)[:200]} at {traceback.extract_tb(e.__traceback__)[-1].lineno}"}
     state_numel = sum(state.values())
+    try:                                    # F04: the loaded model's identity (G2 compares the executed model against it)
+        identity = model_identity(model)
+        identity["conversions"] = {t: {"sources": sorted(v["sources"]), "source_dtypes": sorted({read[x][1] for x in v["sources"] if x in read}),
+                                       "aux_sources": sorted(x for x in v["sources"] if x in set(aux_keys)),
+                                       "ops": v["ops"], "quant_op": v["quant_op"]} for t, v in conversions.items()}
+        identity["quantizer"] = pre.get("quantizer")
+        identity["quantized_codes"] = sorted({t_ for k_, _ in qev for t_ in (renamed_to.get(k_) or {k_})})
+        identity["load_kw"] = {k: str(v) for k, v in kw.items() if k != "config"}
+    except Exception as e:
+        identity = {"error": f"{type(e).__name__}: {str(e)[:200]}"}
     du = int(os.popen(f"du -sk '{d}'").read().split()[0])
     pshape = {k: t.numel() for k, t in model.named_parameters()}
     return {"files_read": sorted(opened), "files_all": sorted(headers), "read_keys": sorted(read),
@@ -270,7 +342,7 @@ def _report(A, cls, aux_keys=(), **kw):
             "missing_param_numel": sum(pshape.get(k, 0) for k in info.get("missing_keys", [])),
             "reported_sources": {k: sorted(v) for k, v in src_of.items()},
             "tie_value_check_unevaluable": tie_unchecked, "tie_unchecked_shipped": sorted(tie_dups),
-            "stub_disk_kb": du, "provenance": provenance,
+            "stub_disk_kb": du, "provenance": provenance, "identity": identity,
             # load authority state (P0.5): loaded | refused | quantized_interpretation_unknown; a refused load's fields
             # come from the forced diagnostic recovery (evidence only)
             "load_state": load_state, "refusal": refusal, "forced_diagnostic_recovery": refusal is not None,
@@ -374,6 +446,288 @@ def _provenance(model, info, set_ids, pre, tracer, tie_unchecked, headers, opene
             "raw_tie_word_embeddings": raw.get("tie_word_embeddings", raw_text.get("tie_word_embeddings", "<absent>")),
             "library_tie_word_embeddings": lib_tie,
             "state_shapes": {k: list(t.shape) for k, t in sd.items()}}
+
+
+def model_identity(model):
+    """What G2 promises is the same in the loaded and the executed model (INTENT G2, F04): every module (name -> class),
+    module objects registered under several names, every parameter (shape, dtype) and buffer (shape, dtype, persistent),
+    and the tie partition (names that are ONE tensor object). Works on meta and real models alike."""
+    sd = model.state_dict(keep_vars=True)
+    def cname(x):
+        t = type(x)
+        return f"{t.__module__}.{t.__qualname__}"
+    mods, mgroups, attrs = {}, {}, {}
+    for n, x in model.named_modules(remove_duplicate=False):
+        mods[n or "(root)"] = cname(x)
+        mgroups.setdefault(id(x), []).append(n or "(root)")
+        for k, v in vars(x).items():                # plain settings a forward reads (scaling, is_causal, eps, stride ...)
+            # public settings only (private ones are loader bookkeeping, e.g. _use_kernels); MODULE_ATTRS_NOT_COMPARED:
+            # where the model was loaded from (the library's load writes its own mirror path there)
+            if k.startswith("_") or k == "training" or k in MODULE_ATTRS_NOT_COMPARED:
+                continue
+            if v is None or isinstance(v, (bool, int, float, str)) or (
+                    isinstance(v, (tuple, list)) and len(v) <= 16 and all(x_ is None or isinstance(x_, (bool, int, float, str)) for x_ in v)):
+                attrs[f"{n or '(root)'}.{k}"] = repr(v)
+    groups = {}
+    params = {}
+    for n, p in model.named_parameters(remove_duplicate=False):
+        params[n] = [list(p.shape), str(p.dtype).replace("torch.", "")]
+        groups.setdefault(id(p), []).append(n)
+    buffers = {}
+    for n, b in model.named_buffers(remove_duplicate=False):
+        buffers[n] = [list(b.shape), str(b.dtype).replace("torch.", ""), n in sd]
+        groups.setdefault(id(b), []).append(n)
+    return {"modules": mods, "params": params, "buffers": buffers,
+            "ties": sorted(sorted(g) for g in groups.values() if len(g) > 1),
+            "module_ties": sorted(sorted(g) for g in mgroups.values() if len(g) > 1),
+            "config": config_view(getattr(model, "config", None)), "module_attrs": attrs}
+
+
+# config fields that are not the model's computation: precision (the declared float32 build, F04-2) and bookkeeping
+# (quantization_config: how the checkpoint is STORED; judged by the quantized-layout / dequantization rules, F04-3)
+CONFIG_NOT_COMPARED = ("dtype", "torch_dtype", "transformers_version", "_name_or_path", "_commit_hash", "quantization_config")
+MODULE_ATTRS_NOT_COMPARED = ("name_or_path",)            # (mirrors the config's _name_or_path: a load location)
+
+
+def _is_cfg(v):
+    return any(c.__name__ in ("PreTrainedConfig", "PretrainedConfig") for c in type(v).__mro__)
+
+
+def config_view(cfg, path=""):
+    """The config the model was built from, flattened {path: repr(value)}, incl. every sub-config's private attention /
+    experts implementation (to_dict omits them), minus CONFIG_NOT_COMPARED. None when there is no config."""
+    if cfg is None or not _is_cfg(cfg):
+        return None
+    out = {}
+    def walk(c, pre, seen):
+        if id(c) in seen:
+            return
+        seen.add(id(c))
+        try:
+            d = c.to_dict()
+        except Exception:
+            d = {}
+        def flat(prefix, val, depth=0):
+            if isinstance(val, dict) and depth < 4:
+                for k2, v2 in val.items():
+                    if k2 not in CONFIG_NOT_COMPARED:
+                        flat(f"{prefix}.{k2}", v2, depth + 1)
+            else:
+                out[prefix] = repr(val)
+        for k, v in d.items():
+            if k in CONFIG_NOT_COMPARED:
+                continue
+            flat(f"{pre}{k}", v)
+        for k, v in vars(c).items():
+            if k.startswith(("_attn_implementation", "_experts_implementation")):
+                out[f"{pre}{k}"] = repr(v)
+            elif _is_cfg(v):
+                walk(v, f"{pre}{k}.", seen)
+    walk(cfg, path, set())
+    return out
+
+
+FLOAT_DTYPES = ("float16", "bfloat16", "float32", "float64")
+QUANT_STORAGE = ("F8_E4M3", "F8_E5M2", "F8_E8M0", "F4", "I8", "U8", "I16", "U16", "I32", "U32")   # header formats of codes
+
+
+def _partition(groups, names):
+    """A tie partition restricted to names present in both models, as a set of frozensets (size > 1 only)."""
+    out = set()
+    for g in groups:
+        g2 = frozenset(n for n in g if n in names)
+        if len(g2) > 1:
+            out.add(g2)
+    return out
+
+
+def g2_compare(L, E, executed_build=None):
+    """G2 executed = loaded (INTENT; F04), from the two identities (model_identity) plus the library's conversion record.
+      L: the loaded identity (from the library's own from_pretrained, `identity` of a load report);
+      E: the executed identity (model_identity of the model the recorder ran);
+      executed_build: what the harness declares about its build ({"attn_implementation", "dtype", "zero_storage"}).
+    Allowed and NAMED (evidence, not names of models or methods):
+      - float16 / bfloat16 / float32 -> float32: the harness executes one float32 build; learned values are zeros by design
+        (the declared abstraction); float64 -> float32 rounds values: a G2 unknown (F04-2);
+      - a target the library itself built from quantized storage together with an auxiliary tensor (its own conversion
+        record: >= 2 sources, >= 1 operation): dequantized at load by the library, named with its operations.
+    Unknown (never FULL): quantized codes the library cast to floats without such a conversion; a loaded layout that keeps
+      quantized (non-floating) parameters the executed model runs as floats (the harness, not the library, dequantized).
+    Fail (observed difference -> PARTIAL): different module names or classes, module aliasing, parameter / buffer names,
+      shapes, persistence, non-floating dtypes, or tie groups.
+    Returns {"fail": {...}, "unknowns": [...], "named": {...}}."""
+    import collections
+    if not L or L.get("error") or not E or E.get("error"):
+        why = (L or {}).get("error") or (E or {}).get("error") or "no identity"
+        return {"fail": {}, "named": {}, "unknowns": [{"predicate": "G2", "what": f"the executed model could not be "
+                f"compared with the library-loaded model ({why})", "items": [], "count": 0}]}
+    fail, unknowns, named = collections.defaultdict(list), [], {}
+    def unk(what, items):
+        if items: unknowns.append({"predicate": "G2", "what": what, "items": sorted(items)[:20], "count": len(items)})
+    # modules
+    lm, em = L["modules"], E["modules"]
+    fail["modules_differ"] = [f"{n}: {'loaded only' if n in lm else 'executed only'}" for n in sorted(set(lm) ^ set(em))]
+    fail["module_classes_differ"] = [f"{n}: {lm[n].rsplit('.', 1)[-1]} loaded, {em[n].rsplit('.', 1)[-1]} executed"
+                                     for n in sorted(set(lm) & set(em)) if lm[n] != em[n]]
+    both_m = set(lm) & set(em)
+    if _partition(L.get("module_ties", []), both_m) != _partition(E.get("module_ties", []), both_m):
+        fail["module_aliasing_differs"] = [" = ".join(sorted(g)) for g in
+                                           _partition(L.get("module_ties", []), both_m) ^ _partition(E.get("module_ties", []), both_m)][:20]
+    # a quantized layout the loaded model keeps: a module whose loaded state holds non-floating tensors (codes, as
+    # parameters or persistent buffers) that the executed module does not hold, where the executed module runs floating
+    # parameters instead. The harness (not the library) interpreted it: the module (class, parameters, buffers) is
+    # judged as ONE unknown, never as a structural failure (F04-3)
+    lp, ep = L["params"], E["params"]
+    lb, eb = L["buffers"], E["buffers"]
+    isf = lambda dt: dt in FLOAT_DTYPES or dt.startswith("complex")
+    par = lambda n: n.rpartition(".")[0] or "(root)"
+    lstate = collections.defaultdict(dict); estate = collections.defaultdict(dict)
+    for n, (_, dt) in lp.items(): lstate[par(n)][n] = dt
+    for n, (_, dt, per) in lb.items():
+        if per: lstate[par(n)][n] = dt
+    for n, (_, dt) in ep.items(): estate[par(n)][n] = dt
+    for n, (_, dt, per) in eb.items():
+        if per: estate[par(n)][n] = dt
+    # evidence PER MODULE: one of its own non-floating loaded tensors is a quantized code the library identified, or a
+    # conversion target built from quantized storage (never "the model has a quantizer somewhere")
+    codes = set(L.get("quantized_codes") or ())
+    qtargets = {t for t, c in (L.get("conversions") or {}).items() if any(d in QUANT_STORAGE for d in c.get("source_dtypes", []))}
+    is_code = lambda n: n in codes or n in qtargets or any(n.startswith(t.replace(".*.", ".") + ".") or n == t.replace(".*.", ".") for t in qtargets if "*" in t)
+    qmods = {mo for mo, st in lstate.items()
+             if any(not isf(dt) and estate[mo].get(n) != dt and is_code(n) for n, dt in st.items())
+             and any(isf(dt) for n, dt in estate[mo].items() if n in ep)}
+    # inside such a module only the code layout is the harness's interpretation: names present on ONE side, or
+    # non-floating on the loaded side, are part of it; floating state present on both sides is still compared
+    inq = lambda n: par(n) in qmods and (n not in (set(lp) | set(lb)) or n not in (set(ep) | set(eb))
+                                         or not isf((lp.get(n) or lb.get(n))[1]))
+    harness_deq, f64 = sorted(qmods), []
+    fail["module_classes_differ"] = [x for x in fail["module_classes_differ"] if x.split(":", 1)[0] not in qmods]
+    for n in sorted(set(lp) | set(ep)):
+        if inq(n):
+            continue
+        if n not in ep:
+            fail["parameters_differ"].append(f"{n}: loaded only")
+        elif n not in lp:
+            fail["parameters_differ"].append(f"{n}: executed only")
+        elif lp[n][0] != ep[n][0]:
+            fail["parameter_shapes_differ"].append(f"{n}: {lp[n][0]} loaded, {ep[n][0]} executed")
+        elif lp[n][1] != ep[n][1] and not (lp[n][1] in FLOAT_DTYPES and ep[n][1] == "float32"):
+            fail["parameter_dtypes_differ"].append(f"{n}: {lp[n][1]} loaded, {ep[n][1]} executed")
+        elif lp[n][1] == "float64" and ep[n][1] == "float32":
+            f64.append(n)
+    unk("modules the library loads in a quantized layout (codes as non-floating parameters / buffers) that the executed "
+        "model runs as floating modules: the harness, not the library, chose that interpretation", harness_deq)
+    # buffers
+    for n in sorted(set(lb) | set(eb)):
+        if inq(n):
+            continue
+        if n not in eb:
+            fail["buffers_differ"].append(f"{n}: loaded only")
+        elif n not in lb:
+            fail["buffers_differ"].append(f"{n}: executed only")
+        else:
+            (ls, ld, lper), (es, ed, eper) = lb[n], eb[n]
+            if lper != eper:
+                fail["buffer_persistence_differs"].append(f"{n}: {'persistent' if lper else 'non-persistent'} loaded")
+            if ls != es:
+                fail["buffer_shapes_differ"].append(f"{n}: {ls} loaded, {es} executed")
+            elif ld != ed and not (ld in FLOAT_DTYPES and ed == "float32"):
+                fail["buffer_dtypes_differ"].append(f"{n}: {ld} loaded, {ed} executed")
+            elif ld == "float64" and ed == "float32":
+                f64.append(n)
+    # F04-2 (Soumil 2026-10-14): float16 / bfloat16 / float32 -> float32 loses nothing; float64 -> float32 rounds values
+    unk("float64 tensors the executed float32 build rounds (the values run are not the loaded values)", f64)
+    # ties (one tensor object under several names): the partitions must be equal
+    names = (set(lp) | set(lb)) & (set(ep) | set(eb))           # (ties are compared across every name both carry)
+    lt, et = _partition(L.get("ties", []), names), _partition(E.get("ties", []), names)
+    if lt != et:
+        fail["tie_groups_differ"] = ([f"loaded only: {' = '.join(sorted(g))}" for g in lt - et]
+                                     + [f"executed only: {' = '.join(sorted(g))}" for g in et - lt])[:20]
+    # named conversions: float32 build, and the library's own dequantization at load
+    conv = collections.Counter(f"{lp[n][1]}->float32" for n in set(lp) & set(ep)
+                               if lp[n][1] != ep[n][1] and lp[n][1] in FLOAT_DTYPES and ep[n][1] == "float32")
+    conv.update(f"{lb[n][1]}->float32 (buffer)" for n in set(lb) & set(eb)
+                if lb[n][1] != eb[n][1] and lb[n][1] in FLOAT_DTYPES and eb[n][1] == "float32")
+    named["declared_abstraction"] = ("learned values executed as zeros (zero-storage build); one float32 build"
+                                     + (f"; attention implementation {executed_build.get('attn_implementation')}" if executed_build else ""))
+    if conv:
+        named["float32_conversion"] = dict(conv)
+    deq, cast = [], []
+    for t, c in sorted((L.get("conversions") or {}).items()):
+        qsrc = [d for d in c.get("source_dtypes", []) if d in QUANT_STORAGE]
+        if not qsrc or not c.get("ops"):
+            continue
+        tgt_float = any(isf(lp[x][1]) for x in lp if x == t or x.startswith(t.replace(".*.", ".")))
+        if not tgt_float:
+            continue                            # the target stays quantized (not dequantized: judged above as a layout)
+        if c.get("aux_sources"):                # the library's own op consumed the codes WITH an auxiliary (scale) tensor
+            deq.append((t, tuple(c["ops"]), tuple(c["source_dtypes"])))
+        else:                                   # codes turned into floats with no auxiliary tensor: not shown dequantized
+            cast.append(t)
+    covered = {t for t, _, _ in deq}
+    cast = sorted(set(cast) | {t for t in codes if t in lp and lp[t][1] in FLOAT_DTYPES
+                               and not any(t == x or t.startswith(x.replace(".*.", ".")) for x in covered)})
+    if deq:
+        named["dequantized_at_load_by_library"] = {
+            "count": len(deq), "quantizer": L.get("quantizer"),
+            "operations": sorted({" + ".join(o) for _, o, _ in deq}), "source_dtypes": sorted({d for _, _, ds in deq for d in ds}),
+            "examples": [t for t, _, _ in deq][:5]}
+    unk("quantized codes the library cast to floats without dequantizing them with their auxiliary tensor (the "
+        "executed values are not the checkpoint's)", cast)
+    # the config the executed model was built from vs the one the library loaded with (attention implementation, eps,
+    # scaling ...; precision excluded: F04-2): a difference is not shown to change the computation -> unknown
+    lc, ec = L.get("config"), E.get("config")
+    if lc is not None and ec is not None:
+        unk("config fields differ between the library-loaded and the executed model (whether that changes the "
+            "computation is not shown)", [f"{k}: {lc.get(k)} loaded, {ec.get(k)} executed" for k in sorted(set(lc) | set(ec)) if lc.get(k) != ec.get(k)])
+    la, ea = L.get("module_attrs"), E.get("module_attrs")
+    if la is not None and ea is not None:
+        # settings BOTH models carry (one a loader adds to its own model only, e.g. a quantizer's is_quantized flag, is
+        # bookkeeping, not a setting the two builds share)
+        both = {k for k in set(la) & set(ea) if k.rsplit(".", 1)[0] in set(lm) & set(em) and k.rsplit(".", 1)[0] not in qmods}
+        # F04-2: a float setting the library computed with tensors in the checkpoint's half precision (e.g. drop-path
+        # rates from torch.linspace) differs from the float32 build only in the last digits: precision, named
+        half = sorted({dt for _, dt in lp.values() if dt in ("float16", "bfloat16")})
+        rtol = {"float16": 4 * 2 ** -10, "bfloat16": 4 * 2 ** -7}.get(half[0]) if len(half) == 1 else None
+        def _num(v):
+            import ast as _a
+            try:
+                x = _a.literal_eval(v)
+            except Exception:
+                return None
+            if isinstance(x, float):
+                return (x,)
+            if isinstance(x, (tuple, list)) and x and all(isinstance(y, float) for y in x):
+                return tuple(x)
+            return None
+        def _close(a, b):
+            xa, xb = _num(a), _num(b)
+            return (rtol is not None and xa is not None and xb is not None and len(xa) == len(xb)
+                    and all(abs(p_ - q_) <= rtol * max(abs(p_), abs(q_)) for p_, q_ in zip(xa, xb)))
+        diff = [k for k in sorted(both) if la.get(k) != ea.get(k)]
+        prec = [k for k in diff if _close(la[k], ea[k])]
+        if prec:
+            named["settings_computed_in_loaded_precision"] = {"dtype": half[0], "count": len(prec), "examples": prec[:5]}
+        unk("module settings differ between the library-loaded and the executed model (whether that changes the "
+            "computation is not shown)", [f"{k}: {la.get(k)} loaded, {ea.get(k)} executed" for k in diff if k not in prec])
+    return {"fail": {k: v[:20] for k, v in fail.items() if v}, "unknowns": unknowns, "named": named,
+            "counts": {k: len(v) for k, v in fail.items() if v}}
+
+
+def g2_decide(loaded_identity, build_ids, final_identity, executed_build):
+    """The worker's whole G2 decision (F04), one function so it is tested as it runs: compare the library-loaded identity
+    with the FIRST executed build; every later build and the model at grading time must equal it (else an unknown).
+    Returns (unknowns, failure items for T1 or [], the record for R["g2"])."""
+    try:
+        G = g2_compare(loaded_identity, build_ids[0] if build_ids else final_identity, executed_build)
+        if build_ids and any(b != build_ids[0] for b in list(build_ids[1:]) + [final_identity]):
+            G["unknowns"].append({"predicate": "G2", "what": "the executed model differs between its builds or changed "
+                                  "during the run (modules / state / ties)", "items": [], "count": 0})
+    except Exception as e:                       # a comparator error is an unknown, never a crashed row
+        G = {"fail": {}, "named": {}, "counts": {}, "unknowns": [{"predicate": "G2", "what": "the executed model could not "
+             f"be compared with the library-loaded model (comparator error: {type(e).__name__}: {str(e)[:120]})", "items": [], "count": 0}]}
+    fail_items = [f"{k} ({(G.get('counts') or {}).get(k, len(v))}): " + "; ".join(v[:5]) for k, v in G["fail"].items()]
+    return G["unknowns"], fail_items, {"named": G["named"], "fail": G["fail"], "counts": G.get("counts")}
 
 
 RANDOM_CLASSES = ("INIT_RANDOM", "UNINITIALIZED")

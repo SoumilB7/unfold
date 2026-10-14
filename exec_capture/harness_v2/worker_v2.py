@@ -238,6 +238,30 @@ if not torch.cuda.is_available():
                 _kern(v, f"{path}{k}.")
     _kern(cfg)
 
+# ---- F04: the load hypothesis. The library load (authority) and the executed build start from ONE config snapshot,
+#      taken here after the declared switches above and before any build (the library's _from_config writes dtype and
+#      attention implementation into the config it is given). The authority loads with the attention implementation
+#      the executed build uses (a documented from_pretrained option), so loaded and executed are comparable exactly;
+#      the library's default attention is reported beside it (info).
+import copy as _copy
+CFG_LOAD = _copy.deepcopy(cfg)
+_ATTN_CHOICE = {}
+def _attn_choice(klass):
+    """The attention implementation the executed build of this class uses (the same rule as _fresh: eager when the
+    class accepts it, else the library default), from a meta build of the load config snapshot."""
+    if klass not in _ATTN_CHOICE:
+        try:
+            with torch.device("meta"):
+                klass._from_config(_copy.deepcopy(CFG_LOAD), attn_implementation="eager", dtype=torch.float32)
+            _ATTN_CHOICE[klass] = "eager"
+        except (TypeError, ValueError):         # _fresh's own fallback rule (the class does not take eager): the library
+            _ATTN_CHOICE[klass] = None          # default. Anything else (e.g. a stage time limit) is raised, never cached
+    return _ATTN_CHOICE[klass]
+def _lkw(klass):
+    a = _attn_choice(klass)
+    return {"attn_implementation": a} if a else {}
+_A_aux = None
+
 # time limits. Optional stages (3a-3d) are bounded so they can never cost the main result: each model call gets a hard
 # limit, and no new optional call starts once the job is past its optional budget (the runner kills at
 # BENCH_JOB_TIMEOUT_S, monotonic clock). The library authority (1c, T1) has its own budget, capped by that deadline.
@@ -334,9 +358,9 @@ if T and R.get("ground_truth_source") in (None, "safetensors") and GGUF_RAW is N
         import atexit; atexit.register(AUTH.close)
         _A_aux = set(ckpt_split(T)[1])
         def _rep(klass):                              # a report produced while an alarm fired is not trusted/cached
-            n0 = ALARMS[0]; r_ = AUTH.report(klass, _A_aux, config=cfg)
+            n0 = ALARMS[0]; r_ = AUTH.report(klass, _A_aux, config=CFG_LOAD, **_lkw(klass))
             if ALARMS[0] != n0:
-                AUTH.cache.pop(klass.__name__, None); raise StageTimeout("alarm during library load")
+                AUTH.forget(klass, _A_aux, CFG_LOAD, **_lkw(klass)); raise StageTimeout("alarm during library load")
             return r_
         _left = int(DEADLINE - time.monotonic() - 900) if DEADLINE else LIBLOAD_S
         if _left < 60:
@@ -446,7 +470,14 @@ def _fresh():
         except (TypeError, ValueError):
             mm = cls._from_config(cfg, dtype=torch.float32); BUILD_ATTN = "library default"
     _lc = __import__("lowcost")                    # one float32 build (sub-configs may declare bf16); learned weights
-    return _lc.normalise_learned(_lc.uniform_float32(mm.eval()))  # executed as zeros (F07-3)
+    mm = _lc.normalise_learned(_lc.uniform_float32(mm.eval()))  # executed as zeros (F07-3)
+    try:
+        BUILD_IDS.append(libload.model_identity(mm))    # F04: every build of the executed model is the same model
+    except Exception as _e:
+        BUILD_IDS.append({"error": f"identity: {type(_e).__name__}: {str(_e)[:120]}"})
+    return mm
+import libload
+BUILD_IDS = []
 t = time.time()
 try:
     m = _fresh()
@@ -1038,7 +1069,7 @@ if T:
     # ---- library authority (safetensors repos): which shipped keys the library consumes, from its own from_pretrained
     #      on sparse header stubs (file choice, renames, merges/splits, ignore lists all the library's). Replaces the
     #      name matcher's "class lacks" and "unused" sets; the matcher's result is kept for comparison.
-    LIB, G1 = None, None
+    LIB, G1, _g2f = None, None, []                 # (_g2f: F04 failure items; none without a library load)
     reported_by_library = None                    # None = no library load report (matcher only): nothing certified
     if R.get("ground_truth_source") in (None, "safetensors") and GGUF_RAW is None:
         try:
@@ -1057,7 +1088,7 @@ if T:
                 if AUTH is None:
                     AUTH = libload.Authority(repo); import atexit; atexit.register(AUTH.close)
                 _n0 = ALARMS[0]
-                LIB = AUTH.report(cls, set(A), config=cfg)       # cached when class selection already loaded it
+                LIB = AUTH.report(cls, set(A), config=CFG_LOAD, **_lkw(cls))   # cached only for the same hypothesis (F04)
                 if ALARMS[0] != _n0:                             # an alarm the library swallowed: report not trusted
                     LIB = None; raise StageTimeout("alarm during library load")
             finally:
@@ -1077,7 +1108,8 @@ if T:
         if LIB.get("refusal"):
             R["library_load_refusal"] = LIB["refusal"]
         # R-REFUSE: the user's default load = the declared class's (its report is cached from class selection)
-        _decl_rep = LIB if cls is DECLARED_CLS else (AUTH.cache.get(DECLARED_CLS.__name__) if AUTH is not None else None)
+        _decl_rep = LIB if cls is DECLARED_CLS else (AUTH.lookup(DECLARED_CLS, _A_aux, CFG_LOAD, **_lkw(DECLARED_CLS))
+                                                     if AUTH is not None and _A_aux is not None else None)
         R["library_refuses_checkpoint"] = bool(_decl_rep) and libload.refuses(_decl_rep)
         if R["library_refuses_checkpoint"]:
             _rk = _decl_rep.get("refusal_unexplained_by_quantization") or (_decl_rep.get("refusal") or {}).get("mismatched") or []
@@ -1091,6 +1123,8 @@ if T:
         LIB = None                                 # evidence kept above; it certifies nothing
     if not LIB or "error" in LIB:
         R["t1_authority"] = "name matcher (no library load report)"
+        UNKNOWNS.append({"predicate": "G2", "what": "the executed model is not compared with a library-loaded model (no "
+                         "certified library load)", "items": [], "count": 0})
         UNKNOWNS.append({"predicate": "G1", "what": "no library load: which shipped tensors the library consumes, and how "
                          "it fills the rest, is not established (" + (R.get("library_load_report_error") or "no report") + ")",
                          "items": [], "count": 0})
@@ -1132,7 +1166,30 @@ if T:
         _pn = {n for n, _ in m.named_parameters(remove_duplicate=False)}
         _bg = {k: (type(m.get_submodule(k.rpartition(".")[0]) if "." in k else m).__name__, k.rpartition(".")[2])
                for k, t in _sd.items() if k not in _pn and t.is_floating_point()}
-        G1 = libload.g1_assess(LIB.get("provenance") or {}, used, {k: list(t.shape) for k, t in _sd.items()}, _bg)
+        # F04: names / shapes (and the rest of G2) are compared by g2_compare below when the load has an identity
+        _has_id = bool(LIB.get("identity")) and not (LIB.get("identity") or {}).get("error")
+        G1 = libload.g1_assess(LIB.get("provenance") or {}, used,
+                               ((LIB.get("provenance") or {}).get("state_shapes") or {}) if _has_id
+                               else {k: list(t.shape) for k, t in _sd.items()}, _bg)
+        try:
+            _EID = libload.model_identity(m)
+        except Exception as _e:
+            _EID = {"error": f"identity: {type(_e).__name__}: {str(_e)[:120]}", "modules": {}}
+        _g2u, _g2f, _g2r = libload.g2_decide(LIB.get("identity"), BUILD_IDS, _EID,
+                                             {"attn_implementation": BUILD_ATTN, "dtype": "float32", "zero_storage": True})
+        UNKNOWNS.extend(_g2u)
+        try:                                         # info: what the library's DEFAULT attention would build instead
+            with torch.device("meta"):
+                _dm = cls._from_config(_copy.deepcopy(CFG_LOAD))
+            _dmods = {n or "(root)": f"{type(x).__module__}.{type(x).__qualname__}" for n, x in _dm.named_modules(remove_duplicate=False)}
+            _dd = sorted(n for n in _dmods if _EID["modules"].get(n) != _dmods[n])
+            _datt = getattr(_dm.config, "_attn_implementation", None); del _dm
+        except Exception as _e:
+            _dd, _datt = None, f"not evaluated: {type(_e).__name__}"
+        R["g2"] = dict(_g2r, load_hypothesis=LIB.get("hypothesis"),
+                       executed_build={"attn_implementation": BUILD_ATTN, "dtype": "float32", "zero_storage": True},
+                       library_default_attention={"implementation": _datt, "modules_differ": None if _dd is None else len(_dd),
+                                                  "examples": (_dd or [])[:5]})
         UNKNOWNS.extend(G1["unknowns"])
         _prov = LIB.get("provenance") or {}
         R["load_provenance"] = {"quantizer": _prov.get("quantizer"),
@@ -1157,6 +1214,8 @@ if T:
             rk = set(LIB["read_keys"])
             R["checkpoint_numel_in_files_library_reads"] = sum(numel(T[k][0]) for k in rk if k in T)
     _g1f = dict((G1 or {}).get("fail") or {}, **(_AUTH_ST.get("fail") or {}))   # + a refusal the codes do not explain
+    if _g2f:                                         # F04: the executed model is not the loaded one (observed)
+        _g1f["executed_differs_from_loaded"] = _g2f
     _g1l = (G1 or {}).get("leftovers") or {}
     _t1_old = not unused and not un_c and not unbuilt
     checks["T1_weights"] = {
