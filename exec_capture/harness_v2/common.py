@@ -197,10 +197,14 @@ def pos_lengths(c):
 
 def stored_constant(key, shape, dtype, *, quantized=frozenset(), pos=frozenset(), declared=False, buffer_slot=False):
     """THE rule for "a shipped tensor is stored state (a table / mask / counter), not a learned weight", on every path
-    (P0.6 B4 + C7; D-C7 ruling 2026-10-12 "strict unless declared"):
+    (P0.6 B4 + C7; D-C7 ruling 2026-10-12 "strict unless declared"; F05 "by meaning, not dtype"):
       - it lands in a buffer slot of the built model;
       - never a quantized learned weight (quantized_weight_keys);
-      - an integer / bool table;
+      - an integer / bool tensor ONLY with evidence about THIS key (F05): it lands in a buffer slot (above), the
+        library declares the key ignorable, or it is a 1x1xNxN mask whose N is a position length (the C7 shape rule).
+        dtype alone is never evidence: an integer table can be routing / control state (int_table_unknown names the
+        rest, never hidden). A same-named table the model computes ELSEWHERE is a hint, not evidence: the shipped
+        values are not compared (zero storage);
       - a float 1x1xNxN matrix whose N is a position length of the model (a stored mask), or any N if the library
         declares the key ignorable;
       - a 0-d float ONLY when the library declares the key ignorable (a learned scalar such as CLIP's logit_scale is
@@ -210,12 +214,45 @@ def stored_constant(key, shape, dtype, *, quantized=frozenset(), pos=frozenset()
     if key in quantized:
         return False
     if dtype in INT_DTYPES or dtype == "BOOL":
-        return True
+        return bool(declared or (len(shape) == 4 and shape[0] == shape[1] == 1 and shape[2] == shape[3] and shape[2] in pos))
     if len(shape) == 4 and shape[0] == shape[1] == 1 and shape[2] == shape[3]:
         return declared or shape[2] in pos
     if len(shape) == 0:
         return declared
     return False
+
+
+def is_int_table(dtype, key=None, quantized=frozenset()):
+    """An integer / bool checkpoint tensor that is not a quantized learned weight (a table, index, counter, mask or
+    control state: its meaning needs evidence, F05)."""
+    return (dtype in INT_DTYPES or dtype == "BOOL") and key not in quantized
+
+
+def int_table_unknown(keys, hints=None):
+    """F05 class (d): shipped integer / bool tensors the model does not load, with no evidence of what they are (not
+    declared ignorable, no buffer slot, not a table the model recomputes, not a position-length mask). Not a learned
+    weight (no failure) and never hidden: their relevance is unknown (G1)."""
+    keys, hints = sorted(keys), hints or {}
+    return {"predicate": "G1", "hints": {k: hints[k] for k in keys[:20] if hints.get(k)}, "what": "shipped integer / bool tables the model does not load, with no evidence of what "
+            "they are (not declared ignorable, no buffer slot, not recomputed by the model): relevance unknown",
+            "items": keys[:20], "count": len(keys)}
+
+
+def recomputed_signatures(model, loaded=()):
+    """(last name part, element count) of every buffer the built model computes itself instead of loading: every
+    non-persistent buffer (the library declares it derived, never saved), and persistent buffers not in `loaded` (the
+    names the loader filled from the checkpoint). A shipped integer table with the same name part and size is the
+    HINT that it is the library's recomputed table; it is not evidence (the shipped values are never compared)."""
+    out, loaded = set(), set(loaded)
+    for mn, mod in model.named_modules():
+        npb = getattr(mod, "_non_persistent_buffers_set", set())
+        for bn, b in mod._buffers.items():
+            if b is None:
+                continue
+            full = f"{mn}.{bn}" if mn else bn
+            if bn in npb or full not in loaded:
+                out.add((bn, b.numel()))
+    return out
 
 
 def looks_like_stored_buffer(shape, dtype):

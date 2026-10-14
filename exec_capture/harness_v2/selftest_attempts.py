@@ -48,6 +48,7 @@ def env_for(m, **kw):
              math_attention=math_attention, clear_library_caches=clear_library_caches, class_rules=class_rules,
              mask_positions=mask_positions, m=m, R={"steps": {}}, save=lambda: None, EMIT=None, used_params=set(),
              used_buffers=set(), called=set(), pass_res={}, sigs={}, S_={}, _optional_ok=lambda label: True,
+             PASS_READS=[], libload_pass=lambda rec: (set(rec.used_params) | set(rec.used_buffers), set(rec.called)),   # F05 worker globals
              _limit=contextlib.nullcontext, TIED=[], TIED_FWD=[], TIED_SUB=[], _skip_tied=lambda w: None,
              _fresh=lambda: type(m)(), cfg=None, variants={})
     e.update(kw); return e
@@ -198,6 +199,22 @@ check("N8 train: every candidate starts from the base BatchNorm state (none inhe
       bool(BN_SEEN) and set(BN_SEEN) == {1} and int(mt.bn.num_batches_tracked) == 0, (BN_SEEN, int(mt.bn.num_batches_tracked)))
 check("V4 train: failed candidates not credited, the successful one is",
       "loss_fail" not in e["used_params"] and "loss_ok" in e["used_params"] and not mt.training, sorted(e["used_params"]))
+
+# ---- F05-3: a training pass a BatchNorm layer cannot run on ONE example is retried as a batch of 2 ------------------------
+class BN1(torch.nn.Module):
+    def __init__(s): super().__init__(); s.bn = torch.nn.BatchNorm1d(2); s.head = P(2)
+    def forward(s, input_ids, labels=None):
+        h = s.bn(input_ids.float().reshape(input_ids.shape[0], -1)[:, :2])          # (batch, 2): batch 1 cannot train
+        return (h * s.head).sum() if labels is not None else h
+mb1 = BN1()
+e = env_for(mb1, passes=[("t", {"input_ids": torch.arange(2).reshape(1, 2)})], pass_res={"t": {"ok": True}}, used_params=set(),
+            used_buffers=set())
+exec(TRAIN, e)
+_tr = e["pass_res"].get("train") or {}
+check("F05-3 train: a batch-1 BatchNorm failure is retried as a batch of 2, credited, recorded",
+      _tr.get("ok") is True and _tr.get("batch") == 2 and "head" in e["used_params"]
+      and any(a_.get("batch") == 1 and not a_.get("ok") for a_ in _tr.get("attempts") or []), _tr)
+
 
 
 # ---- N9 recorder: an op that raises (caught inside a successful forward) is not a recorded op: no credit ----------

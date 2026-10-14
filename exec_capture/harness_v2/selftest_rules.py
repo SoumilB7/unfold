@@ -118,15 +118,17 @@ def main():
            "h.0.attn.bias": ((1, 1, 32, 32), "U8"), "h.0.attn.fmask": ((1, 1, 32, 32), "F32"), "x.proj": ((1, 1, 7, 7), "F32")}
     sc = getattr(CM, "stored_constant", None)
     qw = CM.quantized_weight_keys(raw) if hasattr(CM, "quantized_weight_keys") else set()
-    def stored(k, declared=False):
+    def stored(k, declared=False, buffer_slot=False):
         s_, d_ = raw[k]
         if sc is None:                                   # HEAD: two rules; the matcher's looks_like_stored_buffer
             return CM.looks_like_stored_buffer(s_, d_)
-        return sc(k, s_, d_, quantized=qw, pos={32}, declared=declared)
+        return sc(k, s_, d_, quantized=qw, pos={32}, declared=declared, buffer_slot=buffer_slot)
     check("B4 packed int MTP weight (weight_packed) is not a stored table", stored("mtp.layers.0.mlp.down_proj.weight_packed"), False)
     check("B4 I8 codes with a quantization scale sibling are not a stored table", stored("mtp.layers.0.ffn.w1.weight"), False)
-    check("B4 an I64 index table stays a stored table", stored("mtp.layers.0.rel_index"), True)
-    check("B4 an I64 counter stays a stored table", stored("bn.num_batches_tracked"), True)
+    check("B4 an I64 index table in a buffer slot stays a stored table", stored("mtp.layers.0.rel_index", buffer_slot=True), True)
+    check("B4 an I64 counter in a buffer slot stays a stored table", stored("bn.num_batches_tracked", buffer_slot=True), True)
+    check("F05 an I64 index table with no slot and no declaration is not hidden by its dtype", stored("mtp.layers.0.rel_index"), False)
+    check("F05 an I64 counter the library declares ignorable is stored", stored("bn.num_batches_tracked", declared=True), True)
     check("C7 CLIP logit_scale (learned 0-d float, undeclared) is not stored", stored("text_model.logit_scale"), False)
     check("C7 undeclared 0-d masked_bias is not stored (strict unless declared)", stored("h.0.attn.masked_bias"), False)
     check("C7 0-d masked_bias the library declares ignorable is stored", stored("h.0.attn.masked_bias", declared=True), True)
@@ -190,7 +192,8 @@ def main():
     W2, WD = src("worker_v2.py"), src("worker_v2_diffusion.py")
     wiring = {
         "worker_v2: matcher class scoring uses the common stored-constant rule": "unc0 = [c for c in unc0 if not common.stored_constant(" in W2,
-        "worker_v2: _stored_constant is the common rule": "return common.stored_constant(x, *T[x], quantized=QW, pos=_POS)" in W2,
+        "worker_v2: _stored_constant is the common rule (with the library's per-key integer evidence, F05)":
+            "return common.stored_constant(x, *T[x], quantized=QW, pos=_POS, buffer_slot=ev in" in W2,
         "worker_v2: both split_library_ignored calls pass the quantized keys": W2.count("split_library_ignored(") == 2 and "split_library_ignored(mm, W0, ren0, QW)" in W2 and "split_library_ignored(m, W, ren, QW)" in W2,
         "worker_v2: matcher masks use the common rule": "masks = [c for c in un_c if common.stored_constant(" in W2,
         "worker_v2: no call to the old looks_like_stored_buffer rule": "looks_like_stored_buffer(*" not in W2,
@@ -199,7 +202,7 @@ def main():
         "worker_v2: _last_resort applies after_grading_exception": "common.after_grading_exception(R, UNKNOWNS" in W2,
         "worker_v2: T1 loaded set uses loaded_params": "libload.loaded_params(" in W2,
         "worker_v2: both class-selection paths add selection_incomplete": W2.count("class_rules.selection_incomplete(") == 2,
-        "worker_v2_diffusion: masks use the common rule": "if common.stored_constant(c, *W[c], quantized=QW, pos=POS)]" in WD,
+        "worker_v2_diffusion: masks use the common rule (with slot evidence, F05)": "masks = [c for c in un_c if common.stored_constant(c, *W[c], quantized=QW, pos=POS," in WD,
         "worker_v2_diffusion: split_library_ignored passes the quantized keys": "split_library_ignored(m, W, ren, QW)" in WD,
         "worker_v2_diffusion: _last_resort applies after_grading_exception": "common.after_grading_exception(R, UNKNOWNS" in WD,
         "worker_v2_diffusion: _attempt records the traceback components": "diffusion_rules.components_on_traceback(e.__traceback__, models)" in WD,

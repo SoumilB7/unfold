@@ -314,6 +314,7 @@ def _report(A, cls, aux_keys=(), **kw):
     refusal_unexplained = sorted(k for k in (refused_keys if refusal else ()) if not ((_srcs.get(k) or {k}) & ev_keys))
     quantizer = pre.get("quantizer")
     load_state = load_state_of(qev, quantizer, refusal)
+    int_ev = int_table_evidence(model, read, renamed_to, set_ids, buffer_names, declared, aux)
     try:
         provenance = _provenance(model, info, set_ids, pre, tracer_box.get("t"), tie_unchecked, headers, opened, d)
     except Exception as e:                  # a bug here must not throw away the library's load report: say so instead
@@ -347,7 +348,107 @@ def _report(A, cls, aux_keys=(), **kw):
             # come from the forced diagnostic recovery (evidence only)
             "load_state": load_state, "refusal": refusal, "forced_diagnostic_recovery": refusal is not None,
             "quantized_evidence": [list(x) for x in qev[:20]], "quantized_evidence_count": len(qev),
-            "refusal_unexplained_by_quantization": refusal_unexplained[:50]}
+            "refusal_unexplained_by_quantization": refusal_unexplained[:50],
+            # F05: what each shipped integer / bool tensor is, by the library's own placement (never by dtype alone)
+            "int_table_evidence": int_ev}
+
+
+def int_table_evidence(model, read, renamed_to, set_ids, buffer_names, declared, aux=()):
+    """F05: for every integer / bool checkpoint tensor the library read (file key), the library's own evidence of what
+    it is, or None (meaning not established):
+      loaded_buffer      : the loader filled a persistent buffer with it (checkpoint state: a G3 obligation)
+      loaded_param       : the loader filled a parameter with it
+      nonpersistent_slot : it names a non-persistent buffer: the library declares that table derived (never loaded)
+      declared_ignorable : the library declares the key ignorable (_keys_to_ignore_on_load_unexpected)
+      recomputed         : HINT only: the model computes its own buffer of the same name part and size elsewhere
+                           (the shipped values are never compared: not evidence, the key stays an unknown)
+      mask_shape         : a 1x1xNxN mask whose N is a position length of the model
+    Quantized codes are judged by quantized_evidence, not here (an integer that lands in a float parameter is codes)."""
+    import common
+    try:
+        pos = common.pos_lengths(model.config)
+    except Exception:
+        pos = set()
+    sd = model.state_dict(keep_vars=True)
+    pnames = {n for n, _ in model.named_parameters(remove_duplicate=False)}
+    nonpers = set()
+    for mn, mod in model.named_modules():
+        for bn in getattr(mod, "_non_persistent_buffers_set", set()):
+            nonpers.add(f"{mn}.{bn}" if mn else bn)
+    sig = common.recomputed_signatures(model, loaded=set(set_ids))
+    out = {}
+    for k, (s, d_) in read.items():
+        if not (d_ in common.INT_DTYPES or d_ == "BOOL"):
+            continue                                # (names in the auxiliary regex get evidence too: a name is not evidence)
+        tg = set(renamed_to.get(k) or ()) | {k}
+        n = 1
+        for i in s: n *= int(i)
+        if any(t in set_ids and t in sd and t in pnames for t in tg):
+            ev = "loaded_param"
+        elif any(t in set_ids and t in sd and t not in pnames for t in tg):
+            ev = "loaded_buffer"
+        elif any(t in nonpers for t in tg):
+            ev = "nonpersistent_slot"
+        elif declared(k) or any(declared(t) for t in tg):
+            ev = "declared_ignorable"
+        elif len(s) == 4 and s[0] == s[1] == 1 and s[2] == s[3] and s[2] in pos:
+            ev = "mask_shape"
+        elif (k.rsplit(".", 1)[-1], n) in sig:
+            ev = "recomputed"
+        else:
+            ev = None
+        out[k] = ev
+    return out
+
+
+def buffer_groups(model):
+    """{state-dict name: (module class, buffer name)} for EVERY persistent buffer of the model, whatever its dtype
+    (F05: an integer table is checkpoint state as much as a floating one; dtype is not meaning)."""
+    sd = model.state_dict(keep_vars=True)
+    pn = {n for n, _ in model.named_parameters(remove_duplicate=False)}
+    return {k: (type(model.get_submodule(k.rpartition(".")[0]) if "." in k else model).__name__, k.rpartition(".")[2])
+            for k in sd if k not in pn}
+
+
+def matcher_buffer_split(unused, matched, buffer_group, used, passes=None):
+    """The name-matcher path (no library load): `unused` [(checkpoint key, numel)] of matched-but-unread tensors.
+    Checkpoint keys matched onto a persistent buffer are judged by buffer_gaps, never as unread learned weights (F05):
+    returns (unused without the buffers buffer_gaps does not fail, buffer names that are an R-BUF unknown)."""
+    loaded = {h for h in matched.values() if h in buffer_group}
+    bfail, bunk = buffer_gaps(buffer_group, loaded, used, passes)
+    keep = [(c, n) for c, n in unused if matched.get(c) not in buffer_group or matched.get(c) in set(bfail)]
+    return keep, bunk
+
+
+def buffer_gaps(buffer_group, loaded, used, passes=None):
+    """THE G3 rule for checkpoint-loaded persistent buffers (any dtype), on every path (library authority and name
+    matcher): (fail, unknown) name lists.
+      fail    : unread while a buffer of the same kind (module class, buffer name) WAS read, in a pass where this
+                buffer's module also ran, or this module never ran in any pass (a module-level gap): a real coverage gap.
+                (Per pass, F05: a counter that only the training pass touches, in a module the training pass skips but
+                inference runs, is not shown skipped where its siblings were read: an unknown, not a failure.)
+                passes = [(names read, modules run)] per credited pass; None = all reads as one pass;
+      unknown : unread and no buffer of its kind was read in the modes tried: not proven dead (R-BUF 2026-10-13: trying
+                modes never proves that no supported input reads it). Dead state needs evidence covering the approved
+                scope (the library's own declaration); transformers 5.12.1 has no such declaration for buffers."""
+    shipped = [k for k in buffer_group if k in loaded]
+    unread = [k for k in shipped if k not in used]
+    if passes is None:
+        groups_read = {buffer_group[k] for k in shipped if k in used}
+        fail = [k for k in unread if buffer_group[k] in groups_read]
+    else:
+        def ran(mod, rd, run):                      # the buffer's module executed in this pass
+            return mod == "" or mod in run or any(n.startswith(mod + ".") for n in rd)
+        per = [({buffer_group[k] for k in shipped if k in rd}, rd, run) for rd, run in passes]
+        fail = []
+        for k in unread:
+            mod, g = k.rpartition(".")[0], buffer_group[k]
+            if not any(g in gr for gr, _, _ in per):
+                continue
+            ever = any(ran(mod, rd, run) for _, rd, run in per)
+            if not ever or any(g in gr and ran(mod, rd, run) for gr, rd, run in per):
+                fail.append(k)
+    return sorted(fail), sorted(k for k in unread if k not in set(fail))
 
 
 def _final(tracer, t):
@@ -731,6 +832,15 @@ def g2_decide(loaded_identity, build_ids, final_identity, executed_build):
 
 
 RANDOM_CLASSES = ("INIT_RANDOM", "UNINITIALIZED")
+
+
+def initialised_not_shipped(nonloaded, cap=40):
+    """F05-4 (R-NORM kept): the persistent state the library fills itself (a deterministic / constant init) because the
+    checkpoint does not ship it, named on the row so nobody reads it as learned. Never random state (G1 judges that),
+    never derived non-persistent buffers, never a key the loader itself set (a shipped value the library replaced)."""
+    return sorted(k for k, v in (nonloaded or {}).items()
+                  if str(v.get("class", "")).startswith("INIT_") and v["class"] not in RANDOM_CLASSES
+                  and v.get("kind") != "buffer_nonpersistent" and not v.get("set_by_loader"))[:cap]
 QUANT_INT = ("I8", "U8", "I16", "U16", "I32", "U32")      # integer formats packed weights use (I64 / BOOL are tables)
 
 
@@ -812,13 +922,15 @@ def authority(rep):
 TIE_UNVERIFIED = ("TIED_BOTH_SHIPPED_VALUE_UNVERIFIED", "TIED_REPLACED")
 
 
-def g1_assess(prov, used, exec_shapes, buffer_group):
+def g1_assess(prov, used, exec_shapes, buffer_group, passes=None):
     """The G1/G2 verdict inputs (INTENT.md; decisions in G1_LOAD_PROVENANCE_2026-10-09.md), from the library's load
     provenance and the recorded execution.
       prov         : _provenance(...) of the library load of the executed class
       used         : names of every parameter / buffer some recorded op read (tied aliases included)
       exec_shapes  : {state-dict name: shape} of the executed model
-      buffer_group : {name: (module class, buffer name)} for the executed model's FLOATING persistent buffers
+      buffer_group : {name: (module class, buffer name)} for the executed model's persistent buffers of ANY dtype
+                     (buffer_groups; F05)
+      passes       : [(names read, modules run)] per credited pass (buffer_gaps' per-pass sibling evidence; None = one pass)
     Returns {"fail": {...}, "unknowns": [...], "leftovers": {...}}: a non-empty fail fails T1 (PARTIAL); unknowns make an
     otherwise FULL row FULL_UNVERIFIED (incl. buffers unread in the modes tried, R-BUF); leftovers is empty since R-BUF."""
     if prov.get("error"):
@@ -852,16 +964,14 @@ def g1_assess(prov, used, exec_shapes, buffer_group):
     ls = prov.get("state_shapes") or {}
     diff = sorted(k for k in set(ls) | set(exec_shapes) if list(ls.get(k, [])) != list(exec_shapes.get(k, [])) or (k in ls) != (k in exec_shapes))
     unk("G2", "the executed model's state differs from the library-loaded model's (names / shapes)", diff)
-    # shipped floating buffers no op read: a sibling of the same kind WAS read -> a real gap (fail); none of that kind
-    # was read in the modes tried -> not proven dead (R-BUF: an unknown, below)
-    shipped_bufs = [k for k in buffer_group if k not in nl]
-    groups_read = {buffer_group[k] for k in shipped_bufs if k in used}
-    unread = [k for k in shipped_bufs if k not in used]
-    fail["buffers_unread_while_siblings_read"] = sorted(k for k in unread if buffer_group[k] in groups_read)
+    # checkpoint-loaded persistent buffers (ANY dtype, F05) no op read: a sibling of the same kind WAS read -> a real
+    # gap (fail); none of that kind was read in the modes tried -> not proven dead (R-BUF: an unknown, below)
+    gap_fail, gap_unknown = buffer_gaps(buffer_group, {k for k in buffer_group if k not in nl}, used, passes)
+    fail["buffers_unread_while_siblings_read"] = gap_fail
     # R-BUF (Soumil 2026-10-13): no recorded run read them in the modes tried, but trying modes never proves that no
     # supported input reads them: not proven dead -> an unknown (FULL_UNVERIFIED), never FULL_LEFTOVERS
-    unk("G3", "floating buffers no recorded run read in the modes tried (not proven dead: no supported input is shown "
-        "to leave them unread)", sorted(k for k in unread if buffer_group[k] not in groups_read))
+    unk("G3", "checkpoint-loaded buffers no recorded run read in the modes tried (not proven dead: no supported input is "
+        "shown to leave them unread)", gap_unknown)
     leftovers = {}
     return {"fail": {k: v for k, v in fail.items() if v}, "unknowns": unknowns,
             "leftovers": {k: v for k, v in leftovers.items() if v}}

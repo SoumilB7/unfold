@@ -536,11 +536,17 @@ for cn, m in models.items():
         alias = collections.defaultdict(list)
         for k, v in sd.items(): alias[id(v)].append(k)
         matched, un_c, _, _ = match(W, H, alias, packed, rename=ren)
-        masks = [c for c in un_c if common.stored_constant(c, *W[c], quantized=QW, pos=POS)]    # THE common rule
+        _bnD = common.buffer_names(m)                                   # F05: integer tables need evidence
+        masks = [c for c in un_c if common.stored_constant(c, *W[c], quantized=QW, pos=POS,    # THE common rule
+                                                         buffer_slot=(c in _bnD or bool(ren and ren(c) in _bnD)))]
         un_c = [c for c in un_c if c not in set(masks)]
+        _intu = [c for c in un_c if common.is_int_table(W[c][1], c, QW)]   # F05 class d: an unknown, never hidden
+        if _intu:
+            un_c = [c for c in un_c if c not in set(_intu)]
+            UNKNOWNS.append(dict(common.int_table_unknown([f"{cn}:{c}" for c in _intu]), component=cn))
         for names in alias.values():
             if any(n in used for n in names): used |= set(names)
-        unused = [(c, numel(s)) for c, (s, _) in W.items() if c not in set(masks) | set(un_c) and not (
+        unused = [(c, numel(s)) for c, (s, _) in W.items() if c not in set(masks) | set(un_c) | set(_intu) and not (
             (h := matched.get(c)) is not None and ((h in used) if not h.startswith(("fused:", "renamed:")) else any(u.startswith(h.split(":", 1)[1] + ".") for u in used)))]
         checks["T1_weights"] = {"pass": not unused and not un_c and not unbuilt, "shipped_weights_unused": top_groups(unused, 4),
                                 "shipped_but_not_built_by_model": top_groups([(c, numel(W[c][0])) for c in un_c], 4),

@@ -68,8 +68,10 @@ def build(d):
     C["C6 tied, both shipped (different)"] = (save(d, "C6", mt, lambda sd: dict(sd, **{"lm_head.weight": sd["lm_head.weight"] + 1.0})), L, ids, "FULL_UNVERIFIED")
     r = transformers.ResNetForImageClassification(transformers.ResNetConfig(embedding_size=8, hidden_sizes=[8, 16], depths=[1, 1], num_labels=3))
     px = {"pixel_values": torch.randn(1, 3, 32, 32)}
+    # F05: shipped BN counters are checkpoint state; the worker's training pass (3d, labels) is what reads them
+    pxt = dict(px, __train__=dict(px, labels=torch.tensor([0])))
     C["C7 BN counter not shipped"] = (save(d, "C7", r, lambda sd: {k: v for k, v in sd.items() if not k.endswith("num_batches_tracked")}), "ResNetForImageClassification", px, "FULL")
-    C["C8 BN running stats not shipped (deterministic)"] = (save(d, "C8", r, lambda sd: {k: v for k, v in sd.items() if not k.endswith(("running_mean", "running_var"))}), "ResNetForImageClassification", px, "FULL")
+    C["C8 BN running stats not shipped (deterministic)"] = (save(d, "C8", r, lambda sd: {k: v for k, v in sd.items() if not k.endswith(("running_mean", "running_var"))}), "ResNetForImageClassification", pxt, "FULL")
     b = transformers.BertForPreTraining(transformers.BertConfig(vocab_size=64, hidden_size=16, num_hidden_layers=1, num_attention_heads=2,
                                                                 intermediate_size=32, max_position_embeddings=32))
     C["C9 BERT NSP head not shipped (random, executed)"] = (save(d, "C9", b, lambda sd: {k: v for k, v in sd.items() if not k.startswith("cls.seq_relationship")}), "BertForPreTraining", ids, "PARTIAL")
@@ -80,7 +82,7 @@ def build(d):
     C["C11 EnCodec default bandwidth (codebooks unread while siblings read)"] = (save(d, "C11", e), "EncodecModel", wav, "PARTIAL")
     # R-BUF (Soumil 2026-10-13): buffers unread in the modes tried are not proven dead -> an unknown, never leftovers
     C["C11b EnCodec full bandwidth (only EMA state unread: not proven dead)"] = (save(d, "C11b", e), "EncodecModel", dict(wav, bandwidth=6.0),
-                                                                             "FULL_UNVERIFIED+floating buffers no recorded run read")
+                                                                             "FULL_UNVERIFIED+buffers no recorded run read")
     u = transformers.UMT5ForConditionalGeneration(transformers.UMT5Config(vocab_size=64, d_model=16, d_kv=8, d_ff=32, num_layers=1,
                                                                           num_heads=2, decoder_start_token_id=0))
     C["C12 UMT5 raw tie false, both shipped"] = (save(d, "C12", u, cfg_edit=lambda j: j.__setitem__("tie_word_embeddings", False)),
@@ -136,7 +138,7 @@ def build(d):
     C["Q3 scaled same-shape FP8, no quantizer"] = (save(d, "Q3", m, fp8_scaled), L, ids, "NOT_CERTIFIED@quantized_interpretation_unknown")
     C["Q4 integer table into a buffer slot (BN counter as I32)"] = (save(d, "Q4", r, lambda sd: {
         k: (v.to(torch.int32) if k.endswith("num_batches_tracked") else v) for k, v in sd.items()}),
-        "ResNetForImageClassification", px, "FULL@loaded")
+        "ResNetForImageClassification", pxt, "FULL@loaded")
     C["Q5 ordinary float shape mismatch (library refuses)"] = (save(d, "Q5", m, lambda sd: dict(sd, **{"lm_head.weight": torch.zeros(60, 16)})),
                                                              L, ids, "FAIL:library_refuses_load@refused")
     q6 = save(d, "Q6", m, packed_u8)
@@ -202,22 +204,34 @@ def grade(path, cls_name, kw):
         return ("PARTIAL" if f_ else "NOT_CERTIFIED"), {"state": state, "fail": f_, "unknowns": [st["unknown"][:90]]}
     with lowcost.zero_storage():
         m = cls._from_config(cfg, attn_implementation="eager", dtype=torch.float32).eval()
-    rec = DagRecorder(m, kw)
-    try:
-        with torch.no_grad(), math_attention(), rec:
-            m(**kw)
-    finally:
-        rec.remove_hooks()
-    used = set(rec.used_params) | set(rec.used_buffers)
+    kw = dict(kw); train_kw = kw.pop("__train__", None)      # the worker's training pass (3d), where a control has one
+    used, passes = set(), []
+    for kws in (kw, train_kw):
+        if kws is None:
+            continue
+        m.train(kws is train_kw)
+        rec = DagRecorder(m, kws)
+        try:
+            with (torch.enable_grad() if kws is train_kw else torch.no_grad()), math_attention(), rec:
+                m(**kws)
+        finally:
+            rec.remove_hooks()
+        used |= set(rec.used_params) | set(rec.used_buffers)
+        passes.append((set(rec.used_params) | set(rec.used_buffers), set(rec.called)))
+    m.eval()
     sd = m.state_dict(keep_vars=True)
     alias = collections.defaultdict(list)
     for k, v in sd.items(): alias[id(v)].append(k)
     for names in alias.values():
         if any(n in used for n in names): used |= set(names)
     pn = {n for n, _ in m.named_parameters(remove_duplicate=False)}
-    bg = {k: (type(m.get_submodule(k.rpartition(".")[0]) if "." in k else m).__name__, k.rpartition(".")[2])
-          for k, t in sd.items() if k not in pn and t.is_floating_point()}
-    G = libload.g1_assess(LIB["provenance"], used, {k: list(t.shape) for k, t in sd.items()}, bg)
+    bgf = getattr(libload, "buffer_groups", None)        # F05: every persistent buffer, any dtype (HEAD: floating only)
+    bg = bgf(m) if bgf else {k: (type(m.get_submodule(k.rpartition(".")[0]) if "." in k else m).__name__, k.rpartition(".")[2])
+                             for k, t in sd.items() if k not in pn and t.is_floating_point()}
+    try:                                                  # F05: per-pass sibling evidence, as the worker passes it
+        G = libload.g1_assess(LIB["provenance"], used, {k: list(t.shape) for k, t in sd.items()}, bg, passes)
+    except TypeError:                                     # (HEAD: no per-pass argument)
+        G = libload.g1_assess(LIB["provenance"], used, {k: list(t.shape) for k, t in sd.items()}, bg)
     # the worker's other T1 inputs, as the library reports them: unexpected / mismatched keys, loaded params never read
     unexp = [k for k in LIB["unexpected"] if not k.endswith("num_batches_tracked")]
     lp = getattr(libload, "loaded_params", None)          # (absent before P0.6: params minus the reported-missing list)

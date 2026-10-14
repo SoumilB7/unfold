@@ -312,9 +312,12 @@ def _uncovered_numel(klass):
 # and parameters it leaves uninitialized). The name matcher below is the fallback when no load report is possible.
 _POS = common.pos_lengths(cfg)
 QW = common.quantized_weight_keys(T) if T else set()      # quantized learned weights: never stored tables (P0.6 B4)
-def _stored_constant(x):
-    """A shipped tensor that is a stored table, not a learned weight: THE common rule (common.stored_constant)."""
-    return common.stored_constant(x, *T[x], quantized=QW, pos=_POS)
+def _stored_constant(x, rep=None):
+    """A shipped tensor that is a stored table, not a learned weight: THE common rule (common.stored_constant), with the
+    library load's own evidence for an integer / bool tensor (F05: dtype alone is not evidence)."""
+    ev = ((rep or {}).get("int_table_evidence") or {}).get(x)
+    return common.stored_constant(x, *T[x], quantized=QW, pos=_POS, buffer_slot=ev in ("loaded_buffer", "nonpersistent_slot"),
+                                  declared=ev == "declared_ignorable")
 AUTH, _auth_sel, _auth_mirror_failed = None, False, False
 DECLARED_CLS = cls        # the class a user's default load uses: R-REFUSE judges its load (Soumil 2026-10-13)
 import class_rules
@@ -346,7 +349,7 @@ def _lib_score(rep):
     srcs = rep.get("reported_sources", {})
     def _int_table(k):                                # integer/bool tables and counters (renamed or not)
         ss = srcs.get(k) or [k]
-        return all(x in T and _stored_constant(x) for x in ss)
+        return all(x in T and _stored_constant(x, rep) for x in ss)
     bad = [k for k in rep["unexpected"] + [m_[0] for m_ in rep["mismatched"]] if not _int_table(k)]
     n_bad = sum(numel(T[x][0]) for k in bad for x in (srcs.get(k) or [k]) if x in T)
     return (n_bad + rep.get("unaccounted_numel", 0), rep.get("missing_param_numel", 0))
@@ -530,6 +533,9 @@ if not passes:
     notes.append("no processor-built input path for this model's forward(): synthesized inputs will be tried")
 
 used_params, used_buffers, called, pass_res, sigs = set(), set(), set(), {}, {}
+PASS_READS = []                     # F05: per credited pass (tensors read, modules run): sibling evidence is per pass
+def libload_pass(rec):
+    return (set(rec.used_params) | set(rec.used_buffers), set(rec.called))
 S_ = {}
 variants = dict(passes_b)
 def _schedule():
@@ -628,7 +634,7 @@ for label, kw in _schedule():
             S_["router_input_scales"] = sorted(scales)
             S_["embedding_params"] = sorted({e[1] for n in rec.nodes if n.func in ("embedding", "embedding_bag") for e in n.ins if e[0] == "param"})
         if not label.startswith("stability:"):
-            used_params |= rec.used_params; used_buffers |= rec.used_buffers; called |= rec.called
+            used_params |= rec.used_params; used_buffers |= rec.used_buffers; called |= rec.called; PASS_READS.append(libload_pass(rec))
     except Exception as e:
         tb = traceback.extract_tb(e.__traceback__)
         lib = [f for f in tb if "site-packages/transformers/" in f.filename]
@@ -652,7 +658,7 @@ for label, kw in extra_passes:
                 rec, out = attempts.run(m, m, kw, lambda: m(**kw), _ledger, {"entry": label})
         a = analyse(rec, out)
         pass_res[label] = {"ok": True, "attempts": _ledger, **{k: v for k, v in a.items() if k != "structure_signature"}}
-        used_params |= rec.used_params; used_buffers |= rec.used_buffers; called |= rec.called
+        used_params |= rec.used_params; used_buffers |= rec.used_buffers; called |= rec.called; PASS_READS.append(libload_pass(rec))
     except Exception as e:
         pass_res[label] = {"ok": False, "error": f"{type(e).__name__}: {str(e)[:180]}", "attempts": _ledger}
     finally:
@@ -674,7 +680,7 @@ def _run_mode(label, kw, model=None):
                 rec, out = attempts.run(mdl, mdl, tkw, lambda: mdl(**kw), _ledger, {"entry": label})
         a = analyse(rec, out)
         before = len(used_params)
-        used_params |= rec.used_params; used_buffers |= rec.used_buffers; called |= rec.called
+        used_params |= rec.used_params; used_buffers |= rec.used_buffers; called |= rec.called; PASS_READS.append(libload_pass(rec))
         pass_res[label] = {"ok": True, "newly_used_params": len(used_params) - before, "attempts": _ledger,
                            **{k: v for k, v in a.items() if k not in ("structure_signature",)}}
     except Exception as e:
@@ -793,7 +799,7 @@ if hasattr(m, "generate") and class_rules.shared(TIED, "generate") and (not any(
                 if not fallback_ok: raise first_err
         a = analyse(rec, out)
         pass_res["generate"] = {"ok": True, "secs": round(time.time() - t, 2), "attempts": _ledger, **{k: v for k, v in a.items() if k != "structure_signature"}}
-        used_params |= rec.used_params; used_buffers |= rec.used_buffers; called |= rec.called
+        used_params |= rec.used_params; used_buffers |= rec.used_buffers; called |= rec.called; PASS_READS.append(libload_pass(rec))
     except Exception as e:
         tb = traceback.extract_tb(e.__traceback__)
         f = next((x for x in reversed(tb) if "site-packages/transformers/" in x.filename), tb[-1] if tb else None)
@@ -836,7 +842,7 @@ for name, sub in m.named_modules():
             rec, enc = attempts.run(m, m, ekw, _encdec, _ledger, {"entry": f"entry:{name}"})
         a = analyse(rec, enc)
         pass_res[f"entry:{name}"] = {"ok": True, "attempts": _ledger, **{k: v for k, v in a.items() if k != "structure_signature"}}
-        used_params |= rec.used_params; used_buffers |= rec.used_buffers; called |= rec.called
+        used_params |= rec.used_params; used_buffers |= rec.used_buffers; called |= rec.called; PASS_READS.append(libload_pass(rec))
     except Exception as e:
         pass_res[f"entry:{name}"] = {"ok": False, "error": f"{type(e).__name__}: {str(e)[:180]}", "attempts": _ledger}
     finally:
@@ -885,7 +891,7 @@ for name, sub in m.named_modules():
                     rec, res = attempts.run(m, m, mkw, lambda: getattr(sub, meth)(**mkw), _ledger, {"entry": f"entry:{name or '(root)'}.{meth}"})
                 a = analyse(rec, res)
                 before = len(used_params)
-                used_params |= rec.used_params; used_buffers |= rec.used_buffers; called |= rec.called
+                used_params |= rec.used_params; used_buffers |= rec.used_buffers; called |= rec.called; PASS_READS.append(libload_pass(rec))
                 pass_res[f"entry:{name or '(root)'}.{meth}"] = {"ok": True, "newly_used_params": len(used_params) - before, "attempts": _ledger,
                                                                  **{k: v for k, v in a.items() if k != "structure_signature"}}
             except Exception as e:
@@ -922,32 +928,46 @@ if ((P_names - used_params) or (persist_bufs - used_buffers)) and any(v["ok"] fo
         mask_cands = [{"mask_labels": [torch.zeros(1, pv.shape[-2], pv.shape[-1])], "class_labels": [torch.tensor([0])]}]
     m.train()
     done_train, errs, train_ledger = False, [], []
-    for ex in extras:
-        for mk in mask_cands:
-            for lab in label_cands:
-                kw = dict(base_kw, **ex, **mk)
-                if lab is not None: kw["labels"] = lab
-                if not _optional_ok("train"): break
-                rec, _ledger = None, []
-                try:
-                    with _limit():
-                        rec, out = attempts.run(m, m, {k: v for k, v in kw.items() if isinstance(v, torch.Tensor)},
-                                                lambda: m(**kw), _ledger, {"entry": "train", "labels": type(lab).__name__})
-                    newly = (rec.used_params - used_params)
-                    a = analyse(rec, out)
-                    pass_res["train"] = {"ok": True, "extra_inputs": sorted(set(ex) | set(mk) | ({"labels"} if lab is not None else set())),
-                                         "newly_used_params": len(newly), "ops": a["ops"], "attempts": train_ledger,
-                                         "note": "training-mode pass: counts toward T1/T2 only (loss/matching code may route through Python)"}
-                    used_params |= rec.used_params; used_buffers |= rec.used_buffers; called |= rec.called
-                    done_train = True
-                except Exception as e:
-                    errs.append(f"{type(e).__name__}: {str(e)[:90]}")
-                finally:
-                    if rec is not None: rec.remove_hooks()
-                    ATTEMPT_LEDGER.extend(_ledger); train_ledger.extend(_ledger)
+    def _double(v):
+        """The same inputs as a batch of 2 (F05-3: a BatchNorm layer cannot train on one example)."""
+        if isinstance(v, torch.Tensor) and v.dim() >= 1 and v.shape[0] == 1:
+            return torch.cat([v, v], 0)
+        if isinstance(v, list) and len(v) == 1:
+            return v * 2
+        return v
+    for _bs in (1, 2):                                   # batch 2 only when every batch-1 candidate failed
+        if done_train: break
+        if _bs == 2:
+            base_kw = {k: _double(v) for k, v in base_kw.items()}
+            extras = [{k: _double(v) for k, v in ex.items()} for ex in extras]
+            mask_cands = [{k: _double(v) for k, v in mk.items()} for mk in mask_cands]
+            label_cands = [_double(lab) for lab in label_cands]
+        for ex in extras:
+            for mk in mask_cands:
+                for lab in label_cands:
+                    kw = dict(base_kw, **ex, **mk)
+                    if lab is not None: kw["labels"] = lab
+                    if not _optional_ok("train"): break
+                    rec, _ledger = None, []
+                    try:
+                        with _limit():
+                            rec, out = attempts.run(m, m, {k: v for k, v in kw.items() if isinstance(v, torch.Tensor)},
+                                                    lambda: m(**kw), _ledger, {"entry": "train", "labels": type(lab).__name__, "batch": _bs})
+                        newly = (rec.used_params - used_params)
+                        a = analyse(rec, out)
+                        pass_res["train"] = {"ok": True, "extra_inputs": sorted(set(ex) | set(mk) | ({"labels"} if lab is not None else set())),
+                                             "newly_used_params": len(newly), "ops": a["ops"], "attempts": train_ledger, "batch": _bs,
+                                             "note": "training-mode pass: counts toward T1/T2 only (loss/matching code may route through Python)"}
+                        used_params |= rec.used_params; used_buffers |= rec.used_buffers; called |= rec.called; PASS_READS.append(libload_pass(rec))
+                        done_train = True
+                    except Exception as e:
+                        errs.append(f"{type(e).__name__}: {str(e)[:90]}")
+                    finally:
+                        if rec is not None: rec.remove_hooks()
+                        ATTEMPT_LEDGER.extend(_ledger); train_ledger.extend(_ledger)
+                    if done_train: break
                 if done_train: break
             if done_train: break
-        if done_train: break
     m.eval()
     if not done_train:
         pass_res["train"] = {"ok": False, "error": " | ".join(errs[:3]), "attempts": train_ledger}
@@ -967,7 +987,7 @@ if not ok_passes and not ROOT_NO_FORWARD:
             a = analyse(rec, out)
             pass_res["synth"] = {"ok": True, "inputs": label, "attempts": synth_ledger, **{k: v for k, v in a.items() if k != "structure_signature"}}
             sigs["synth"] = (a["structure_signature"], [(n.module, n.func) for n in rec.nodes], rec.nodes)
-            used_params |= rec.used_params; used_buffers |= rec.used_buffers; called |= rec.called
+            used_params |= rec.used_params; used_buffers |= rec.used_buffers; called |= rec.called; PASS_READS.append(libload_pass(rec))
             passes.append(("synth", kw))
             kw2 = next(k2 for lb, k2 in synth.candidates(m, limit=40, seed=1) if lb == label)
             m2, rec2, _l2 = _fresh(), None, []
@@ -1011,19 +1031,30 @@ if T:
         alias[id(v)].append(k)
     matched, un_c, _, _ = match(W, H, alias, packed, rename=ren)
     model_buffers = buffer_names(m)                         # includes non-persistent buffers (recomputed tables)
+    _sigM = common.recomputed_signatures(m, loaded=set(matched.values()))   # F05: a hint only (values not compared)
     masks = [c for c in un_c if common.stored_constant(c, *W[c], quantized=QW, pos=_POS,
                                                      buffer_slot=(c in model_buffers or bool(ren and ren(c) in model_buffers)))]
     un_c = [c for c in un_c if c not in set(masks)]
+    # F05: integer / bool tables with no evidence of their meaning are not learned weights (no failure) and are never
+    # hidden either: a G1 unknown names them (int_tables_unexplained); quantized codes stay learned weights (QW)
+    INT_UNEXPLAINED = [c for c in un_c if common.is_int_table(W[c][1], c, QW)]
+    un_c = [c for c in un_c if c not in set(INT_UNEXPLAINED)]
+    INT_HINTS = {c: "same name and size as a table the model computes itself (values not compared)"
+                 for c in INT_UNEXPLAINED if (c.rsplit(".", 1)[-1], numel(W[c][0])) in _sigM}
     used = set(used_params) | set(used_buffers)
     for names in alias.values():
         if any(n in used for n in names): used |= set(names)
     tot = sum(numel(W[c][0]) for c in W if c not in set(masks))
     unused = []
     for c, (s, _) in W.items():
-        if c in set(masks) or c in set(un_c): continue
+        if c in set(masks) or c in set(un_c) or c in set(INT_UNEXPLAINED): continue   # (F05: an unknown, not a weight)
         h = matched.get(c)
         ok = h is not None and ((h in used) if not h.startswith(("fused:", "renamed:")) else any(u.startswith(h.split(":", 1)[1] + ".") for u in used))
         if not ok: unused.append((c, numel(s)))
+    # F05: a checkpoint-loaded persistent buffer (any dtype) unread is judged by THE buffer rule (libload.buffer_gaps):
+    # a same-kind sibling read -> a real gap (stays a T1 failure); otherwise an R-BUF unknown, never a learned-weight fail
+    import libload as _ll
+    unused, MATCHER_BUFFER_UNKNOWN = _ll.matcher_buffer_split(unused, matched, _ll.buffer_groups(m), used, PASS_READS)
     # ---- execution witness for what the library declares it never builds (e.g. MTP): results_v2/_witness/vllm/<repo>.json
     #      (vLLM executed these tensors under the recorder; written by mtp_witness_run.py). Covered keys count as executed.
     WIT = None
@@ -1135,8 +1166,16 @@ if T:
         _srcs = LIB.get("reported_sources", {})
         _src = lambda k: _srcs.get(k) or [k]
         lib_unexp = [k for k in LIB["unexpected"] if not all(x in set(unbuilt) | set(bufs) for x in _src(k))]
-        lib_unexp = [k for k in lib_unexp if not all(x in T and _stored_constant(x) for x in _src(k))
+        lib_unexp = [k for k in lib_unexp if not all(x in T and _stored_constant(x, LIB) for x in _src(k))
                      and k not in model_buffers]
+        # F05: unexpected integer / bool tables with no evidence of their meaning: an unknown, never hidden, never a
+        # learned-weight failure (quantized codes stay learned weights)
+        INT_UNEXPLAINED = [k for k in lib_unexp if all(x in T and common.is_int_table(T[x][1], x, QW) for x in _src(k))]
+        lib_unexp = [k for k in lib_unexp if k not in set(INT_UNEXPLAINED)]
+        _ev = LIB.get("int_table_evidence") or {}
+        INT_HINTS = {k: "same name and size as a table the model computes itself (values not compared)"
+                     for k in INT_UNEXPLAINED if any(_ev.get(x) == "recomputed" for x in _src(k))}
+        MATCHER_BUFFER_UNKNOWN = []                   # the library path judges buffers in g1_assess
         mism = [m_[0] for m_ in LIB["mismatched"]]
         loaded = libload.loaded_params({n for n, _ in m.named_parameters()}, LIB)   # never-shipped params excluded
         used_n = set(used)
@@ -1164,13 +1203,12 @@ if T:
         # executed model is the loaded one
         _sd = m.state_dict(keep_vars=True)
         _pn = {n for n, _ in m.named_parameters(remove_duplicate=False)}
-        _bg = {k: (type(m.get_submodule(k.rpartition(".")[0]) if "." in k else m).__name__, k.rpartition(".")[2])
-               for k, t in _sd.items() if k not in _pn and t.is_floating_point()}
+        _bg = libload.buffer_groups(m)             # every persistent buffer, ANY dtype (F05: dtype is not meaning)
         # F04: names / shapes (and the rest of G2) are compared by g2_compare below when the load has an identity
         _has_id = bool(LIB.get("identity")) and not (LIB.get("identity") or {}).get("error")
         G1 = libload.g1_assess(LIB.get("provenance") or {}, used,
                                ((LIB.get("provenance") or {}).get("state_shapes") or {}) if _has_id
-                               else {k: list(t.shape) for k, t in _sd.items()}, _bg)
+                               else {k: list(t.shape) for k, t in _sd.items()}, _bg, PASS_READS)
         try:
             _EID = libload.model_identity(m)
         except Exception as _e:
@@ -1193,6 +1231,9 @@ if T:
         UNKNOWNS.extend(G1["unknowns"])
         _prov = LIB.get("provenance") or {}
         R["load_provenance"] = {"quantizer": _prov.get("quantizer"),
+                                # F05-4 (R-NORM kept): persistent state the library fills itself (constant / deterministic)
+                                # because the checkpoint does not ship it, named so nobody reads it as learned
+                                "initialised_by_library_not_shipped": libload.initialised_not_shipped(_prov.get("nonloaded")) or None,
                                 "nonloaded": {k: v for k, v in list((_prov.get("nonloaded") or {}).items())[:60]},
                                 "nonloaded_classes": dict(collections.Counter(v["class"] for v in (_prov.get("nonloaded") or {}).values())),
                                 "missing_silenced_by_ignore": _prov.get("missing_silenced_by_ignore"),
@@ -1213,6 +1254,12 @@ if T:
         if LIB.get("read_keys"):
             rk = set(LIB["read_keys"])
             R["checkpoint_numel_in_files_library_reads"] = sum(numel(T[k][0]) for k in rk if k in T)
+    if INT_UNEXPLAINED:
+        UNKNOWNS.append(common.int_table_unknown(INT_UNEXPLAINED, INT_HINTS))
+    if MATCHER_BUFFER_UNKNOWN:
+        UNKNOWNS.append({"predicate": "G3", "what": "checkpoint-loaded buffers no recorded run read in the modes tried (not "
+                         "proven dead: no supported input is shown to leave them unread)",
+                         "items": MATCHER_BUFFER_UNKNOWN[:20], "count": len(MATCHER_BUFFER_UNKNOWN)})
     _g1f = dict((G1 or {}).get("fail") or {}, **(_AUTH_ST.get("fail") or {}))   # + a refusal the codes do not explain
     if _g2f:                                         # F04: the executed model is not the loaded one (observed)
         _g1f["executed_differs_from_loaded"] = _g2f

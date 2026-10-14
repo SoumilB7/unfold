@@ -166,7 +166,10 @@ class NPBufFilled(NPBuf):
 REAL = {
     "R7 Levit: attention_bias_idxs from torch.LongTensor (CPU load refills it identically)": (
         lambda: T.LevitModel(T.LevitConfig(image_size=32, patch_size=16, hidden_sizes=[16, 32, 48], num_attention_heads=[1, 2, 3],
-                                           depths=[1, 1, 1], key_dim=[8, 8, 8])), None, {"pixel_values": torch.randn(1, 3, 32, 32)}, "FULL", {}),
+                                           depths=[1, 1, 1], key_dim=[8, 8, 8])), None,
+        # F05: its shipped BN counters are checkpoint state, read by the worker's training pass (3d); at this tiny size the
+        # last stage has one token, so train-mode BatchNorm needs a batch of 2 (the real 224px model has 16 tokens)
+        {"pixel_values": torch.randn(1, 3, 32, 32), "__train__": {"pixel_values": torch.randn(2, 3, 32, 32)}}, "FULL", {}),
     "R8 Sam3ViT: rotary tables built with repeat_interleave (CPU load refills them identically)": (
         lambda: T.Sam3ViTModel(T.Sam3ViTConfig(hidden_size=32, intermediate_size=64, num_hidden_layers=2, num_attention_heads=2, image_size=56,
                                                patch_size=14, window_size=2, global_attn_indexes=[1], pretrain_image_size=28)), None,
@@ -190,7 +193,8 @@ REAL = {
     "R6 (selftest_grading C8) BN running stats not shipped: zeros / ones": (
         lambda: T.ResNetForImageClassification(T.ResNetConfig(embedding_size=8, hidden_sizes=[8, 16], depths=[1, 1], num_labels=3)),
         lambda sd: {k: v for k, v in sd.items() if not k.endswith(("running_mean", "running_var"))},
-        {"pixel_values": torch.randn(1, 3, 32, 32)}, "FULL", {"resnet.embedder.embedder.normalization.running_mean": "INIT_DETERMINISTIC",
+        dict(_pxr := {"pixel_values": torch.randn(1, 3, 32, 32)}, __train__=dict(_pxr, labels=torch.tensor([0]))),   # F05: + training pass
+        "FULL", {"resnet.embedder.embedder.normalization.running_mean": "INIT_DETERMINISTIC",
                                                               "resnet.embedder.embedder.normalization.running_var": "INIT_DETERMINISTIC"}),
 }
 
