@@ -25,6 +25,7 @@ from lowcost import zero_storage, fetch_headers, fetch_bin_headers
 import common
 from common import grading_id, runtime, ckpt_split, match, library_rename, split_library_ignored, looks_like_stored_buffer, top_groups, numel, INT_DTYPES, buffer_names
 from dag import DagRecorder, analyse, tied_alias_modules, math_attention, clear_library_caches
+import dag
 from inputs import build_passes, mask_positions
 import attempts                                   # F13: one recorder per attempt; a failed attempt credits nothing
 ATTEMPT_LEDGER = []                               # every attempt of every stage (entry point, inputs, flags, ok / error)
@@ -539,7 +540,8 @@ for label, kw in _schedule():
             R.setdefault("input_notes", []).append(f"{label}: processor gave 5-D pixel tensor with singleton group dim; retried squeezed")
         a = analyse(rec, out)
         pass_res[label] = {"ok": True, "secs": round(time.time() - t, 2), "attempts": _ledger, **{k: v for k, v in a.items() if k != "structure_signature"}}
-        sigs[label] = (a["structure_signature"], [(n.module, n.func) for n in rec.nodes])
+        _keep = label.startswith("stability:") or not any(not l.startswith("stability:") for l in sigs)   # (T5's two runs)
+        sigs[label] = (a["structure_signature"], [(n.module, n.func) for n in rec.nodes], rec.nodes if _keep else None)
         if EMIT and not label.startswith("stability:") and "sub=" not in label:
             try:
                 _cp = CAP["passes"]
@@ -933,7 +935,7 @@ if not ok_passes and not ROOT_NO_FORWARD:
                 rec, out = attempts.run(m, m, synth.flat_tensors(kw, "synth"), lambda: m(**kw), _ledger, {"entry": f"synth:{label}"})
             a = analyse(rec, out)
             pass_res["synth"] = {"ok": True, "inputs": label, "attempts": synth_ledger, **{k: v for k, v in a.items() if k != "structure_signature"}}
-            sigs["synth"] = (a["structure_signature"], [(n.module, n.func) for n in rec.nodes])
+            sigs["synth"] = (a["structure_signature"], [(n.module, n.func) for n in rec.nodes], rec.nodes)
             used_params |= rec.used_params; used_buffers |= rec.used_buffers; called |= rec.called
             passes.append(("synth", kw))
             kw2 = next(k2 for lb, k2 in synth.candidates(m, limit=40, seed=1) if lb == label)
@@ -942,7 +944,7 @@ if not ok_passes and not ROOT_NO_FORWARD:
                 with _limit():
                     rec2, o2 = attempts.run(m2, m2, synth.flat_tensors(kw2, "synth"), lambda: m2(**kw2), _l2,
                                             {"entry": f"stability:synth:{label}"})
-                sigs["stability:synth"] = (analyse(rec2, o2)["structure_signature"], [(n.module, n.func) for n in rec2.nodes])
+                sigs["stability:synth"] = (analyse(rec2, o2)["structure_signature"], [(n.module, n.func) for n in rec2.nodes], rec2.nodes)
                 pass_res["stability:synth"] = {"ok": True, "attempts": _l2}
             except Exception as e:
                 pass_res["stability:synth"] = {"ok": False, "error": f"{type(e).__name__}: {str(e)[:120]}", "attempts": _l2}
@@ -1231,6 +1233,21 @@ if first in sigs and ("stability:" + first) in sigs:
                                      "first_divergence": None if same else {"index": div if div is not None else min(len(na), len(nb)),
                                                                              "a": na[div] if div is not None and div < len(na) else None,
                                                                              "b": nb[div] if div is not None and div < len(nb) else None}}
+    # F06-2 (Soumil 2026-10-13): INFO only, never part of the grade until F12 / P2.4 moves T5 onto the detailed record:
+    # do the two runs also agree op by op on overload, arguments (canonical form), producer ports and output shapes?
+    try:
+        if sigs[first][2] is None or sigs["stability:" + first][2] is None:
+            raise ValueError("the detailed record of a T5 run was not kept")
+        ka = [dag.node_key(n) for n in sigs[first][2]]
+        kb = [dag.node_key(n) for n in sigs["stability:" + first][2]]
+        dv = next((i for i in range(min(len(ka), len(kb))) if ka[i] != kb[i]), None if len(ka) == len(kb) else min(len(ka), len(kb)))
+        checks["T5_stable_structure"]["info_schema2_same"] = ka == kb
+        if ka != kb and dv is not None:
+            checks["T5_stable_structure"]["info_schema2_first_divergence"] = {
+                "index": dv, "a": repr(ka[dv])[:300] if dv < len(ka) else None, "b": repr(kb[dv])[:300] if dv < len(kb) else None}
+    except Exception as _e:                              # (info only: it can never change pass / failed)
+        checks["T5_stable_structure"]["info_schema2_same"] = None
+        checks["T5_stable_structure"]["info_schema2_note"] = f"not comparable: {str(_e)[:160]}"
 else:
     checks["T5_stable_structure"] = {"pass": False, "note": "second input could not be run"}
 R["checks"] = checks
@@ -1299,7 +1316,7 @@ if EMIT and CAP["passes"]:
             try:
                 with torch.no_grad(), math_attention(), _rc:
                     _oc = _cm(**_ckw, use_cache=True)
-                CAP["cache_run"] = {"pass": _cl, "graph": capture.graph(_rc), "cache": capture.cache_slots(_rc, _oc)}
+                CAP["cache_run"] = {"pass": _cl, "graph": capture.graph(_rc, _oc), "cache": capture.cache_slots(_rc, _oc)}
             finally:
                 _rc.remove_hooks()
         del _oc, _cm

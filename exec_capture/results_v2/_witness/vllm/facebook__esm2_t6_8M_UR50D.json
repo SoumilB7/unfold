@@ -2,7 +2,7 @@
  "repo": "facebook/esm2_t6_8M_UR50D",
  "executed_by": "vLLM (source, no compiled extension; custom ops on their pure-PyTorch path)",
  "schema": 2,
- "producer_id": "7628516d7930",
+ "producer_id": "0822778cf273",
  "vllm_version": "0.30.0",
  "vllm_source_id": "65d9e4beec54b27c",
  "runtime": {
@@ -82,6 +82,6 @@
  "failed_stage": "config",
  "error": "NotImplementedError: Unsupported speculative method: 'mtp'",
  "where": "vllm/config/speculative.py:1369",
- "secs": 8.1,
- "peak_rss_gb": 0.51
+ "secs": 13.4,
+ "peak_rss_gb": 0.47
 }

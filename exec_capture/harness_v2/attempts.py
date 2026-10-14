@@ -177,19 +177,7 @@ def _seed(seed):
     torch.manual_seed(seed); np.random.seed(seed % (2 ** 32)); random.seed(seed)
 
 
-@contextlib.contextmanager
-def _no_alarm():
-    """The restore and the ledger write run with SIGALRM blocked: a stage time limit can never cut them short (a
-    pending alarm is delivered right after)."""
-    try:
-        old = signal.pthread_sigmask(signal.SIG_BLOCK, {signal.SIGALRM})
-    except (AttributeError, ValueError, OSError):
-        old = None
-    try:
-        yield
-    finally:
-        if old is not None:
-            signal.pthread_sigmask(signal.SIG_SETMASK, old)
+_no_alarm = dag._alarm_blocked      # the restore and the ledger write never run a stage time limit midway (delivered after)
 
 
 @contextlib.contextmanager

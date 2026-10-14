@@ -11,9 +11,10 @@ Opt-in (BENCH_EMIT_CAPTURE=<dir>); grading is unchanged. A bundle holds no weigh
 """
 import base64, collections, gzip, hashlib, json, os
 import torch
-from dag import DagRecorder, Node
+from dag import DagRecorder, Node, GRAPH_SCHEMA
 
-FORMAT = "exec-capture-bundle/2"      # /2: records which tie-group members the checkpoint ships
+FORMAT = "exec-capture-bundle/3"      # /2: records which tie-group members the checkpoint ships; /3: graph schema 2 (F06)
+LEGACY_FORMATS = {"exec-capture-bundle/2": 1}   # older bundle format -> the graph schema its graphs carry
 SQUARE_MAX = 1 << 16          # numel limit of a square activation kept from an add (as exec_to_ir's MaskCapture)
 SQUARE_SIDE_MAX = 256         # stored slice is [S, S]; larger sides are not kept
 BUF_MAX = 4096                # non-persistent buffers up to this size are stored with their values
@@ -45,37 +46,77 @@ class CaptureRecorder(DagRecorder):
         return out
 
 
-def graph(rec):
-    """A recording as interned strings + compact nodes: [func, module, ins, consts, n_out, shape]."""
+def graph(rec, outputs=None):
+    """A recording as interned strings + compact nodes (graph schema 2, F06):
+    [func, module, ins, consts, n_out, shape, op, args, outs, cargs]; an op edge is ["o", node, port], an external edge
+    ["x", shape, dtype, ordinal]. `returns` is the model call's returned structure (dag return_structure): from
+    `outputs` when given, else the one analyse() kept on the recorder, else null (UNKNOWN)."""
     strs, sidx = [], {}
     def s(x):
         if x not in sidx:
             sidx[x] = len(strs); strs.append(x)
         return sidx[x]
+    edge = lambda e: edge_json(e, s)
     nodes = []
     for n in rec.nodes:
-        ins = []
-        for e in n.ins:
-            k = KIND[e[0]]
-            if k == "o": ins.append([k, e[1]])
-            elif k == "x": ins.append([k, list(e[1]), e[2]])
-            else: ins.append([k, s(e[1])])
-        nodes.append([s(n.func), s(n.module), ins, list(n.consts), n.n_out, list(n.shape) if n.shape is not None else None])
-    return {"strings": strs, "nodes": nodes,
+        nodes.append([s(n.func), s(n.module), [edge(e) for e in n.ins], list(n.consts), n.n_out,
+                      list(n.shape) if n.shape is not None else None,
+                      s(n.op) if n.op is not None else None,
+                      [[a, v] for a, v in n.args] if n.args is not None else None,
+                      [[list(sh), dt] for sh, dt in n.outs] if n.outs is not None else None,
+                      [[a, v] for a, v in n.cargs] if getattr(n, "cargs", None) is not None else None])
+    rets = rec.return_structure(outputs) if outputs is not None else getattr(rec, "returns", None)
+    return {"schema": GRAPH_SCHEMA, "strings": strs, "nodes": nodes,
+            "returns": None if rets is None else [[list(p), _ref_out(r, s)] for p, r in rets],
             "op_strings": {str(j): v for j, v in getattr(rec, "op_strings", {}).items()}}
 
 
+def _ref_out(r, s):
+    if r[0] in KIND:
+        return edge_json(r, s)
+    return list(r)
+
+
+def edge_json(e, s):
+    k = KIND[e[0]]
+    if k == "o": return [k, e[1], e[2]]
+    if k == "x": return [k, list(e[1]), e[2], e[3]]
+    return [k, s(e[1])]
+
+
+def _edge_in(e, S, schema):
+    k = UNKIND[e[0]]
+    if k == "op": return ("op", e[1], e[2] if schema >= 2 else None)          # schema 1: the port is UNKNOWN
+    if k == "external": return ("external", tuple(e[1]), e[2], e[3] if schema >= 2 else None)
+    return (k, S[e[1]])
+
+
 def nodes_of(g):
-    """Inverse of graph(): dag.Node objects with the recorder's own edge tuples."""
+    """Inverse of graph(): dag.Node objects with the recorder's own edge tuples. A schema-1 graph (older bundle) gives
+    nodes whose schema-2 fields are None and whose op edges have port None: unknown, never a default."""
     S = g["strings"]; out = []
-    for func, mod, ins, consts, n_out, shape in g["nodes"]:
-        e2 = []
-        for e in ins:
-            k = UNKIND[e[0]]
-            if k == "op": e2.append(("op", e[1]))
-            elif k == "external": e2.append(("external", tuple(e[1]), e[2]))
-            else: e2.append((k, S[e[1]]))
-        out.append(Node(S[func], S[mod], e2, consts, n_out, tuple(shape) if shape is not None else None))
+    schema = g.get("schema", 1)
+    for row in g["nodes"]:
+        func, mod, ins, consts, n_out, shape = row[:6]
+        op, args, outs = (row[6:9] if schema >= 2 else (None, None, None))
+        cargs = row[9] if schema >= 2 and len(row) > 9 else None
+        out.append(Node(S[func], S[mod], [_edge_in(e, S, schema) for e in ins], consts, n_out,
+                        tuple(shape) if shape is not None else None,
+                        S[op] if op is not None else None,
+                        tuple((a, v) for a, v in args) if args is not None else None,
+                        tuple((tuple(sh), dt) for sh, dt in outs) if outs is not None else None,
+                        tuple((a, v) for a, v in cargs) if cargs is not None else None))
+    return out
+
+
+def returns_of(g):
+    """Inverse of graph()'s returns: [(path, ref)] with the recorder's own ref tuples; None = UNKNOWN (schema 1, or
+    not recorded)."""
+    if g.get("schema", 1) < 2 or g.get("returns") is None:
+        return None
+    S = g["strings"]; out = []
+    for p, r in g["returns"]:
+        out.append((list(p), _edge_in(r, S, 2) if r and r[0] in UNKIND else tuple(r)))
     return out
 
 
@@ -130,7 +171,8 @@ def cache_slots(rec_c, out):
             for k, x in vars(o).items(): walk(x, f"{path}.{k}", depth + 1)
     walk(pkv, "cache")
     return {"container": type(pkv).__name__,
-            "slots": [{"path": p, "shape": list(t.shape), "producer": rec_c.producer.get(id(t))} for p, t in found]}
+            "slots": [{"path": p, "shape": list(t.shape), "producer": rec_c.producer.get(id(t)),
+                       "port": rec_c.port.get(id(t))} for p, t in found]}
 
 
 def model_facts(m):
@@ -197,10 +239,18 @@ def write(out_dir, repo, R, cap, model, cfg, build_attn, shipped=None):
     return p
 
 
-def load(path):
+def load(path, allow_legacy=False):
+    """A bundle of the current format. An older format is refused (re-capture it), unless allow_legacy: then it is
+    returned with graph_schema = its schema (1) so every schema-2 consumer refuses it (dag.node_key raises; ports,
+    arguments and returns read as unknown). Never upgraded in place."""
     with gzip.open(path, "rt") as fh:
         b = json.load(fh)
-    if b.get("format") != FORMAT:
-        raise ValueError(f"stale or foreign capture bundle (format {b.get('format')}, expected {FORMAT}): re-capture "
-                         "it with the current worker (older bundles cannot say which tied tensors the checkpoint ships)")
-    return b
+    if b.get("format") == FORMAT:
+        b["graph_schema"] = GRAPH_SCHEMA
+        return b
+    if allow_legacy and b.get("format") in LEGACY_FORMATS:
+        b["graph_schema"] = LEGACY_FORMATS[b["format"]]
+        return b
+    raise ValueError(f"stale or foreign capture bundle (format {b.get('format')}, expected {FORMAT}): re-capture "
+                     "it with the current worker (older bundles cannot say which tied tensors the checkpoint ships, "
+                     "nor output ports, bound arguments or returned structure)")

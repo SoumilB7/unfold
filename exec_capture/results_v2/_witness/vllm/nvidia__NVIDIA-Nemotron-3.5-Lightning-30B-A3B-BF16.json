@@ -2,7 +2,7 @@
  "repo": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16",
  "executed_by": "vLLM (source, no compiled extension; custom ops on their pure-PyTorch path)",
  "schema": 2,
- "producer_id": "7628516d7930",
+ "producer_id": "0822778cf273",
  "vllm_version": "0.30.0",
  "vllm_source_id": "65d9e4beec54b27c",
  "runtime": {
@@ -82,6 +82,6 @@
  "failed_stage": "config",
  "error": "NotImplementedError: is_act_and_mul=False is supported only for CUDA, XPU and ROCm for now",
  "where": "vllm/model_executor/layers/fused_moe/config.py:1388",
- "secs": 10.5,
- "peak_rss_gb": 0.44
+ "secs": 8.2,
+ "peak_rss_gb": 0.45
 }

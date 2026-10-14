@@ -2,7 +2,7 @@
  "repo": "datalab-to/chandra-ocr-2",
  "executed_by": "vLLM (source, no compiled extension; custom ops on their pure-PyTorch path)",
  "schema": 2,
- "producer_id": "7628516d7930",
+ "producer_id": "0822778cf273",
  "vllm_version": "0.30.0",
  "vllm_source_id": "65d9e4beec54b27c",
  "runtime": {
@@ -280,6 +280,6 @@
   "pinned": 6,
   "other_revision": []
  },
- "secs": 8.6,
- "peak_rss_gb": 1.14
+ "secs": 6.6,
+ "peak_rss_gb": 1.02
 }
