@@ -1,0 +1,562 @@
+# Idealized model-benchmark taxonomy.
+#
+# Purpose: give the coverage-measurement harness a real denominator. Every category/subcategory
+# below states (1) a one-line definition, (2) the INPUTS needed to actually exercise it through a
+# real forward pass / pipeline __call__ (not just load a config), and (3) the mechanism_features
+# it stresses -- the architectural facts a correct extractor must detect from evidence (config
+# fields / forward-pass AST), never from model identity. `evidence_fields` under each mechanism
+# feature names the concrete config/attribute a detector should read; `build_catalog.py` uses the
+# same field names to pick real witness models (axis c).
+#
+# This file is read by scripts/build_catalog.py. Keep it hand-authored; the catalog JSON/MD files
+# are the generated artifacts.
+
+schema_version: 1
+generated_by: human
+notes: >
+  "inputs_needed" values are drawn from a closed vocabulary so the harness router
+  (harness/run_all.py) can dispatch mechanically: text, image, audio, video, image+mask,
+  pipeline-prompt, none (config/header-only, no forward pass attempted).
+
+stress_axes:
+  scale:
+    definition: >
+      Parameter-count band the extraction mechanism must survive without downloading weights
+      (zero-storage / meta-device construction). Spans the conceivable range from smoke-test
+      stub models to trillion-parameter MoE flagships.
+    bands:
+      - {id: tiny, range: "<10M params", example_source: "hf-internal-testing / trl-internal-testing tiny-random-* repos"}
+      - {id: small, range: "10M-1B params"}
+      - {id: medium, range: "1B-30B params"}
+      - {id: large, range: "30B-200B params"}
+      - {id: huge, range: "200B-1T+ params", example_source: "DeepSeek-V3/V4-class, Kimi-K2-class, Llama-4-Maverick-class"}
+  quantization:
+    definition: >
+      Storage/compute format of the checkpoint's weights, orthogonal to architecture. A
+      correct extractor must recognize the format from config (`quantization_config.quant_method`)
+      or tensor dtype/suffix evidence, never assume unquantized fp16/bf16.
+    formats:
+      - {id: fp8, evidence_fields: ["quantization_config.quant_method=fp8", "tensor dtype F8_E4M3/F8_E5M2"]}
+      - {id: nvfp4, evidence_fields: ["quantization_config.quant_method=nvfp4/modelopt", "weight_global_scale / input_global_scale tensors"]}
+      - {id: mxfp4, evidence_fields: ["quantization_config.quant_method=mxfp4", "*_blocks + *_scales tensor pairs"]}
+      - {id: gptq, evidence_fields: ["quantization_config.quant_method=gptq", "qweight/qzeros/g_idx tensors"]}
+      - {id: awq, evidence_fields: ["quantization_config.quant_method=awq", "qweight/qzeros/scales tensors"]}
+      - {id: bnb, evidence_fields: ["quantization_config.quant_method=bitsandbytes", "SCB / quant_state tensors"]}
+      - {id: compressed-tensors, evidence_fields: ["quantization_config.quant_method=compressed-tensors", "weight_packed + weight_scale tensors"]}
+      - {id: gguf, evidence_fields: ["repo tag gguf / library_name=gguf", "GGUF KV metadata (general.architecture)"]}
+      - {id: mlx, evidence_fields: ["repo tag mlx / library_name=mlx", "*.safetensors with mlx quant KV in config.json (bits, group_size)"]}
+  negative_controls:
+    definition: >
+      Repos deliberately expected to defeat or degrade the winning mechanism, so the catalog
+      also measures graceful-failure behavior, not just success rate.
+    kinds:
+      - {id: remote_code_only, definition: "config.auto_map present, architecture class only exists as repo-local Python (trust_remote_code required)"}
+      - {id: gated, definition: "repo requires accepting a license / access request before config or weights are readable"}
+      - {id: broken_or_partial_config, definition: "config.json missing required fields, or references a model_type unknown to the installed library version"}
+      - {id: gguf_only, definition: "repo ships only .gguf files, no safetensors -- no Hub-side ground-truth header to score against"}
+      - {id: adapter_only_lora, definition: "repo is a PEFT/LoRA adapter with no base weights of its own; architecture is defined by base_model, not this repo"}
+
+categories:
+
+  text_decoder:
+    definition: Autoregressive decoder-only language models (the causal-LM family).
+    default_inputs_needed: [text]
+    subcategories:
+      dense:
+        definition: Every decoder layer has one dense FFN; no routing.
+        inputs_needed: [text]
+        mechanism_features:
+          - {id: standard_mha_gqa, evidence_fields: ["num_attention_heads", "num_key_value_heads"]}
+      moe_shared_experts:
+        definition: Mixture-of-experts FFN with N routed experts plus one or more always-on shared experts summed in.
+        inputs_needed: [text]
+        mechanism_features:
+          - {id: shared_experts, evidence_fields: ["n_shared_experts", "shared_expert_intermediate_size", "moe_intermediate_size"]}
+          - {id: routed_experts, evidence_fields: ["n_routed_experts", "num_experts", "num_experts_per_tok"]}
+      moe_grouped_hash_routing:
+        definition: MoE routing that groups experts (e.g. device/node groups) or routes by a hash function instead of plain top-k softmax.
+        inputs_needed: [text]
+        mechanism_features:
+          - {id: grouped_routing, evidence_fields: ["n_group", "topk_group", "routed_scaling_factor"]}
+          - {id: hash_routing, evidence_fields: ["router type in modeling source (hash vs. learned gate)"]}
+      mla:
+        definition: Multi-head Latent Attention -- Q/K/V are low-rank-projected through a shared latent bottleneck before per-head expansion.
+        inputs_needed: [text]
+        mechanism_features:
+          - {id: mla, evidence_fields: ["q_lora_rank", "kv_lora_rank", "qk_rope_head_dim", "qk_nope_head_dim", "v_head_dim"]}
+      mtp:
+        definition: Multi-Token Prediction -- extra lightweight head(s) that predict more than one future token per step, trained jointly with the main LM head.
+        inputs_needed: [text]
+        mechanism_features:
+          - {id: mtp, evidence_fields: ["num_nextn_predict_layers", "num_mtp_modules"]}
+      hybrid_ssm_attention:
+        definition: Layer stack interleaves state-space (SSM/Mamba) layers with regular attention layers.
+        inputs_needed: [text]
+        mechanism_features:
+          - {id: hybrid_layer_types, evidence_fields: ["layer_types (list mixing 'attention'/'mamba')", "attn_layer_indices / full_attn_idxs"]}
+      linear_recurrent_attention:
+        definition: Attention replaced by a linear/recurrent mechanism (RWKV time-mix, gated-delta-net, pure Mamba SSM) with O(1) per-token state instead of a KV cache.
+        inputs_needed: [text]
+        mechanism_features:
+          - {id: rwkv_timemix, evidence_fields: ["model_type=rwkv/rwkv5/rwkv6/rwkv7", "attention_hidden_size, rescale_every"]}
+          - {id: gated_deltanet, evidence_fields: ["linear_attn_config / gated delta fields in modeling source", "model_type=qwen3_next, lfm2, zamba2"]}
+          - {id: mamba_ssm, evidence_fields: ["state_size, conv_kernel, time_step_rank, n_mamba_heads"]}
+      sliding_local_global:
+        definition: Attention window alternates between local/sliding-window layers and full-context global layers.
+        inputs_needed: [text]
+        mechanism_features:
+          - {id: sliding_window, evidence_fields: ["sliding_window", "layer_types (sliding_attention vs full_attention)", "sliding_window_pattern"]}
+      softcapping:
+        definition: Attention logits (and/or final LM-head logits) are passed through a tanh soft-cap before softmax.
+        inputs_needed: [text]
+        mechanism_features:
+          - {id: attn_logit_softcap, evidence_fields: ["attn_logit_softcapping", "final_logit_softcapping"]}
+      sandwich_norms:
+        definition: Each sub-block is normed both entering AND leaving (pre-norm + post-norm sandwich), not just pre-norm.
+        inputs_needed: [text]
+        mechanism_features:
+          - {id: sandwich_norm, evidence_fields: ["use_post_attention_layernorm / use_post_feedforward_layernorm-style pairs seen in modeling source"]}
+      kv_sharing:
+        definition: Some decoder layers reuse (do not recompute) the K/V projection of another layer, cross-layer KV cache sharing.
+        inputs_needed: [text]
+        mechanism_features:
+          - {id: kv_sharing, evidence_fields: ["layer_types with 'kv_shared'", "cross-layer cache-sharing map in modeling source"]}
+
+  encoder_only:
+    definition: Bidirectional encoder-only transformers (masked-LM style), including embedding and reranking heads.
+    default_inputs_needed: [text]
+    subcategories:
+      bert_family:
+        definition: Classic bidirectional encoder stack (BERT/RoBERTa/ELECTRA/DeBERTa lineage) with a masked-LM or classification head.
+        inputs_needed: [text]
+        mechanism_features:
+          - {id: absolute_or_relative_pos, evidence_fields: ["position_embedding_type"]}
+      embeddings:
+        definition: Encoder tuned to output pooled sentence/token embeddings for retrieval or similarity (feature-extraction / sentence-similarity pipeline).
+        inputs_needed: [text]
+        mechanism_features:
+          - {id: pooling_head, evidence_fields: ["1_Pooling/config.json pooling_mode_*", "dense projection module"]}
+      rerankers:
+        definition: Cross-encoder that scores a (query, document) pair jointly and outputs a single relevance logit.
+        inputs_needed: [text]
+        mechanism_features:
+          - {id: cross_encoder_head, evidence_fields: ["num_labels=1", "sequence-pair classification head"]}
+      other:
+        definition: Encoder-only architecture that does not cleanly match bert-family/embeddings/rerankers (catalog-honesty fallback).
+        inputs_needed: [text]
+        mechanism_features: []
+
+  encoder_decoder:
+    definition: Sequence-to-sequence transformers with a separate encoder and decoder stack joined by cross-attention.
+    default_inputs_needed: [text]
+    subcategories:
+      t5_style:
+        definition: T5-lineage encoder-decoder with relative-position bias instead of rotary/absolute embeddings.
+        inputs_needed: [text]
+        mechanism_features:
+          - {id: relative_position_bias, evidence_fields: ["relative_attention_num_buckets", "relative_attention_max_distance"]}
+      bart_style:
+        definition: BART/mBART-lineage encoder-decoder with learned absolute positions and denoising pretraining.
+        inputs_needed: [text]
+        mechanism_features:
+          - {id: learned_abs_pos_encdec, evidence_fields: ["max_position_embeddings on both encoder and decoder configs"]}
+      translation:
+        definition: Encoder-decoder fine-tuned/specialized for machine translation (Marian/NLLB/M2M100 style, often many small per-language-pair checkpoints).
+        inputs_needed: [text]
+        mechanism_features:
+          - {id: lang_token_routing, evidence_fields: ["forced_bos_token_id", "lang_code embedding table"]}
+      other:
+        definition: Encoder-decoder architecture that does not cleanly match t5/bart/translation (catalog-honesty fallback).
+        inputs_needed: [text]
+        mechanism_features: []
+
+  vision_language:
+    definition: Models that jointly consume image (and/or video) and text, however the modalities are fused.
+    default_inputs_needed: [image, text]
+    subcategories:
+      projector_mlp:
+        definition: Frozen/trained vision tower feeds a small MLP projector that maps vision tokens directly into the LM's embedding space (LLaVA-style).
+        inputs_needed: [image, text]
+        mechanism_features:
+          - {id: mlp_projector, evidence_fields: ["mm_projector_type", "vision_feature_layer", "vision_feature_select_strategy"]}
+      cross_attention_perceiver:
+        definition: Vision features are fused via dedicated cross-attention or a Perceiver-Resampler stack instead of concatenation into the LM sequence.
+        inputs_needed: [image, text]
+        mechanism_features:
+          - {id: perceiver_resampler, evidence_fields: ["num_latents / resampler config", "cross_attn_every_n_layers"]}
+      native_multimodal:
+        definition: Vision patches are tokenized and interleaved with text tokens through the SAME transformer stack (no separate cross-attn or late-fusion module).
+        inputs_needed: [image, text]
+        mechanism_features:
+          - {id: native_patch_tokens, evidence_fields: ["image_token_id / image_token_index", "native resolution dynamic patching (spatial_merge_size)"]}
+      video_llm:
+        definition: Vision-language model with an explicit temporal/frame-sampling path for video input (as opposed to treating frames as independent images).
+        inputs_needed: [video, text]
+        mechanism_features:
+          - {id: temporal_pos_encoding, evidence_fields: ["video token / temporal_patch_size", "3D-RoPE / t_position ids in modeling source"]}
+      other:
+        definition: Vision-language fusion style that does not cleanly match projector/cross-attn/native/video-llm (catalog-honesty fallback, not a claimed archetype).
+        inputs_needed: [image, text]
+        mechanism_features: []
+
+  omni_any_to_any:
+    definition: Single model accepting and/or producing more than two modalities (text+image+audio(+video)) through one shared backbone.
+    default_inputs_needed: [text, image, audio]
+    subcategories:
+      any_to_any:
+        definition: Unified encoder/decoder stack with modality-specific tokenizers/detokenizers feeding one shared transformer, producing any-of-the-input modalities as output.
+        inputs_needed: [text, image, audio]
+        mechanism_features:
+          - {id: modality_router, evidence_fields: ["per-modality embedding tables + a shared backbone in modeling source", "output modality head list"]}
+
+  speech_recognition:
+    definition: Audio-in, text-out (or phoneme-out) transcription models.
+    default_inputs_needed: [audio]
+    subcategories:
+      whisper_style:
+        definition: Encoder-decoder transformer over log-mel spectrogram features with a text decoder (Whisper lineage).
+        inputs_needed: [audio]
+        mechanism_features:
+          - {id: log_mel_encoder, evidence_fields: ["num_mel_bins", "encoder/decoder cross-attention"]}
+      wav2vec2_hubert:
+        definition: Self-supervised CNN-feature-extractor + transformer encoder, CTC or quantized-target pretraining (wav2vec2/HuBERT/WavLM lineage).
+        inputs_needed: [audio]
+        mechanism_features:
+          - {id: conv_feature_extractor, evidence_fields: ["conv_dim / conv_stride / conv_kernel lists", "do_stable_layer_norm"]}
+      conformer:
+        definition: Encoder block interleaves self-attention with a depthwise-convolution module (Conformer block) rather than pure attention or pure conv.
+        inputs_needed: [audio]
+        mechanism_features:
+          - {id: conformer_conv_module, evidence_fields: ["conv_depthwise_kernel_size", "macaron feed-forward pair in modeling source"]}
+      other:
+        definition: Speech-recognition architecture that does not cleanly match whisper/wav2vec2-hubert/conformer (catalog-honesty fallback).
+        inputs_needed: [audio]
+        mechanism_features: []
+
+  audio_generation:
+    definition: Models that produce audio waveforms or audio-codec tokens from text or other conditioning.
+    default_inputs_needed: [text]
+    subcategories:
+      tts:
+        definition: Text-to-speech synthesis producing a waveform (or vocoder input) from text + optional speaker conditioning.
+        inputs_needed: [text]
+        mechanism_features:
+          - {id: duration_predictor, evidence_fields: ["duration_predictor_kernel_size", "speaker_embedding_dim"]}
+      audio_lm:
+        definition: Autoregressive language model over discrete audio-codec tokens (text-to-audio / speech-LM), reusing an LM stack on codec token ids.
+        inputs_needed: [text]
+        mechanism_features:
+          - {id: codec_token_lm, evidence_fields: ["audio_vocab_size", "num_codebooks"]}
+      neural_codec:
+        definition: Neural audio codec (encoder -> residual vector quantizer -> decoder) used to turn waveforms into discrete tokens and back.
+        inputs_needed: [audio]
+        mechanism_features:
+          - {id: rvq_codebooks, evidence_fields: ["num_quantizers", "codebook_size"]}
+      music_generation:
+        definition: Long-form music/audio generation conditioned on text and/or melody (MusicGen-style), typically an LM over multiple parallel codebooks.
+        inputs_needed: [text]
+        mechanism_features:
+          - {id: k_codebook_delay_pattern, evidence_fields: ["num_codebooks", "audio_channels", "delay pattern in modeling source"]}
+      other:
+        definition: Audio-generation architecture that does not cleanly match tts/audio_lm/neural_codec/music_generation (catalog-honesty fallback).
+        inputs_needed: [text]
+        mechanism_features: []
+
+  audio_classification:
+    definition: Audio-in, fixed-label-set-out classification (sound event / speaker / emotion / genre).
+    default_inputs_needed: [audio]
+    subcategories:
+      audio_classification:
+        definition: Feature extractor (spectrogram or raw-waveform CNN) + pooled classification head over a fixed label set.
+        inputs_needed: [audio]
+        mechanism_features:
+          - {id: spectrogram_patch_embed, evidence_fields: ["num_mel_bins + patch embedding (AST-style)", "id2label size"]}
+
+  vision_backbone:
+    definition: Image-in feature-extraction backbones without a generative or detection head (classification / representation only).
+    default_inputs_needed: [image]
+    subcategories:
+      vit:
+        definition: Plain Vision Transformer -- patchify + learned/absolute position embedding + transformer encoder.
+        inputs_needed: [image]
+        mechanism_features:
+          - {id: patch_embed, evidence_fields: ["patch_size", "num_channels"]}
+      convnext_swin:
+        definition: Hierarchical convolutional or windowed-attention backbone with stage-wise downsampling (ConvNeXt / Swin lineage).
+        inputs_needed: [image]
+        mechanism_features:
+          - {id: windowed_attention_or_stage_conv, evidence_fields: ["window_size (Swin)", "depths / hidden_sizes per stage"]}
+      dino_ssl:
+        definition: Self-supervised (no classification head trained end-to-end with labels) ViT trained via self-distillation (DINO/DINOv2 lineage).
+        inputs_needed: [image]
+        mechanism_features:
+          - {id: register_tokens, evidence_fields: ["num_register_tokens"]}
+      clip_siglip_dual_encoder:
+        definition: Paired image encoder + text encoder trained jointly with a contrastive (CLIP) or sigmoid (SigLIP) loss, no cross-attention between towers.
+        inputs_needed: [image, text]
+        mechanism_features:
+          - {id: dual_tower_contrastive, evidence_fields: ["logit_scale / logit_bias parameter", "separate vision_config and text_config"]}
+      other:
+        definition: Vision-backbone architecture that does not cleanly match vit/convnext-swin/dino-ssl/clip-siglip (catalog-honesty fallback).
+        inputs_needed: [image]
+        mechanism_features: []
+
+  detection_segmentation:
+    definition: Image-in, per-object or per-pixel structured output (boxes, masks, class ids).
+    default_inputs_needed: [image]
+    subcategories:
+      detr_style:
+        definition: Set-prediction object detector -- CNN/ViT backbone + transformer encoder-decoder with learned object queries, bipartite matching loss.
+        inputs_needed: [image]
+        mechanism_features:
+          - {id: object_queries, evidence_fields: ["num_queries", "decoder cross-attention over backbone features"]}
+      mask2former:
+        definition: Unified panoptic/instance/semantic segmentation via masked-attention transformer decoder over per-pixel embeddings.
+        inputs_needed: [image]
+        mechanism_features:
+          - {id: masked_attention, evidence_fields: ["num_queries", "mask_feature_size"]}
+      sam:
+        definition: Promptable segmentation -- image encoder + prompt encoder (points/boxes/mask) + lightweight mask decoder.
+        inputs_needed: [image+mask]
+        mechanism_features:
+          - {id: prompt_encoder, evidence_fields: ["prompt_embed_dim", "mask_decoder two-way transformer in modeling source"]}
+      other:
+        definition: Detection/segmentation architecture that does not cleanly match detr/mask2former/sam (catalog-honesty fallback).
+        inputs_needed: [image]
+        mechanism_features: []
+
+  dense_vision_other:
+    definition: Other per-pixel image-in dense-prediction tasks not covered by detection/segmentation.
+    default_inputs_needed: [image]
+    subcategories:
+      depth_estimation:
+        definition: Predicts a per-pixel depth (or disparity) map from a single image.
+        inputs_needed: [image]
+        mechanism_features:
+          - {id: dense_prediction_head, evidence_fields: ["neck/head fusion module (DPT-style) in modeling source"]}
+      other_dense:
+        definition: Other dense-vision tasks (normal estimation, optical flow, super-resolution) sharing the encoder-decoder dense-prediction pattern.
+        inputs_needed: [image]
+        mechanism_features:
+          - {id: encoder_decoder_dense, evidence_fields: ["task-specific head class name + skip connections in modeling source"]}
+
+  image_diffusion:
+    definition: Text/image-conditioned image generation via a diffusion or flow-matching denoiser plus a VAE.
+    default_inputs_needed: [pipeline-prompt]
+    subcategories:
+      unet_sd:
+        definition: Convolutional U-Net denoiser with cross-attention text conditioning (Stable Diffusion 1.x/2.x/XL lineage).
+        inputs_needed: [pipeline-prompt]
+        mechanism_features:
+          - {id: unet_cross_attn, evidence_fields: ["cross_attention_dim", "down_block_types / up_block_types"]}
+      dit_pixart_style:
+        definition: Plain (single-stream) Diffusion Transformer conditioned by AdaLN-zero from a pooled text/time embedding (PixArt lineage).
+        inputs_needed: [pipeline-prompt]
+        mechanism_features:
+          - {id: adaln_zero, evidence_fields: ["caption_channels", "num_layers + AdaLN modulation in modeling source"]}
+      mmdit:
+        definition: Multimodal DiT -- separate text and image token streams processed by shared joint-attention blocks with per-stream modulation (SD3 lineage).
+        inputs_needed: [pipeline-prompt]
+        mechanism_features:
+          - {id: dual_stream_joint_attn, evidence_fields: ["joint_attention_dim", "dual-stream transformer block class in modeling source"]}
+      flux_style:
+        definition: MMDiT variant that transitions from dual-stream to single-stream blocks partway through the network (FLUX lineage).
+        inputs_needed: [pipeline-prompt]
+        mechanism_features:
+          - {id: dual_to_single_stream_transition, evidence_fields: ["num_layers (dual) vs num_single_layers", "guidance_embeds"]}
+      sana:
+        definition: Linear-attention DiT with a deep-compression autoencoder for very high spatial compression.
+        inputs_needed: [pipeline-prompt]
+        mechanism_features:
+          - {id: linear_attention_dit, evidence_fields: ["linear attention module in modeling source", "vae spatial_compression_ratio"]}
+      auraflow:
+        definition: Sequential (not parallel dual-stream) single-stream DiT joining text and image tokens by concatenation before joint blocks.
+        inputs_needed: [pipeline-prompt]
+        mechanism_features:
+          - {id: sequential_single_stream, evidence_fields: ["joint_attention_dim", "concat-then-attend block in modeling source"]}
+      hunyuandit:
+        definition: DiT with dual text encoders (CLIP + multilingual T5-style) and rotary position embeddings adapted to 2D image grids.
+        inputs_needed: [pipeline-prompt]
+        mechanism_features:
+          - {id: dual_text_encoder_2d_rope, evidence_fields: ["text_encoder + text_encoder_2 components in model_index.json", "2D rope in modeling source"]}
+      qwen_image:
+        definition: Large-scale MMDiT conditioned by a multimodal LLM text encoder rather than a CLIP/T5 pair.
+        inputs_needed: [pipeline-prompt]
+        mechanism_features:
+          - {id: llm_text_conditioning, evidence_fields: ["text_encoder component class is a causal-LM, not CLIP/T5"]}
+      other:
+        definition: Image-diffusion pipeline that does not cleanly match a named lineage above (catalog-honesty fallback, not a claimed archetype).
+        inputs_needed: [pipeline-prompt]
+        mechanism_features: []
+
+  video_diffusion:
+    definition: Text/image-conditioned video generation via a diffusion or flow-matching denoiser over spatio-temporal latents.
+    default_inputs_needed: [pipeline-prompt]
+    subcategories:
+      wan:
+        definition: DiT over 3D (space+time) latents with a causal 3D-VAE and full 3D rotary position embedding.
+        inputs_needed: [pipeline-prompt]
+        mechanism_features:
+          - {id: rope_3d, evidence_fields: ["3D rope signal (t,h,w axes) in modeling source"]}
+      hunyuanvideo:
+        definition: Dual-stream-then-single-stream video DiT (FLUX-style transition) extended over the temporal axis.
+        inputs_needed: [pipeline-prompt]
+        mechanism_features:
+          - {id: dual_to_single_stream_video, evidence_fields: ["num_layers vs num_single_layers", "temporal patch size"]}
+      ltx:
+        definition: Video DiT with no pre-normalization on cross-attention blocks (evidenced only in modeling source, not config).
+        inputs_needed: [pipeline-prompt]
+        mechanism_features:
+          - {id: no_prenorm_cross_attn, evidence_fields: ["absence of a norm module before cross-attention in modeling source"]}
+      mochi:
+        definition: Video DiT using sandwich-norm gating on its attention/FFN outputs.
+        inputs_needed: [pipeline-prompt]
+        mechanism_features:
+          - {id: sandwich_gating, evidence_fields: ["gated residual in modeling source (learned per-channel gate, not just AdaLN scale)"]}
+      cogvideox:
+        definition: 3D-VAE + DiT with expert (text/video) adaptive layernorm applied per-stream.
+        inputs_needed: [pipeline-prompt]
+        mechanism_features:
+          - {id: expert_adaln, evidence_fields: ["separate ada-LN modulation params per text/video stream in modeling source"]}
+      other:
+        definition: Video-diffusion pipeline that does not cleanly match a named lineage above (catalog-honesty fallback).
+        inputs_needed: [pipeline-prompt]
+        mechanism_features: []
+
+  audio_diffusion:
+    definition: Text/audio-conditioned audio generation via a diffusion or flow-matching denoiser over an audio latent.
+    default_inputs_needed: [pipeline-prompt]
+    subcategories:
+      stableaudio:
+        definition: DiT operating on a 1D (time-axis) VAE latent of a full stereo waveform, conditioned on text + duration embedding.
+        inputs_needed: [pipeline-prompt]
+        mechanism_features:
+          - {id: audio_dit_1d, evidence_fields: ["1D transformer over waveform latent in modeling source", "duration/seconds conditioning embedding"]}
+      other:
+        definition: Audio-diffusion pipeline that does not cleanly match the stableaudio lineage (catalog-honesty fallback).
+        inputs_needed: [pipeline-prompt]
+        mechanism_features: []
+
+  vae_autoencoder:
+    definition: Standalone encoder/decoder pair that maps raw data to/from a compressed latent, used as the first stage of a diffusion pipeline or on its own.
+    default_inputs_needed: [image]
+    subcategories:
+      image_vae:
+        definition: 2D convolutional VAE (KL- or VQ-regularized) for image latents.
+        inputs_needed: [image]
+        mechanism_features:
+          - {id: kl_or_vq_bottleneck, evidence_fields: ["latent_channels", "vq num_vq_embeddings (if VQ)"]}
+      video_vae:
+        definition: 3D (causal, space+time) VAE for video latents, usually with a temporal compression ratio distinct from spatial.
+        inputs_needed: [video]
+        mechanism_features:
+          - {id: causal_3d_conv, evidence_fields: ["temporal_compression_ratio", "causal conv padding in modeling source"]}
+      audio_vae:
+        definition: 1D convolutional VAE for waveform or spectrogram latents.
+        inputs_needed: [audio]
+        mechanism_features:
+          - {id: waveform_1d_bottleneck, evidence_fields: ["latent_channels", "downsampling_ratios"]}
+      other:
+        definition: Standalone autoencoder that does not cleanly match image/video/audio VAE (catalog-honesty fallback).
+        inputs_needed: [image]
+        mechanism_features: []
+
+  time_series:
+    definition: Numeric sequence-in, numeric sequence-out forecasting models (not text/image/audio tokens).
+    default_inputs_needed: [text]
+    subcategories:
+      forecasting:
+        definition: Transformer or patch-based model over numeric time-series windows, predicting future values (probabilistic or point forecast).
+        inputs_needed: [text]
+        mechanism_features:
+          - {id: patchified_series, evidence_fields: ["context_length", "prediction_length", "patch_size (PatchTST-style)"]}
+
+  speculative_decoding_draft:
+    definition: Small auxiliary model trained to propose multi-token continuations that a larger target model verifies in parallel.
+    default_inputs_needed: [text]
+    subcategories:
+      draft_models:
+        definition: Compact causal-LM (or single-layer head attached to the target's hidden states, EAGLE-style) used only as a speculative-decoding proposer.
+        inputs_needed: [text]
+        mechanism_features:
+          - {id: eagle_style_head, evidence_fields: ["single-layer draft head consuming target hidden states in modeling source", "base_model tag pointing at the target"]}
+
+  uncategorized:
+    definition: >
+      Safety-net bucket, NOT part of the idealized taxonomy proper. build_catalog.py files a repo
+      here only when its pipeline_tag/model_type/pipeline-class matches none of the classifier
+      rules above; a non-zero count here is a finding (a taxonomy gap or classifier gap to fix),
+      not a normal outcome.
+    default_inputs_needed: [none]
+    subcategories:
+      unclassified:
+        definition: Repo or model_type the classifier could not place in any named category.
+        inputs_needed: [none]
+        mechanism_features: []
+
+popularity_axis:
+  definition: >
+    Per Hub pipeline_tag, the top-N most-downloaded repos as of the run date. Independent of the
+    architecture-class axis; guarantees the catalog is anchored to what people actually use, not
+    just what the library declares support for.
+  tasks:
+    - {pipeline_tag: text-generation, n: 300}
+    - {pipeline_tag: image-text-to-text, n: 100}
+    - {pipeline_tag: text-to-image, n: 100}
+    - {pipeline_tag: feature-extraction, n: 50}
+    - {pipeline_tag: sentence-similarity, n: 50}
+    - {pipeline_tag: automatic-speech-recognition, n: 50}
+    - {pipeline_tag: text-to-speech, n: 30}
+    - {pipeline_tag: text-to-audio, n: 30}
+    - {pipeline_tag: audio-classification, n: 20}
+    - {pipeline_tag: image-classification, n: 30}
+    - {pipeline_tag: object-detection, n: 20}
+    - {pipeline_tag: image-segmentation, n: 20}
+    - {pipeline_tag: mask-generation, n: 10}
+    - {pipeline_tag: depth-estimation, n: 10}
+    - {pipeline_tag: text-to-video, n: 30}
+    - {pipeline_tag: image-to-video, n: 20}
+    - {pipeline_tag: any-to-any, n: 20}
+    - {pipeline_tag: fill-mask, n: 30}
+    - {pipeline_tag: translation, n: 20}
+    - {pipeline_tag: summarization, n: 15}
+    - {pipeline_tag: zero-shot-image-classification, n: 20}
+    - {pipeline_tag: time-series-forecasting, n: 10}
+    - {pipeline_tag: image-to-image, n: 20}
+
+architecture_class_axis:
+  definition: >
+    Every model_type registered in the installed transformers' CONFIG_MAPPING, and every
+    diffusers pipeline class exposed by the installed diffusers, each matched to its top-2
+    most-downloaded public Hub repos (verified by reading that repo's actual config, not by
+    name/tag matching alone). A model_type or pipeline class with zero matching public repos is
+    recorded as "uncovered" -- itself a finding, not an error.
+  transformers_source: transformers.models.auto.configuration_auto.CONFIG_MAPPING_NAMES
+  diffusers_source: "diffusers.__all__ classes ending in 'Pipeline', matched via the Hub tag diffusers:<PipelineClass>"
+  top_k_per_class: 2
+
+mechanism_witness_axis:
+  definition: >
+    For each mechanism_feature id declared under categories above, at least 2 real Hub repos
+    verified (via HfApi model_info config expand, not memory) to actually set the named
+    evidence_fields. Verification failures (field absent/renamed in the current config) are
+    reported, not silently dropped.
+  min_witnesses_per_feature: 2
+
+harness_input_paths:
+  # What harness/worker_*.py can already build a real input for, vs. what would require new
+  # measurement logic this task explicitly forbids inventing.
+  implemented:
+    text: "worker_zs.py step_text / worker_text.py text_inputs -- zeros input_ids via tokenizer-free zero tensor"
+    image: "worker_zs.py step_image / worker_text.py step_vlm_image -- AutoProcessor + a real PIL image"
+    audio: "worker_zs.py step_audio -- AutoProcessor + a real zeroed waveform"
+    pipeline-prompt: "worker_diffusion.py run_pipeline -- the diffusers pipeline's own __call__ with a real text prompt (+ image/mask when the pipeline signature takes them)"
+    image+mask: "worker_diffusion.py run_pipeline -- passes image + mask_image when the pipeline __call__ signature declares them (inpainting pipelines)"
+  not_implemented:
+    video: "no worker builds a real video tensor / frame-sampling input; AutoProcessor video path unexercised (vision_language.video_llm)"
+    encoder_only_no_lm_head: "worker_zs/worker_text call the model as a causal LM (use_cache=False generation-style forward); bert-family/embeddings/reranker heads are not causal LMs, not implemented (encoder_only, all subcategories)"
+    plain_vision_no_chat_template: "worker_zs.step_image / worker_text.step_vlm_image build a VLM chat-template (image+text) input via AutoProcessor; plain image classification/backbone/depth processors (ViTImageProcessor etc.) do not accept the paired text arg the workers pass, so a run would silently fail every step rather than measure anything real (vision_backbone, dense_vision_other)"
+    detection_segmentation: "no worker builds the image+annotation/query input these heads expect, and there is no checkpoint-header ground truth scoring path for box/mask outputs"
+    time_series: "no worker builds a numeric context-window tensor for forecasting models"
+    speculative_decoding_draft: "EAGLE/Medusa-style draft heads need the TARGET model's hidden states as an extra input, not just input_ids; no worker builds that, and several draft repos ship non-standard config.json besides"
+    speech_synthesis_output_scoring: "TTS/audio-LM/codec workers would need an audio-output ground truth path, not just weight coverage"

@@ -1,0 +1,675 @@
+"""STRICT capture check for one diffusers pipeline repo. Usage: worker_v2_diffusion.py <repo> <out.json>
+Same verdict ladder and checks as worker_v2.py, applied per weighted component; the repo is FULL only if every
+weighted component is FULL. The pipeline's own __call__ runs for real (zero-storage weights, exact zero-skip);
+entry points the generation path never uses (e.g. VAE.encode for text-to-image) get their own pass."""
+import sys, os, json, re, time, inspect, resource, traceback, collections, warnings
+warnings.filterwarnings("ignore")
+os.environ.setdefault("TRANSFORMERS_VERBOSITY", "error"); os.environ.setdefault("DIFFUSERS_VERBOSITY", "error")
+HERE = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, HERE)
+import torch
+import noweights; noweights.install()
+import diffusion_rules
+torch.set_num_threads(int(os.environ.get("BENCH_THREADS", "2")))
+import transformers, diffusers
+from huggingface_hub import HfApi, hf_hub_download
+from lowcost import zero_storage
+import common
+from common import grading_id, runtime, ckpt_split, match, library_rename, split_library_ignored, looks_like_stored_buffer, top_groups, numel
+from dag import DagRecorder, tied_alias_modules, math_attention, clear_library_caches
+import attempts                                   # F13: every attempt in its own state window; failed calls credit nothing
+ATTEMPT_LEDGER = []
+
+repo, out_path = sys.argv[1], sys.argv[2]
+HDR_CACHE = os.environ.get("BENCH_HEADER_CACHE", os.path.join(HERE, "..", "cache_v2", "headers"))
+R = {"repo": repo, "diffusers": diffusers.__version__, "transformers": transformers.__version__, "components": {}, "grading_id": grading_id(), "runtime": runtime()}
+T0 = time.time()
+# one checkpoint revision for the whole run (INTENT.md G6)
+try:
+    from huggingface_hub import HfApi as _Api0
+    R["revision"] = _Api0().model_info(repo).sha
+    noweights.pin(repo, R["revision"])
+except Exception as e:
+    R["revision_error"] = f"{type(e).__name__}: {str(e)[:160]}"
+    _NET0 = noweights.network_error(e)
+UNKNOWNS = []          # predicates that could not be evaluated (INTENT.md): an otherwise FULL row becomes FULL_UNVERIFIED
+
+
+def _net_fail(e, what):
+    """An outage is never evidence about a model: FAIL as an environment error so the runner re-runs it."""
+    if noweights.network_error(e):
+        fail("FAIL", f"network: {what} ({noweights.network_error(e)}: {str(e)[:120]})", what)
+
+
+def _last_resort(etype, e, tb):
+    import traceback as _tb
+    common.after_grading_exception(R, UNKNOWNS, f"{etype.__name__}: {str(e)[:200]}")   # FULL* never stands after a crash
+    R["reason"] = R.get("reason") or f"unhandled {etype.__name__}: {str(e)[:250]}"
+    fr = _tb.extract_tb(tb)
+    R["where"] = R.get("where") or (f"{fr[-1].filename.split('site-packages/')[-1]}:{fr[-1].lineno}" if fr else "")
+    try: save()
+    except Exception: pass
+
+
+sys.excepthook = _last_resort; api = HfApi()
+
+
+def save():
+    R["secs"] = round(time.time() - T0, 1)
+    R["peak_rss_gb"] = round(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1e9, 2)
+    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+    json.dump(R, open(out_path, "w"), indent=1, default=str)
+
+
+def fail(v, why, where=""):
+    R["verdict"] = v; R["reason"] = why[:400]; R["where"] = where; save(); sys.exit(0)
+
+
+if globals().get("_NET0"):
+    fail("FAIL", f"network: repo revision unavailable ({_NET0})", "revision")
+
+
+def resolve(lib, cname):
+    """The class a model_index entry names, found the way diffusers' own loader finds it: the library itself, then the
+    pipeline package diffusers.pipelines.<lib>, then its deprecated home, then that package's submodules."""
+    import importlib, pkgutil
+    for mod in ((diffusers,) if lib == "diffusers" else (transformers,) if lib == "transformers" else ()):
+        if hasattr(mod, cname): return getattr(mod, cname)
+        if cname.endswith("FeatureExtractor") and hasattr(mod, cname[: -len("FeatureExtractor")] + "ImageProcessor"):
+            return getattr(mod, cname[: -len("FeatureExtractor")] + "ImageProcessor")      # renamed in transformers 5
+    for path in (f"diffusers.pipelines.{lib}", f"diffusers.pipelines.deprecated.{lib}"):
+        try:
+            pkg = importlib.import_module(path)
+        except Exception:
+            continue
+        if hasattr(pkg, cname):
+            return getattr(pkg, cname)
+        for sub in pkgutil.iter_modules(getattr(pkg, "__path__", [])):
+            try:
+                sm = importlib.import_module(f"{path}.{sub.name}")
+            except Exception:
+                continue
+            if hasattr(sm, cname):
+                return getattr(sm, cname)
+    return None
+
+
+try:
+    idx = json.load(open(hf_hub_download(repo, "model_index.json")))
+    sha = api.model_info(repo).sha
+    files = api.list_repo_files(repo)
+except Exception as e:
+    _net_fail(e, "model index")
+    s = f"{type(e).__name__}: {e}"
+    fail("OUT" if ("gated" in s.lower() or "403" in s or "404" in s) else "FAIL", ("gated or missing: " if "403" in s or "404" in s else "") + s[:300])
+pcls = getattr(diffusers, idx.get("_class_name", ""), None)
+if pcls is None:
+    fail("OUT", f"pipeline class not in installed diffusers: {idx.get('_class_name')}")
+R["pipeline"] = pcls.__name__
+
+
+def headers(sub):
+    os.makedirs(HDR_CACHE, exist_ok=True)
+    hp = os.path.join(HDR_CACHE, repo.replace("/", "__") + f"__{sub}@{sha[:12]}.json")
+    if os.path.exists(hp):
+        cached = json.load(open(hp))
+        if cached:                                  # an empty table is never trusted as ground truth
+            return {k: (tuple(v[0]), v[1]) for k, v in cached.items()}
+    at = (lambda f: f.count("/") == 0) if sub == "" else (lambda f: f.startswith(sub + "/") and f.count("/") == 1)
+    fs = [f for f in files if at(f) and f.endswith(".safetensors")]
+    groups = collections.defaultdict(list)
+    for f in fs:
+        b = re.sub(r"-\d{5}-of-\d{5}$", "", f.split("/")[-1][: -len(".safetensors")])
+        groups[b.split(".")[1] if "." in b else ""].append(f)
+    pick = next((groups[p] for p in ("", "fp32", "bf16", "fp16") if p in groups), next(iter(groups.values()), []))
+    T = {}
+    for f in pick:
+        for n, i in api.parse_safetensors_file_metadata(repo, f).tensors.items():
+            T[n] = (tuple(i.shape), i.dtype)
+    if not T:        # legacy .bin component weights: read the tensor index with the restricted unpickler (no code run)
+        from lowcost import _bin_index
+        from huggingface_hub import HfFileSystem
+        fsys = HfFileSystem()
+        bins = [f for f in files if at(f) and f.endswith(".bin") and "training_args" not in f]
+        full = [f for f in bins if ".fp16." not in f] or bins
+        for f in full:
+            with fsys.open(f"{noweights.ref(repo)}/{f}", "rb", block_size=1 << 20) as fh:      # pinned revision
+                T.update(_bin_index(fh))
+    if T:
+        json.dump({k: [list(s), d] for k, (s, d) in T.items()}, open(hp, "w"))
+    return T
+
+
+objs, models = {}, {}
+for name, spec in idx.items():
+    if not (isinstance(spec, list) and len(spec) == 2) or spec[0] is None or spec[1] is None:
+        continue
+    lib, cname = spec
+    C = R["components"].setdefault(name, {"class": f"{lib}.{cname}"})
+    cls = resolve(lib, cname)
+    sub = name if any(f.startswith(name + "/") for f in files) else None
+    if sub is None:
+        C["from_repo_root"] = True                   # old single-folder layout
+    try:
+        if cls is not None and inspect.isclass(cls) and issubclass(cls, diffusers.ModelMixin):
+            with zero_storage():
+                m = cls.from_config(cls.load_config(repo, subfolder=sub))
+            models[name] = __import__("lowcost").normalise_learned(__import__("lowcost").uniform_float32(m.eval()))   # F07-3
+        elif cls is not None and inspect.isclass(cls) and issubclass(cls, transformers.PreTrainedModel):
+            # the class the index names, with ITS config type (diffusers loads getattr(lib, class).from_pretrained)
+            cc = getattr(cls, "config_class", None)
+            try:
+                cfg = cc.from_pretrained(repo, subfolder=sub) if cc is not None else transformers.AutoConfig.from_pretrained(repo, subfolder=sub)
+            except Exception:
+                cfg = transformers.AutoConfig.from_pretrained(repo, subfolder=sub)
+            with zero_storage():
+                try:
+                    m = cls._from_config(cfg, attn_implementation="eager", dtype=torch.float32)
+                except (TypeError, ValueError):
+                    m = cls._from_config(cfg, dtype=torch.float32)
+            models[name] = __import__("lowcost").normalise_learned(__import__("lowcost").uniform_float32(m.eval()))   # F07-3
+        elif cls is not None:
+            objs[name] = cls.from_pretrained(repo, subfolder=sub)
+        else:
+            for auto in (transformers.AutoImageProcessor, transformers.AutoTokenizer, transformers.AutoProcessor):
+                try:
+                    objs[name] = auto.from_pretrained(repo, subfolder=sub); break
+                except Exception:
+                    pass
+            if name not in objs:
+                C["error"] = f"class {lib}.{cname} not in installed libraries"
+    except Exception as e:
+        _net_fail(e, f"component {name}")
+        C["error"] = f"{type(e).__name__}: {str(e)[:200]}"
+    if name in models:
+        try:
+            C["headers"] = len(headers(name if sub else ""))
+        except Exception as e:
+            _net_fail(e, f"headers of {name}")
+            C["headers_error"] = f"{type(e).__name__}: {str(e)[:150]}"
+save()
+container = torch.nn.ModuleDict(models)
+
+# ---- the pipeline's own __call__, recorded end to end ------------------------------------------------------
+GRADED_VARIANT = {}                                  # call label -> (kind, dim) of the attempt that completed
+
+
+def run_pipeline(height, width, prompt, label="first", only=None):
+    """One graded pipeline call. only=(kind, dim): repeat exactly that input variant (the stability call repeats the
+    first call's graded inputs, so the two calls are comparable); no ladder of its own."""
+    kwargs = {}
+    params = inspect.signature(pcls.__init__).parameters
+    for k in params:
+        if k == "self": continue
+        if k in models: kwargs[k] = models[k]
+        elif k in objs: kwargs[k] = objs[k]
+        elif params[k].default is None or k in ("safety_checker", "feature_extractor", "image_encoder"): kwargs[k] = None
+        elif k == "requires_safety_checker": kwargs[k] = False
+    rec = DagRecorder(container, {})
+    try:
+        pipe = pcls(**kwargs)
+    except Exception as e:
+        rec.remove_hooks()
+        _net_fail(e, "pipeline assembly")                   # an outage is not evidence about the model (re-run)
+        return rec, None, f"pipeline could not be assembled: {type(e).__name__}: {str(e)[:200]}", {}, {}
+    rec.remove_hooks()                              # each call attempt below records with its own recorder
+    sig = inspect.signature(pcls.__call__).parameters
+    ck = {"prompt": prompt, "num_inference_steps": 2}
+    if "height" in sig: ck.update(height=height, width=width)
+    # smallest valid call (chosen by parameter name, never by model): the architecture does not depend on size
+    for p in sig:
+        if "resolution_binning" in p or p in ("_auto_resize", "auto_resize"): ck[p] = False
+    if "num_frames" in sig: ck["num_frames"] = 5
+    if "max_sequence_length" in sig: ck["max_sequence_length"] = 64
+    if "prior_num_inference_steps" in sig: ck["prior_num_inference_steps"] = 2
+    from PIL import Image
+    TENSORISH = ("embed", "latent")                 # names of tensor slots: never given a picture
+    for p in sig:                                   # every image-typed slot of __call__ gets a real image
+        if p in ("ip_adapter_image", "ip_adapter_image_embeds") or any(t in p for t in TENSORISH): continue
+        if "mask" in p and ("image" in p or p == "mask"): ck[p] = Image.new("L", (width, height), 255)
+        elif p in ("image", "init_image", "control_image", "control_images", "image_reference", "reference_image", "cond_image"):
+            ck[p] = Image.new("RGB", (width, height), (120, 60, 30))
+    # required arguments of __call__ (no default): fill by NAME (never by pipeline name)
+    frames = [Image.new("RGB", (width, height), (120 + 10 * i, 60, 30)) for i in range(5)]
+    for p, prm in sig.items():
+        if p in ("self", "kwargs", "args") or p in ck or prm.default is not inspect.Parameter.empty:
+            continue
+        n = p.lower()
+        if any(t in n for t in TENSORISH):
+            ck[p] = ("__EMBED__", p)                 # resolved below: a zero tensor, sizes tried from component configs
+        elif "mask" in n: ck[p] = Image.new("L", (width, height), 255)
+        elif "video" in n or "frames" in n or n in ("pose_video", "face_video", "reference_video"): ck[p] = frames
+        elif "image" in n or n in ("reference", "ref", "cond", "control"): ck[p] = Image.new("RGB", (width, height), (120, 60, 30))
+        elif "class" in n and "label" in n: ck[p] = [0]
+        elif "prompt" in n and not n.startswith(("num_", "max_", "min_")): ck[p] = prompt
+        elif "resolution" in n: ck[p] = max(height, width)
+        elif "audio" in n: ck[p] = __import__("numpy").zeros(16000, dtype="float32")
+    for p in sig:                                   # optional but data-carrying slots some pipelines check at runtime
+        n = p.lower()
+        if p not in ck and n.endswith("_boxes"): ck[p] = [[0.1, 0.1, 0.5, 0.5]]
+        if p not in ck and n.endswith("_phrases"): ck[p] = ["a cat"]
+        if p not in ck and n in ("video", "processing_resolution"):
+            ck[p] = frames if n == "video" else max(height, width)
+        if p not in ck and n.endswith("_prompt") and "negative" not in n and not n.startswith(("num_", "max_", "min_")):
+            ck[p] = prompt
+    embed_dims = []                                 # candidate sizes for required embedding tensors: the components' own config
+    for m_ in models.values():
+        c_ = getattr(m_, "config", None)
+        for k_ in ("encoder_hid_dim", "cross_attention_dim", "projection_dim", "image_embed_dim", "embedding_dim", "hidden_size"):
+            v_ = getattr(c_, k_, None) if c_ is not None else None
+            if isinstance(v_, int) and v_ not in embed_dims: embed_dims.append(v_)
+    embed_dims = embed_dims or [768]
+    def _variant(kind, dim=None):
+        def conv(v):
+            if isinstance(v, Image.Image):
+                if kind == "list": return [v]
+                if kind == "nested": return [[v, v]]
+                if kind == "rgba": return v.convert("RGBA")
+                if kind == "gray": return v.convert("L")
+            if isinstance(v, list) and v and isinstance(v[0], Image.Image) and kind in ("rgba", "gray"):
+                return [conv(x) for x in v]
+            return v
+        base = dict(ck)
+        if kind in ("steps4", "steps10"):                # a scheduler may need more than 2 steps (e.g. PNDM's PRK phase)
+            n_ = 4 if kind == "steps4" else 10
+            base["num_inference_steps"] = n_
+            if "prior_num_inference_steps" in base: base["prior_num_inference_steps"] = n_
+        out = {}
+        drop = set()
+        if kind == "novideo": drop = {k_ for k_ in base if "video" in k_ and sig[k_].default is not inspect.Parameter.empty}
+        if kind == "noimage": drop = {k_ for k_ in base if "image" in k_ and sig[k_].default is not inspect.Parameter.empty}
+        if kind == "deflen": drop = {"max_sequence_length"}
+        if kind == "deflen_frames": drop = {"max_sequence_length", "num_frames"}
+        for k_, v_ in base.items():
+            if k_ in drop: continue
+            if isinstance(v_, tuple) and v_ and v_[0] == "__EMBED__":
+                out[k_] = torch.zeros(1, dim or embed_dims[0])
+            else:
+                out[k_] = conv(v_)
+        return out
+    best, best_i = None, None
+    has_embed = any(isinstance(v, tuple) for v in ck.values())
+    ladder = [only] if only else diffusion_rules.initial_ladder(embed_dims, has_embed)
+    tried, tried_errors = [], []
+    while ladder:
+        kind, dim = ladder.pop(0)
+        tried.append(f"{kind}:{dim}" if dim else kind)
+        res = _attempt(pipe, _variant(kind, dim), sig)
+        nb = diffusion_rules.pick_attempt(best, res)              # a completed call is THE graded call
+        if nb is res: best_i = len(tried) - 1
+        best = nb
+        err = res[2] or ""
+        tried_errors.append(err[:240] or None)                    # why each candidate failed (None = completed)
+        if not err:
+            GRADED_VARIANT[label] = (kind, dim)
+            break
+        if only: break
+        ladder, stop = diffusion_rules.extend_ladder(err, tried, ladder, dim, "num_inference_steps" in sig, has_embed)
+        if stop or len(tried) >= diffusion_rules.MAX_ATTEMPTS: break
+    done = best is not None and not best[2]
+    R.setdefault("pipeline_input_variants_tried", tried)
+    R.setdefault("pipeline_variants", {})[label] = {
+        "tried": tried, "errors": tried_errors, "graded": tried[best_i] if done else None,
+        # all attempts failed: the one kept as evidence (most ops recorded) supplies the stop reason and the ops
+        "graded_failed": tried[best_i] if not done and best_i is not None else None,
+        "repeats_first_call": bool(only)}
+    R.setdefault("pipeline_call_args", {k: (type(v).__name__ if not isinstance(v, tuple) else "embed-zeros")
+                                        for k, v in ck.items() if k in sig})
+    return best
+
+
+def _attempt(pipe, ck, sig):
+    with attempts.isolated([container], ATTEMPT_LEDGER, {"entry": "pipeline", "call_args": sorted(k for k in ck if k in sig)},
+                           objects=[pipe, objs.get("scheduler")]) as entry:   # F13: state put back after it
+        res = _attempt_call(pipe, ck, sig)
+    if res[2]:
+        entry.update(ok=False, error=res[2][:160])
+    return res
+
+
+def _attempt_call(pipe, ck, sig):
+    rec = DagRecorder(container, {}, py_inputs={k: v for k, v in ck.items() if k in sig})   # (F09-4b: the call's data)
+    # (F09-13: the recorder starts with every failed earlier attempt's open reads of this run: dag.CARRIED)
+    hooks, calls = [], collections.Counter()
+    for cn, m in models.items():                         # a component's call arguments are its inputs
+        def pre(mod, args, kw, cn=cn):
+            calls[cn] += 1
+            for t in list(args) + list(kw.values()):
+                if isinstance(t, torch.Tensor) and id(t) not in rec.producer:
+                    rec.input_names[id(t)] = f"{cn}.arg"
+        hooks.append(m.register_forward_pre_hook(pre, with_kwargs=True))
+    steps = collections.Counter(); sched = objs.get("scheduler"); o = None
+    if sched is not None and hasattr(sched, "step"):
+        o = sched.step
+        def counted(*a, **k): steps["scheduler.step"] += 1; return o(*a, **k)
+        sched.step = counted
+    # nested text generation inside a pipeline (prompt enhancers, captioners): with zero weights no end token is ever
+    # produced, so cap the length. Length is data, not architecture: every module still runs.
+    from transformers.generation.utils import GenerationMixin
+    _orig_gen = GenerationMixin.generate
+    def _capped(self, *a, **k):
+        k["max_new_tokens"] = min(int(k.get("max_new_tokens") or 2), 2)
+        k.pop("max_length", None)
+        if "min_new_tokens" in k: k["min_new_tokens"] = min(int(k["min_new_tokens"] or 0), 2)
+        return _orig_gen(self, *a, **k)
+    GenerationMixin.generate = _capped
+    stopped, out = None, None
+    try:
+        with torch.no_grad(), math_attention(), rec:
+            out = pipe(**{k: v for k, v in ck.items() if k in sig})
+    except Exception as e:
+        _net_fail(e, "pipeline call")                       # an outage is not evidence about the model (re-run)
+        tb = traceback.extract_tb(e.__traceback__)
+        lib = [f for f in tb if "site-packages/diffusers/" in f.filename or "site-packages/transformers/" in f.filename]
+        f = lib[-1] if lib else tb[-1]
+        stopped = f"{type(e).__name__}: {str(e)[:160]} @ {f.filename.split('site-packages/')[-1]}:{f.lineno}"
+        attempts.carry_from(rec, "pipeline")
+        try:                                                # which components the stop ran through (P0.6 F7)
+            rec.stopped_in = diffusion_rules.components_on_traceback(e.__traceback__, models)
+        except Exception:
+            rec.stopped_in = {}
+    finally:
+        GenerationMixin.generate = _orig_gen
+        if o is not None: sched.step = o
+        for h in hooks: h.remove()
+        rec.remove_hooks()
+    return rec, out, stopped, dict(calls), dict(steps)
+
+
+rec_a, out_a, stop_a, calls_a, steps_a = run_pipeline(128, 128, "a photo of a cat")
+R["pipeline_call"] = {"stopped_at": stop_a, "component_calls": calls_a, "scheduler": steps_a}
+rec_ok = diffusion_rules.completed_call(rec_a, stop_a)     # F13-1: the first call is evidence only if it completed
+save()
+rec_b, out_b, stop_b, _, _ = run_pipeline(128, 128, "a watercolor painting of a lighthouse at dusk, soft light", "stability",
+                                          only=GRADED_VARIANT.get("first"))
+extra = {}
+for cn, m in models.items():                               # entry points the generation path never used
+    # (whether or not the pipeline call reached this component: a call that stopped early never touched it)
+    if callable(getattr(m, "encode", None)) and any(n.startswith("encoder") for n, _ in m.named_modules()) and not any(
+            n.module.startswith(cn + ".encoder") for n in (rec_ok.nodes if rec_ok else [])):
+        ch = getattr(m.config, "in_channels", None) or getattr(m.config, "audio_channels", None) or 3
+        errs = []
+        for shape in ((1, ch, 128, 128), (1, ch, 8192), (1, ch, 5, 128, 128), (1, ch, 9, 128, 128)):  # image, audio, video
+            r = DagRecorder(container, {})
+            try:
+                with attempts.isolated([container], ATTEMPT_LEDGER, {"entry": f"{cn}.encode", "shape": list(shape)}), \
+                        torch.no_grad(), math_attention(), r:
+                    m.encode(torch.zeros(*shape))
+                extra[cn] = r; R["components"][cn]["encode_input_shape"] = list(shape); break
+            except Exception as e:
+                attempts.carry_from(r, f"{cn}.encode")             # F09-13: its open reads stay open for the run
+                errs.append(f"{shape}: {type(e).__name__}: {str(e)[:100]}")
+            finally:
+                r.remove_hooks()
+        if cn not in extra:
+            R["components"][cn]["encode_error"] = errs
+
+
+for cn, m in models.items():
+    dec_mods = [n for n, _ in m.named_modules() if n.startswith("decoder") and any(True for _ in _.parameters(recurse=False))]
+    if not callable(getattr(m, "decode", None)) or not dec_mods:
+        continue
+    ran = {c.split(".", 1)[1] for c in (rec_ok.called if rec_ok else ()) if c.startswith(cn + ".") and "." in c}
+    if all(d in ran for d in dec_mods):
+        continue
+    cfg_ = getattr(m, "config", None)
+    zc = next((getattr(cfg_, k) for k in ("latent_channels", "z_dim", "z_channels", "embed_dim") if isinstance(getattr(cfg_, k, None), int)), 4)
+    errs = []
+    for shape in ((1, zc, 3, 16, 16), (1, zc, 16, 16), (1, zc, 64)):        # video (several frames), image, audio
+        r = DagRecorder(container, {})
+        try:
+            with attempts.isolated([container], ATTEMPT_LEDGER, {"entry": f"{cn}.decode", "shape": list(shape)}), \
+                    torch.no_grad(), math_attention(), r:
+                m.decode(torch.zeros(*shape))
+            extra[cn] = extra.get(cn, []) + [r] if isinstance(extra.get(cn), list) else ([extra[cn], r] if cn in extra else [r])
+            R["components"][cn]["decode_input_shape"] = list(shape); break
+        except Exception as e:
+            attempts.carry_from(r, f"{cn}.decode")                 # F09-13
+            errs.append(f"{shape}: {type(e).__name__}: {str(e)[:100]}")
+        finally:
+            r.remove_hooks()
+    if "decode_input_shape" not in R["components"][cn]:
+        R["components"][cn]["decode_error"] = errs
+
+
+# direct runs: a component whose own forward never ran in the pipeline call (the call stopped first) is run directly,
+# inputs synthesized by argument name with sizes from its own config (synth.py); first candidate that executes is kept,
+# a second run with different values gives the structure-stability check
+import synth, signal as _sig
+direct = {}
+def _alarm(*_): raise TimeoutError("direct-run time limit")
+_sig.signal(_sig.SIGALRM, _alarm)
+for cn, m in models.items():
+    if (rec_ok and any(c == cn or c.startswith(cn + ".") for c in rec_ok.called)) or not any(True for _ in m.parameters()):
+        continue
+    tried, ok = [], None
+    # a part with no forward (e.g. a renderer or normalizer) is entered through its own public methods, found by
+    # reflection on its class; mutating/loading verbs skipped
+    entries = [("forward", m)]
+    if type(m).forward is torch.nn.Module.forward:
+        BLOCK = ("save", "load", "from", "to", "set", "register", "enable", "disable", "train", "eval", "half", "float",
+                 "cuda", "cpu", "fuse", "unfuse", "reset", "clear", "apply", "tie", "init", "prune", "push")
+        entries = []
+        BASE_MODULES = ("diffusers.models.modeling_utils", "diffusers.configuration_utils", "diffusers.loaders",
+                        "diffusers.utils", "diffusers.models.attention_processor", "diffusers.models.adapters")
+        for k_ in type(m).__mro__:
+            # only the part's OWN classes, not diffusers' shared base classes (num_parameters, save_pretrained, ...)
+            if not k_.__module__.startswith("diffusers.") or k_.__module__.startswith(BASE_MODULES): continue
+            for name, fn in vars(k_).items():
+                if name.startswith("_") or name.startswith(BLOCK) or not inspect.isfunction(fn): continue
+                entries.append((name, getattr(m, name)))
+    def _cands():
+        for ename, callee in entries:
+            fn = callee.forward if ename == "forward" else callee
+            for label, kw in synth.candidates(m, fn=fn, limit=40):
+                yield f"{ename}|{label}", callee, kw
+    method_runs, done_methods = [], set()
+    for label, callee, kw in _cands():
+        ename = label.split("|", 1)[0]
+        if ename in done_methods:
+            continue
+        r = DagRecorder(container, synth.flat_tensors(kw, f"{cn}.arg"), py_inputs=kw)   # synthesized tensors are named inputs
+        _sig.alarm(240)
+        try:
+            with attempts.isolated([container], ATTEMPT_LEDGER, {"entry": f"{cn}.{label}"}), torch.no_grad(), math_attention(), r:
+                if ename != "forward": r.stack.append(cn)    # module hooks do not fire for a method call
+                try:
+                    callee(**kw)
+                finally:
+                    if ename != "forward" and r.stack and r.stack[-1] == cn: r.stack.pop(); r.called.add(cn)
+            if ok is None: ok = (label, r)
+            else: method_runs.append(r)                 # forward-less part: one run per entry method
+            done_methods.add(ename)
+            if ename == "forward": break
+        except Exception as e:
+            attempts.carry_from(r, f"{cn}.{label}")                # F09-13
+            tried.append(f"{label}: {type(e).__name__}: {str(e)[:90]}")
+        finally:
+            _sig.alarm(0); r.remove_hooks()
+    if ok is not None and method_runs:
+        R["components"][cn]["entry_methods_run"] = sorted(done_methods)
+    if ok is None:
+        R["components"][cn]["direct_run_error"] = tried[:4]
+        continue
+    label, r1 = ok
+    ename, _, slabel = label.partition("|")
+    callee2 = m if ename == "forward" else getattr(m, ename)
+    kw2 = dict(next(kw for lb, kw in synth.candidates(m, fn=(callee2.forward if ename == "forward" else callee2), limit=40, seed=1) if lb == slabel))
+    r2 = DagRecorder(container, synth.flat_tensors(kw2, f"{cn}.arg"), py_inputs=kw2)
+    try:
+        with attempts.isolated([container], ATTEMPT_LEDGER, {"entry": f"{cn}.{label} (stability)"}), torch.no_grad(), math_attention(), r2:
+            if ename != "forward": r2.stack.append(cn)
+            try:
+                callee2(**kw2)
+            finally:
+                if ename != "forward" and r2.stack and r2.stack[-1] == cn: r2.stack.pop()
+    except Exception:
+        attempts.carry_from(r2, f"{cn}.{label} (stability)")      # F09-13
+        r2 = None
+    finally:
+        if r2 is not None: r2.remove_hooks()
+    direct[cn] = (r1, r2)
+    extra[cn] = (extra[cn] if isinstance(extra.get(cn), list) else ([extra[cn]] if cn in extra else [])) + [r1] + method_runs
+    R["components"][cn]["direct_run"] = {"inputs": label, "attempts_before": len(tried),
+                                        "reason": diffusion_rules.direct_run_reason(
+                                            cn, getattr(rec_a, "stopped_in", {}) or {}, stop_a,
+                                            any(c == cn or c.startswith(cn + ".") for c in rec_a.called))}
+
+
+def norm(nodes, cn):
+    return [(re.sub(r"\.\d+", ".N", n.module), n.func) for n in nodes if n.module.split(".")[0] == cn]
+
+
+verdicts = []
+for cn, m in models.items():
+    C = R["components"][cn]
+    ex_ = extra.get(cn)
+    recs = ([rec_ok] if rec_ok else []) + (ex_ if isinstance(ex_, list) else ([ex_] if ex_ is not None else []))   # F13-1
+    used = set().union(*[{p.split(".", 1)[1] for p in r.used_params | r.used_buffers if p.split(".")[0] == cn} for r in recs])
+    called = set().union(*[{c.split(".", 1)[1] if "." in c else "(root)" for c in r.called if c.split(".")[0] == cn} for r in recs])
+    checks = {}
+    try:
+        T = headers("" if R["components"][cn].get("from_repo_root") else cn)
+    except Exception:
+        T = {}
+    if T:
+        W, A, packed = ckpt_split(T)
+        ren = library_rename(m) if isinstance(m, transformers.PreTrainedModel) else None
+        QW = common.quantized_weight_keys(T)                        # quantized learned weights: never tables (P0.6 B4)
+        POS = common.pos_lengths(m.config) if getattr(m, "config", None) is not None else set()
+        bufs, unbuilt = split_library_ignored(m, W, ren, QW) if isinstance(m, transformers.PreTrainedModel) else ([], [])
+        W = {k: v for k, v in W.items() if k not in set(bufs) | set(unbuilt)}
+        sd = m.state_dict(keep_vars=True); H = {k: tuple(v.shape) for k, v in sd.items()}
+        alias = collections.defaultdict(list)
+        for k, v in sd.items(): alias[id(v)].append(k)
+        matched, un_c, _, _ = match(W, H, alias, packed, rename=ren)
+        _bnD = common.buffer_names(m)                                   # F05: integer tables need evidence
+        masks = [c for c in un_c if common.stored_constant(c, *W[c], quantized=QW, pos=POS,    # THE common rule
+                                                         buffer_slot=(c in _bnD or bool(ren and ren(c) in _bnD)))]
+        un_c = [c for c in un_c if c not in set(masks)]
+        _intu = [c for c in un_c if common.is_int_table(W[c][1], c, QW)]   # F05 class d: an unknown, never hidden
+        if _intu:
+            un_c = [c for c in un_c if c not in set(_intu)]
+            UNKNOWNS.append(dict(common.int_table_unknown([f"{cn}:{c}" for c in _intu]), component=cn))
+        for names in alias.values():
+            if any(n in used for n in names): used |= set(names)
+        unused = [(c, numel(s)) for c, (s, _) in W.items() if c not in set(masks) | set(un_c) | set(_intu) and not (
+            (h := matched.get(c)) is not None and ((h in used) if not h.startswith(("fused:", "renamed:")) else any(u.startswith(h.split(":", 1)[1] + ".") for u in used)))]
+        checks["T1_weights"] = {"pass": not unused and not un_c and not unbuilt, "shipped_weights_unused": top_groups(unused, 4),
+                                "shipped_but_not_built_by_model": top_groups([(c, numel(W[c][0])) for c in un_c], 4),
+                                "library_declared_unbuilt": len(unbuilt)}
+    else:
+        checks["T1_weights"] = {"pass": False, "no_ground_truth": True}
+    mods = {n or "(root)": mm for n, mm in m.named_modules()}
+    drop = {n for n, mm in mods.items() if isinstance(mm, torch.nn.modules.dropout._DropoutNd)}
+    leaf = {n for n, mm in mods.items() if type(mm).forward is not torch.nn.Module.forward and n not in drop}
+    tied = tied_alias_modules(m, called)
+    def exercised(n):
+        if n in called or n in tied or n == "(root)": return True
+        ps = [pn for pn, _ in mods[n].named_parameters(prefix=n)]
+        return bool(ps) and any(p in used for p in ps)
+    never_all = sorted(n for n in leaf if not exercised(n))
+    never = [n for n in never_all if any(True for _ in mods[n].parameters())]
+    C["weightless_never_called_info"] = len(never_all) - len(never)
+    checks["T2_modules"] = {"pass": not never, "modules": len(leaf), "never_executed": len(never),
+                            "never_executed_groups": dict(collections.Counter(".".join("N" if p.isdigit() else p for p in n.split(".")) for n in never).most_common(6))}
+    # G4 is graded on every recording that ran this component and completed: the credited call, direct runs AND the
+    # stability recordings (Opus S3 / Fable S6: F09 Python-built tensors below, F10 opacity T4 after the T3 line)
+    graded_recs = recs + ([rec_b] if rec_b is not None and stop_b is None else []) + \
+        ([direct[cn][1]] if cn in direct and direct[cn][1] is not None else [])
+    # F09 / G4: this component's tensors built from Python values that the recording cannot explain (dag.py rule)
+    _pbu = [p for r in graded_recs for i, p in getattr(r, "pyb", {}).items()
+            if p.get("ndim", 1) >= 1 and p["numel"] >= 1 and p["module"].split(".")[0] == cn
+            and (p["class"] not in __import__("dag").F09_CREDITED or (p["class"] != "copy" and not getattr(r, "escape_hooks_ok", True)))]
+    _pbu += [None for r in graded_recs if getattr(r, "pyb", None) is None
+             for e in r.external if e[2].split(".")[0] == cn and "lift_fresh" in e[3]]   # (no F09 record: nothing credited)
+    if _pbu:
+        UNKNOWNS.append({"predicate": "G4", "component": cn, "what": "tensors built from Python values after a model "
+                         "input or weight value was read into Python (or with values not kept): the recording does not "
+                         "show how they were computed", "items": [{k: p.get(k) for k in ("module", "shape", "dtype", "class", "after")}
+                                                                 for p in _pbu if p][:20], "count": len(_pbu)})
+    ext = [e for r in recs for e in r.external if e[2].split(".")[0] == cn and (1 if not e[0] else __import__("math").prod(e[0])) > 1 and "lift_fresh" not in e[3]]
+    checks["T3_closed_dataflow"] = {"pass": not ext, "external_nonscalar_tensors": len(ext), "examples": [list(map(str, e)) for e in ext[:4]]}
+    # F10 / G4: the classifier's verdict per recorded node of this component (dag.opacity: the one rule every pass uses;
+    # an op inside a recorded decomposition is graded too); no overload / a decomposition that did not reproduce the op
+    # = UNKNOWN. The call's returned structure is used where analyse() kept it (else every unreproduced output counts)
+    _t4 = [__import__("dag").opacity(r.nodes, getattr(r, "returns", None), keep=lambda n: n.module.split(".")[0] == cn)
+           for r in graded_recs]                          # (F09 round 3: the stability recordings too, Opus S3)
+    _sumc = lambda k: sum((collections.Counter(t[k]) for t in _t4), collections.Counter())
+    opq, _ounk, _odis = _sumc("opaque_ops"), _sumc("opacity_unknown_ops"), _sumc("decomposition_disagrees")
+    _uwhy = {k: w for t in _t4 for k, w in t["opacity_unknown_reasons"].items()}
+    R["vocabulary_notes"] = __import__("opclass").vocabulary_note()   # (F10-24: rejected vocabulary entries: a note)
+    checks["T4_no_opaque_ops"] = {"pass": not opq, "opaque_ops": dict(opq),
+                                  "opaque_reasons": {k: w for t in _t4 for k, w in t["opaque_reasons"].items()},
+                                  "decomposed_ops_info": dict(_sumc("decomposed_ops"))}
+    if _ounk or _odis:
+        UNKNOWNS.append({"predicate": "G4", "component": cn, "what": "ops whose transparency is not shown: "
+                         + ("not shown (each with its reason) " + str({k: _uwhy.get(k, "no recorded overload") for k in _ounk})
+                            if _ounk else "")
+                         + (" decomposition did not reproduce the op " + str(dict(_odis)) if _odis else ""),
+                         "items": sorted(set(_ounk) | set(_odis))[:20], "count": len(set(_ounk) | set(_odis))})
+    sa, sb = norm(rec_a.nodes, cn), norm(rec_b.nodes, cn)
+    d2_ran = True
+    if cn in direct:                                      # structure stability from the two direct runs
+        d1, d2 = direct[cn]
+        sa = norm(d1.nodes, cn); sb = norm(d2.nodes, cn) if d2 is not None else []; d2_ran = d2 is not None
+    _pv = R.get("pipeline_variants") or {}
+    checks["T5_stable_structure"] = diffusion_rules.t5_check(
+        sa, sb, cn in direct, d2_ran, stop_a, stop_b,
+        (_pv.get("first") or {}).get("graded"), (_pv.get("stability") or {}).get("graded"))
+    C["checks"] = checks
+    C["failed_checks"], C["not_evaluated_checks"] = diffusion_rules.component_checks(checks)
+    C["verdict"] = diffusion_rules.component_verdict(C["failed_checks"], C["not_evaluated_checks"], used)
+    verdicts.append(C["verdict"])
+    sub = [n for n in (rec_ok.nodes if rec_ok else []) if n.module.split(".")[0] == cn]   # ops of the credited call only
+    C["ops"] = len(sub)
+# F09 / G4 (Opus S3 / Fable S6): builds outside every component (pipeline / scheduler code, module "(root)") are graded
+# once per row on the pipeline calls that completed
+_f09_pipe_recs = ([rec_ok] if rec_ok else []) + ([rec_b] if rec_b is not None and stop_b is None else [])
+_pbp = [p for r in _f09_pipe_recs for p in getattr(r, "pyb", {}).values()
+        if p.get("ndim", 1) >= 1 and p["numel"] >= 1 and p["module"].split(".")[0] not in models
+        and (p["class"] not in __import__("dag").F09_CREDITED or (p["class"] != "copy" and not getattr(r, "escape_hooks_ok", True)))]
+if _pbp:
+    UNKNOWNS.append({"predicate": "G4", "component": "(pipeline)", "what": "tensors built from Python values in pipeline "
+                     "code after a model input or weight value was read into Python (or with values not kept): the "
+                     "recording does not show how they were computed",
+                     "items": [{k: p.get(k) for k in ("module", "shape", "dtype", "class", "after")} for p in _pbp][:20],
+                     "count": len(_pbp)})
+R["stability_run_stopped_at"] = stop_b
+_ne = {cn: C["not_evaluated_checks"] for cn, C in R["components"].items() if C.get("not_evaluated_checks")}
+if _ne:   # a check that could not be evaluated is an unknown, listed with its reason (INTENT.md: never FULL)
+    UNKNOWNS.append({"predicate": "G5", "what": "component checks not evaluated",
+                     "items": [f"{cn}: {k} ({(R['components'][cn]['checks'][k].get('note') or '')[:120]})"
+                               for cn, ks in _ne.items() for k in ks], "count": sum(map(len, _ne.values()))})
+if stop_a and stop_a.startswith("pipeline could not be assembled"):
+    errs = {cn: C.get("error") for cn, C in R["components"].items() if C.get("error")}
+    if any("not in installed libraries" in (e or "") for e in errs.values()):
+        verdicts = ["OUT"]; R["reason"] = "components come from a library that is not installed: " + "; ".join(f"{k}: {v[:80]}" for k, v in errs.items())[:350]
+    elif any("config.json" in (e or "") or "404" in (e or "") for e in errs.values()):
+        verdicts = ["FAIL"]; R["reason"] = "repo incomplete (component files missing): " + "; ".join(f"{k}: {v[:80]}" for k, v in errs.items())[:350]
+    else:
+        verdicts = ["FAIL"]; R["reason"] = stop_a[:350]
+# an unsuccessful graded call (first OR stability) never receives an overall FULL (EXECUTION_PLAN P0.1); component
+# results stay as they are and are reported separately
+diffusion_rules.finalize(R, verdicts, stop_a, stop_b, list(models))
+# one checkpoint revision (INTENT.md G6): what the run's cache actually holds
+_zs_unk, _zs_notes = __import__("dag").zero_storage_findings([x for x in models.values() if isinstance(x, torch.nn.Module)])      # F07: zero-weight execution faithfulness (G2)
+UNKNOWNS.extend(_zs_unk)
+if _zs_notes: R["zero_storage_notes"] = _zs_notes
+R["revision_pin"] = dict(noweights.PIN_LOG, outcome=noweights.revision_outcome())
+_bad = {r_: o for r_, o in R["revision_pin"]["outcome"].items() if not o["ok"]}
+if _bad:
+    UNKNOWNS.append({"predicate": "G6", "what": "the run's cache holds files from another revision than the pinned one",
+                     "items": [f"{r_}: snapshots {o['snapshots']} refs {o['refs']}" for r_, o in _bad.items()], "count": len(_bad)})
+if R.get("revision") is None:
+    UNKNOWNS.append({"predicate": "G6", "what": "the checkpoint revision could not be pinned (" + (R.get("revision_error") or "unknown") + ")",
+                     "items": [], "count": 0})
+UNKNOWNS.append(diffusion_rules.no_load_authority_unknown(list(models)))   # P0.2: G1 not established (no D1-A yet)
+_unr = attempts.unrestored(ATTEMPT_LEDGER)
+if _unr:                                  # F13: an attempt wrote into weights in place; later attempts ran on that state
+    UNKNOWNS.append({"predicate": "G2", "what": "an attempt changed model state that could not be put back: the "
+                     "attempts after it may not have run the state being tested", "items": _unr[:20], "count": len(_unr)})
+R["attempt_ledger"] = attempts.ledger_record(ATTEMPT_LEDGER)
+if R["verdict"] == "FULL" and UNKNOWNS:
+    R["verdict"] = "FULL_UNVERIFIED"
+R["unknowns"] = UNKNOWNS
+save()
