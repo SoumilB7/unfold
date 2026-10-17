@@ -676,9 +676,9 @@ def _run_mode(label, kw, model=None):
     try:
         with _limit():
             try:
-                rec, out = attempts.run(mdl, mdl, tkw, lambda: mdl(**kw, use_cache=False), _ledger, {"entry": label, "use_cache": False})
+                rec, out = attempts.run(mdl, mdl, tkw, lambda: mdl(**kw, use_cache=False), _ledger, {"entry": label, "use_cache": False}, py_inputs=kw)
             except TypeError:
-                rec, out = attempts.run(mdl, mdl, tkw, lambda: mdl(**kw), _ledger, {"entry": label})
+                rec, out = attempts.run(mdl, mdl, tkw, lambda: mdl(**kw), _ledger, {"entry": label}, py_inputs=kw)
         a = analyse(rec, out)
         before = len(used_params)
         used_params |= rec.used_params; used_buffers |= rec.used_buffers; called |= rec.called; PASS_READS.append(libload_pass(rec))
@@ -960,7 +960,7 @@ if ((P_names - used_params) or (persist_bufs - used_buffers)) and any(v["ok"] fo
                     try:
                         with _limit():
                             rec, out = attempts.run(m, m, {k: v for k, v in kw.items() if isinstance(v, torch.Tensor)},
-                                                    lambda: m(**kw), _ledger, {"entry": "train", "labels": type(lab).__name__, "batch": _bs})
+                                                    lambda: m(**kw), _ledger, {"entry": "train", "labels": type(lab).__name__, "batch": _bs}, py_inputs=kw)
                         newly = (rec.used_params - used_params)
                         newly_b = (rec.used_buffers - used_buffers) & persist_bufs   # F10-4: checkpoint buffers it alone reads
                         a = analyse(rec, out)
@@ -968,6 +968,7 @@ if ((P_names - used_params) or (persist_bufs - used_buffers)) and any(v["ok"] fo
                                              "newly_used_params": len(newly), "newly_used_buffers": len(newly_b),
                                              "ops": a["ops"], "body_ops": a["body_ops"], "attempts": train_ledger, "batch": _bs,
                                              **{k_: a[k_] for k_ in ("opaque_ops", "opaque_reasons", "opacity_unknown_ops", "opacity_unknown_reasons", "decomposition_disagrees", "decomposed_ops", "decomposed_random_info")},
+                                             **__import__("dag").f09_fields(a),                     # (F09 B1: every pass record)
                                              "note": "training-mode pass: counts toward T1/T2 only (loss/matching code may route through Python)"}
                         used_params |= rec.used_params; used_buffers |= rec.used_buffers; called |= rec.called; PASS_READS.append(libload_pass(rec))
                         done_train = True
@@ -994,7 +995,7 @@ if not ok_passes and not ROOT_NO_FORWARD:
         rec, _ledger = None, []
         try:
             with _limit():
-                rec, out = attempts.run(m, m, synth.flat_tensors(kw, "synth"), lambda: m(**kw), _ledger, {"entry": f"synth:{label}"})
+                rec, out = attempts.run(m, m, synth.flat_tensors(kw, "synth"), lambda: m(**kw), _ledger, {"entry": f"synth:{label}"}, py_inputs=kw)
             a = analyse(rec, out)
             pass_res["synth"] = {"ok": True, "inputs": label, "attempts": synth_ledger, **{k: v for k, v in a.items() if k != "structure_signature"}}
             sigs["synth"] = (a["structure_signature"], [(n.module, n.func) for n in rec.nodes], rec.nodes)
@@ -1005,11 +1006,12 @@ if not ok_passes and not ROOT_NO_FORWARD:
             try:
                 with _limit():
                     rec2, o2 = attempts.run(m2, m2, synth.flat_tensors(kw2, "synth"), lambda: m2(**kw2), _l2,
-                                            {"entry": f"stability:synth:{label}"})
+                                            {"entry": f"stability:synth:{label}"}, py_inputs=kw2)
                 _a2 = analyse(rec2, o2)
                 sigs["stability:synth"] = (_a2["structure_signature"], [(n.module, n.func) for n in rec2.nodes], rec2.nodes)
                 pass_res["stability:synth"] = {"ok": True, "attempts": _l2,      # (F10: its ops are classified too)
-                                               **{k_: _a2[k_] for k_ in ("opaque_ops", "opaque_reasons", "opacity_unknown_ops", "opacity_unknown_reasons", "decomposition_disagrees", "decomposed_ops", "decomposed_random_info")}}
+                                               **{k_: _a2[k_] for k_ in ("opaque_ops", "opaque_reasons", "opacity_unknown_ops", "opacity_unknown_reasons", "decomposition_disagrees", "decomposed_ops", "decomposed_random_info")},
+                                               **__import__("dag").f09_fields(_a2)}                 # (F09 B1: every pass record)
             except Exception as e:
                 pass_res["stability:synth"] = {"ok": False, "error": f"{type(e).__name__}: {str(e)[:120]}", "attempts": _l2}
             finally:
@@ -1333,7 +1335,31 @@ checks["T2_modules"] = {"pass": not never, "modules": len(leafish), "never_execu
 # T3 closure, T4 opacity
 ext = sum(v.get("external_nonscalar", 0) for l, v in pass_res.items() if v["ok"] and not l.startswith("stability:"))
 pm = sum(v.get("python_mediated_values", 0) for l, v in pass_res.items() if v["ok"] and not l.startswith("stability:"))
+# F09 / G4: a non-scalar tensor built from Python values is credited only as a captured constant (no open input / weight
+# escape before it; complete values kept) or by the direct-copy contract (dag.py). Anything else is an UNKNOWN on every
+# recording that ran: main, modes, entries, generate, synth AND stability (G5a evidence); the training-mode pass only
+# when it alone credits tensors (F10-4). Whether the escaped values came from inputs only or from weights never matters
+# here (an input-only origin does not show the computation: G5 never excuses G4).
+_pbu, _pbx, _pbc = 0, [], collections.Counter()
+for l, v in pass_res.items():
+    if not v["ok"]:
+        continue
+    _n = v.get("python_built_unexplained")
+    if _n is None:                       # (Opus B1: an ok pass without an F09 record is NOT shown: never 0)
+        _n = max(1, v.get("python_mediated_values") or 0)
+        v = dict(v, python_built_unexplained_examples=[{"what": "this pass's record carries no F09 classification"}])
+    _pbc.update(v.get("python_built") or {})
+    if l == "train" and not ((v.get("newly_used_params") or 0) + (v.get("newly_used_buffers") or 0)):
+        continue
+    if _n:
+        _pbu += _n
+        _pbx += [dict(e, pass_label=l) for e in (v.get("python_built_unexplained_examples") or [])][:3]
+if _pbu:
+    UNKNOWNS.append({"predicate": "G4", "what": "tensors built from Python values after a model input or weight value "
+                     "was read into Python (or with values not kept): the recording does not show how they were computed",
+                     "items": _pbx[:20], "count": _pbu})
 checks["T3_closed_dataflow"] = {"pass": ext == 0, "external_nonscalar_tensors": ext, "python_mediated_values_info": pm,
+                                "python_built_info": dict(_pbc),
                                 "examples": sum((v.get("external_examples", []) for v in pass_res.values() if v["ok"]), [])[:5],
                                 "dead_ops_info": {l: v.get("dead_ops") for l, v in pass_res.items() if v["ok"]}}
 # F10 / G4: every credited pass (main, modes, entries, generate, synth, train, stability) on the classifier's verdict per

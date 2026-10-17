@@ -2,7 +2,7 @@
  "repo": "Qwen/Qwen3.6-27B-FP8",
  "executed_by": "vLLM (source, no compiled extension; custom ops on their pure-PyTorch path)",
  "schema": 3,
- "producer_id": "bae6709be690",
+ "producer_id": "309c22999e89",
  "vllm_version": "0.30.0",
  "vllm_source_id": "65d9e4beec54b27c",
  "runtime": {
@@ -298,6 +298,7 @@
   "aten::_safe_softmax": 1
  },
  "external_nonscalar": 0,
+ "python_built_unexplained": 0,
  "ir_torch_wrap": false,
  "vocabulary_errors": [
   "'aten::_fft_c2r' needs no review (it is transparent: core)",
@@ -309,6 +310,6 @@
   "pinned": 70,
   "other_revision": []
  },
- "secs": 22.7,
- "peak_rss_gb": 1.16
+ "secs": 14.0,
+ "peak_rss_gb": 1.3
 }

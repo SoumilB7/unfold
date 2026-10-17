@@ -1050,7 +1050,7 @@ def _diffusion_t4(recs, cn="transformer"):
     b = loop.body
     i = next(k for k, s in enumerate(b) if ast.get_source_segment(src, s).startswith('checks["T3_closed_dataflow"]'))
     j = next(k for k in range(i + 1, len(b)) if ast.get_source_segment(src, b[k]).startswith("sa, sb = norm("))
-    e = {"recs": recs, "cn": cn, "checks": {}, "UNKNOWNS": [], "collections": collections, "R": {}}
+    e = {"recs": recs, "graded_recs": recs, "cn": cn, "checks": {}, "UNKNOWNS": [], "collections": collections, "R": {}}
     exec(compile(ast.Module(body=b[i + 1:j], type_ignores=[]), "<diffusion T4>", "exec"), e)
     _LAST_ROW.clear(); _LAST_ROW.update(e["R"])
     return e["checks"]["T4_no_opaque_ops"], [u for u in e["UNKNOWNS"] if u.get("predicate") == "G4"]
@@ -1656,7 +1656,7 @@ def _y4():
 @C("Y5", "CHECK", {"TRUE"}, "F10-24 witness side: a witness record whose recording is clean but whose venv rejected vocabulary entries (stored transparent False, as the 43 records made with torch 2.14.1) is transparent by the ONE rule the producer and the grader share (witness_io.witness_transparent), and the grader's credit raises no G4 for it; an opaque op in the record still does")
 def _y5():
     import witness_io, common
-    w = {"op_full": ["aten::mm"], "opaque_ops": {}, "opacity_unknown_ops": [], "decomposition_disagrees": [], "external_nonscalar": 0,
+    w = {"op_full": ["aten::mm"], "opaque_ops": {}, "opacity_unknown_ops": [], "decomposition_disagrees": [], "external_nonscalar": 0, "python_built_unexplained": 0,
          "vocabulary_errors": ["'aten::_fft_c2r' needs no review (it is transparent: core)"], "transparent": False}
     preds = lambda r: sorted({p for p, _ in common.witness_execution_credit(r, "r" * 40)})
     got = {"rule": witness_io.witness_transparent(w), "credit G4": "G4" in preds(w),

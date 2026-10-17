@@ -220,16 +220,38 @@ def isolated(models, ledger, desc, inputs=None, objects=()):
             ledger.append(entry)
 
 
-def run(models, rec_model, rec_inputs, call, ledger, desc, recorder=DagRecorder, objects=()):
+def carry_key(desc):
+    """The attempt's label, named in the carried reason (F09-13: the carry itself spans the whole worker run)."""
+    return str((desc or {}).get("entry", "")) or "an attempt"
+
+
+def carry_into(rec, key):
+    """(F09-13: every DagRecorder starts with the run's carried reads itself - dag.CARRIED; kept for callers)."""
+    return None
+
+
+def carry_from(rec, key):
+    """A FAILED attempt: its open (unsealed, tainted) reads stay open for every later recorder of this worker run."""
+    import dag as _dag
+    _dag.carry_from(rec, "a failed attempt (" + str(key) + ")")
+
+
+def run(models, rec_model, rec_inputs, call, ledger, desc, recorder=DagRecorder, objects=(), py_inputs=None):
     """One attempt with its own recorder. Returns (recorder, output) of a call that completed; the caller credits ONLY
     this recorder. On an exception the recorder is discarded (hooks removed) and the exception re-raised. Either way
-    the state is put back afterwards (isolated)."""
-    rec = recorder(rec_model, rec_inputs)
+    the state is put back afterwards (isolated). py_inputs: the call's ORIGINAL arguments when rec_inputs holds only
+    its tensors (F09-4b: Python number data is seen on every pass). F09-8 / F09-13: an exception leaves the attempt's
+    open tainted reads open for EVERY later attempt of this worker run (isolation puts state back, not Python value
+    caches); the recorder made here already starts with any reads carried earlier (dag.CARRIED)."""
+    rec = recorder(rec_model, rec_inputs) if py_inputs is None else recorder(rec_model, rec_inputs, py_inputs=py_inputs)
+    key = carry_key(desc)
+    carry_into(rec, key)
     try:
         with isolated(models, ledger, desc, rec_inputs, objects):
             with torch.no_grad(), math_attention(), rec:
                 out = call()
     except BaseException:
+        carry_from(rec, key)
         rec.remove_hooks()
         raise
     return rec, out

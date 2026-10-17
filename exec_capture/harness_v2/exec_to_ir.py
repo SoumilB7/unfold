@@ -99,7 +99,8 @@ def verify_cache(cache_run, pshape, wk, wv, layer_prefix):
     if not cache_run or not cache_run.get("cache"):
         return {}
     try:
-        _cn, _cmap = capture.fold_groups(capture.nodes_of(cache_run["graph"]))     # F10: decomposed ops drawn as one call
+        _cn, _cmap = capture.fold_groups(capture.nodes_of(cache_run["graph"]),       # F10: decomposed ops drawn as one call
+                                         cache_run["graph"].get("f09_assembled"))     # (F09: assembled builds by class)
     except ValueError as e:
         raise NotDrawn(f"cache run: {e}")
     found = [dict(t, producer=_cmap.get(t["producer"])) if t.get("producer") is not None else t
@@ -195,7 +196,7 @@ def _recognize(bundle):
     pshape = {k: tuple(v) for k, v in bundle["model"]["param_shapes"].items()}
     # F10: the drawing view folds every op recorded as its decomposition back into the one call the program made
     try:
-        _nodes, _remap = capture.fold_groups(capture.nodes_of(P["graph"]))
+        _nodes, _remap = capture.fold_groups(capture.nodes_of(P["graph"]), P["graph"].get("f09_assembled"))
     except ValueError as e:
         raise NotDrawn(str(e))
     P = dict(P, squares=capture.remap_squares(P["squares"], _remap),

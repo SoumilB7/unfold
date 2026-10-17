@@ -61,18 +61,21 @@ WITNESS_SCHEMA = 3        # 3 (F10): records carry the fail-closed opacity field
 # the recorder's own code: a record made by any other version of these files is stale (re-record). The grading rules
 # (common.py, worker_v2, aggregate, ...) are not in it (Soumil 2026-10-13, F14-2).
 WITNESS_FILES = ("mtp_witness_run.py", "vllm_witness.py", "witness_io.py", "dag.py", "opclass.py", "lowcost.py", "noweights.py",
-                 "everchanging/opacity_reviewed.yaml")     # F10: opclass reads it
+                 "everchanging/opacity_reviewed.yaml",     # F10: opclass reads it
+                 "everchanging/f09_value_shape_ops.yaml")  # F09-7: dag reads it
 WITNESS_STRUCTURAL_INPUTS = frozenset({"positions"})       # functions of the token count only: equal in both runs
 
 
 def witness_transparent(wit):
     """G4 for a witness record, ONE rule for the producer (mtp_witness_run) and the grader: full op names recorded,
-    no opaque op, no op without transparency shown, no disagreeing decomposition, nothing from outside the recording.
+    no opaque op, no op without transparency shown, no disagreeing decomposition, nothing from outside the recording,
+    no tensor built from Python values that the recording cannot explain (F09).
     F10-24: the record's vocabulary_errors (entries this venv's torch rejects) are a note and never enter it."""
     return (bool(wit.get("op_full")) and isinstance(wit.get("opaque_ops"), dict) and not wit["opaque_ops"]
             and isinstance(wit.get("opacity_unknown_ops"), list) and not wit["opacity_unknown_ops"]
             and isinstance(wit.get("decomposition_disagrees"), list) and not wit["decomposition_disagrees"]
-            and wit.get("external_nonscalar") == 0)
+            and wit.get("external_nonscalar") == 0
+            and wit.get("python_built_unexplained") == 0)   # F09: absent (an older record) = not shown
 
 
 def witness_producer_id():

@@ -18,7 +18,8 @@ GRADING_FILES = ("worker_v2.py", "worker_v2_diffusion.py", "run_batch.py", "dag.
                  "loadtrace.py", "lowcost.py", "inputs.py", "gguf_parts.py", "noweights.py", "synth.py", "opclass.py",
                  "mtp_witness_run.py", "vllm_witness.py", "capture.py", "class_rules.py",
                  "diffusion_rules.py", "witness_io.py",
-                 "everchanging/opacity_reviewed.yaml")      # capture.py records graded passes; F10: the reviewed-op vocabulary
+                 "everchanging/opacity_reviewed.yaml",      # capture.py records graded passes; F10: the reviewed-op vocabulary
+                 "attempts.py", "everchanging/f09_value_shape_ops.yaml")   # F09: taint carry + py_inputs; F09-7 vocabulary
 
 
 def grading_id():
@@ -366,8 +367,17 @@ def witness_execution_credit(wit, revision, producer=None):
     if wit.get("stable_structure") is not True or not distinct_inputs(fp("a"), fp("b")):
         out.append(("G5a", "its two runs are not shown to have the same structure on different inputs"))
     if not witness_transparent(wit):                # (F10-24: recomputed from the record's evidence, the producer's rule)
-        out.append(("G4", "opaque ops or tensors from outside the recording" if "op_full" in wit
-                    else "old record without full op names"))
+        why = []
+        if "op_full" not in wit:
+            why.append("old record without full op names")
+        else:
+            if wit.get("python_built_unexplained") != 0:    # (round 4, N4/N5: name F09 when it is the cause)
+                why.append("tensors built from Python values the recording cannot explain (F09)" if
+                           wit.get("python_built_unexplained") else "no F09 classification of Python-built tensors (older record)")
+            if (wit.get("opaque_ops") or wit.get("opacity_unknown_ops") or wit.get("decomposition_disagrees")
+                    or wit.get("external_nonscalar") != 0 or not why):
+                why.append("opaque ops or tensors from outside the recording")
+        out.append(("G4", "; ".join(why)))
     return out
 
 

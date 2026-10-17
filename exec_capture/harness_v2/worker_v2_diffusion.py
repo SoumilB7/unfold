@@ -327,7 +327,8 @@ def _attempt(pipe, ck, sig):
 
 
 def _attempt_call(pipe, ck, sig):
-    rec = DagRecorder(container, {})
+    rec = DagRecorder(container, {}, py_inputs={k: v for k, v in ck.items() if k in sig})   # (F09-4b: the call's data)
+    # (F09-13: the recorder starts with every failed earlier attempt's open reads of this run: dag.CARRIED)
     hooks, calls = [], collections.Counter()
     for cn, m in models.items():                         # a component's call arguments are its inputs
         def pre(mod, args, kw, cn=cn):
@@ -361,6 +362,7 @@ def _attempt_call(pipe, ck, sig):
         lib = [f for f in tb if "site-packages/diffusers/" in f.filename or "site-packages/transformers/" in f.filename]
         f = lib[-1] if lib else tb[-1]
         stopped = f"{type(e).__name__}: {str(e)[:160]} @ {f.filename.split('site-packages/')[-1]}:{f.lineno}"
+        attempts.carry_from(rec, "pipeline")
         try:                                                # which components the stop ran through (P0.6 F7)
             rec.stopped_in = diffusion_rules.components_on_traceback(e.__traceback__, models)
         except Exception:
@@ -394,6 +396,7 @@ for cn, m in models.items():                               # entry points the ge
                     m.encode(torch.zeros(*shape))
                 extra[cn] = r; R["components"][cn]["encode_input_shape"] = list(shape); break
             except Exception as e:
+                attempts.carry_from(r, f"{cn}.encode")             # F09-13: its open reads stay open for the run
                 errs.append(f"{shape}: {type(e).__name__}: {str(e)[:100]}")
             finally:
                 r.remove_hooks()
@@ -420,6 +423,7 @@ for cn, m in models.items():
             extra[cn] = extra.get(cn, []) + [r] if isinstance(extra.get(cn), list) else ([extra[cn], r] if cn in extra else [r])
             R["components"][cn]["decode_input_shape"] = list(shape); break
         except Exception as e:
+            attempts.carry_from(r, f"{cn}.decode")                 # F09-13
             errs.append(f"{shape}: {type(e).__name__}: {str(e)[:100]}")
         finally:
             r.remove_hooks()
@@ -463,7 +467,7 @@ for cn, m in models.items():
         ename = label.split("|", 1)[0]
         if ename in done_methods:
             continue
-        r = DagRecorder(container, synth.flat_tensors(kw, f"{cn}.arg"))     # synthesized tensors are named inputs
+        r = DagRecorder(container, synth.flat_tensors(kw, f"{cn}.arg"), py_inputs=kw)   # synthesized tensors are named inputs
         _sig.alarm(240)
         try:
             with attempts.isolated([container], ATTEMPT_LEDGER, {"entry": f"{cn}.{label}"}), torch.no_grad(), math_attention(), r:
@@ -477,6 +481,7 @@ for cn, m in models.items():
             done_methods.add(ename)
             if ename == "forward": break
         except Exception as e:
+            attempts.carry_from(r, f"{cn}.{label}")                # F09-13
             tried.append(f"{label}: {type(e).__name__}: {str(e)[:90]}")
         finally:
             _sig.alarm(0); r.remove_hooks()
@@ -489,7 +494,7 @@ for cn, m in models.items():
     ename, _, slabel = label.partition("|")
     callee2 = m if ename == "forward" else getattr(m, ename)
     kw2 = dict(next(kw for lb, kw in synth.candidates(m, fn=(callee2.forward if ename == "forward" else callee2), limit=40, seed=1) if lb == slabel))
-    r2 = DagRecorder(container, synth.flat_tensors(kw2, f"{cn}.arg"))
+    r2 = DagRecorder(container, synth.flat_tensors(kw2, f"{cn}.arg"), py_inputs=kw2)
     try:
         with attempts.isolated([container], ATTEMPT_LEDGER, {"entry": f"{cn}.{label} (stability)"}), torch.no_grad(), math_attention(), r2:
             if ename != "forward": r2.stack.append(cn)
@@ -498,6 +503,7 @@ for cn, m in models.items():
             finally:
                 if ename != "forward" and r2.stack and r2.stack[-1] == cn: r2.stack.pop()
     except Exception:
+        attempts.carry_from(r2, f"{cn}.{label} (stability)")      # F09-13
         r2 = None
     finally:
         if r2 is not None: r2.remove_hooks()
@@ -566,13 +572,28 @@ for cn, m in models.items():
     C["weightless_never_called_info"] = len(never_all) - len(never)
     checks["T2_modules"] = {"pass": not never, "modules": len(leaf), "never_executed": len(never),
                             "never_executed_groups": dict(collections.Counter(".".join("N" if p.isdigit() else p for p in n.split(".")) for n in never).most_common(6))}
+    # G4 is graded on every recording that ran this component and completed: the credited call, direct runs AND the
+    # stability recordings (Opus S3 / Fable S6: F09 Python-built tensors below, F10 opacity T4 after the T3 line)
+    graded_recs = recs + ([rec_b] if rec_b is not None and stop_b is None else []) + \
+        ([direct[cn][1]] if cn in direct and direct[cn][1] is not None else [])
+    # F09 / G4: this component's tensors built from Python values that the recording cannot explain (dag.py rule)
+    _pbu = [p for r in graded_recs for i, p in getattr(r, "pyb", {}).items()
+            if p.get("ndim", 1) >= 1 and p["numel"] >= 1 and p["module"].split(".")[0] == cn
+            and (p["class"] not in __import__("dag").F09_CREDITED or (p["class"] != "copy" and not getattr(r, "escape_hooks_ok", True)))]
+    _pbu += [None for r in graded_recs if getattr(r, "pyb", None) is None
+             for e in r.external if e[2].split(".")[0] == cn and "lift_fresh" in e[3]]   # (no F09 record: nothing credited)
+    if _pbu:
+        UNKNOWNS.append({"predicate": "G4", "component": cn, "what": "tensors built from Python values after a model "
+                         "input or weight value was read into Python (or with values not kept): the recording does not "
+                         "show how they were computed", "items": [{k: p.get(k) for k in ("module", "shape", "dtype", "class", "after")}
+                                                                 for p in _pbu if p][:20], "count": len(_pbu)})
     ext = [e for r in recs for e in r.external if e[2].split(".")[0] == cn and (1 if not e[0] else __import__("math").prod(e[0])) > 1 and "lift_fresh" not in e[3]]
     checks["T3_closed_dataflow"] = {"pass": not ext, "external_nonscalar_tensors": len(ext), "examples": [list(map(str, e)) for e in ext[:4]]}
     # F10 / G4: the classifier's verdict per recorded node of this component (dag.opacity: the one rule every pass uses;
     # an op inside a recorded decomposition is graded too); no overload / a decomposition that did not reproduce the op
     # = UNKNOWN. The call's returned structure is used where analyse() kept it (else every unreproduced output counts)
     _t4 = [__import__("dag").opacity(r.nodes, getattr(r, "returns", None), keep=lambda n: n.module.split(".")[0] == cn)
-           for r in recs]
+           for r in graded_recs]                          # (F09 round 3: the stability recordings too, Opus S3)
     _sumc = lambda k: sum((collections.Counter(t[k]) for t in _t4), collections.Counter())
     opq, _ounk, _odis = _sumc("opaque_ops"), _sumc("opacity_unknown_ops"), _sumc("decomposition_disagrees")
     _uwhy = {k: w for t in _t4 for k, w in t["opacity_unknown_reasons"].items()}
@@ -601,6 +622,18 @@ for cn, m in models.items():
     verdicts.append(C["verdict"])
     sub = [n for n in (rec_ok.nodes if rec_ok else []) if n.module.split(".")[0] == cn]   # ops of the credited call only
     C["ops"] = len(sub)
+# F09 / G4 (Opus S3 / Fable S6): builds outside every component (pipeline / scheduler code, module "(root)") are graded
+# once per row on the pipeline calls that completed
+_f09_pipe_recs = ([rec_ok] if rec_ok else []) + ([rec_b] if rec_b is not None and stop_b is None else [])
+_pbp = [p for r in _f09_pipe_recs for p in getattr(r, "pyb", {}).values()
+        if p.get("ndim", 1) >= 1 and p["numel"] >= 1 and p["module"].split(".")[0] not in models
+        and (p["class"] not in __import__("dag").F09_CREDITED or (p["class"] != "copy" and not getattr(r, "escape_hooks_ok", True)))]
+if _pbp:
+    UNKNOWNS.append({"predicate": "G4", "component": "(pipeline)", "what": "tensors built from Python values in pipeline "
+                     "code after a model input or weight value was read into Python (or with values not kept): the "
+                     "recording does not show how they were computed",
+                     "items": [{k: p.get(k) for k in ("module", "shape", "dtype", "class", "after")} for p in _pbp][:20],
+                     "count": len(_pbp)})
 R["stability_run_stopped_at"] = stop_b
 _ne = {cn: C["not_evaluated_checks"] for cn, C in R["components"].items() if C.get("not_evaluated_checks")}
 if _ne:   # a check that could not be evaluated is an unknown, listed with its reason (INTENT.md: never FULL)

@@ -60,7 +60,7 @@ def main():
     good = {"closed": True, "transparent": True, "stable_structure": True, "schema": getattr(CM, "WITNESS_SCHEMA", 2),
             "revision": REV, "producer_id": PID, "vllm_version": "0.30.0", "vllm_source_id": "src1", "runtime": {"torch": "2.14.1"},
             "revision_pin": {"pinned": 3, "other_revision": []},
-            "op_full": ["aten::mm"], "opaque_ops": {}, "opacity_unknown_ops": [], "decomposition_disagrees": [], "external_nonscalar": 0,
+            "op_full": ["aten::mm"], "opaque_ops": {}, "opacity_unknown_ops": [], "decomposition_disagrees": [], "external_nonscalar": 0, "python_built_unexplained": 0,
             "vocabulary_errors": [], "inputs": {"a": {"seed": 0, "fingerprints": fa}, "b": {"seed": 1, "fingerprints": fb}},
             "vllm_mtp_arch": "Qwen3_5MTP", "executed_checkpoint_keys": ["mtp.fc.weight"], "loaded_not_used_keys": []}
     ec = has("witness_execution_credit")

@@ -118,6 +118,9 @@ def one(repo):
     R["decomposition_disagrees"] = sorted(set(_a["decomposition_disagrees"]) | set(_b["decomposition_disagrees"]))
     R["decomposed_on_record"] = dict(rec_a.decomposed)
     R["external_nonscalar"] = _a["external_nonscalar"]
+    # F09: tensors built from Python values that neither run can explain (dag.analyse; None = no F09 record)
+    _pa, _pb = _a.get("python_built_unexplained"), _b.get("python_built_unexplained")
+    R["python_built_unexplained"] = None if _pa is None or _pb is None else _pa + _pb
     R["ir_torch_wrap"] = False
     import opclass
     # F10-24: rejected vocabulary entries (this venv's torch) are a NOTE on the record, never part of its transparency:

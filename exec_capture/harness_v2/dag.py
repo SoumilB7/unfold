@@ -4,7 +4,7 @@ Every tensor is mapped to the op that produced it; every op records its input ed
 (op -> op, param, buffer, model input, or EXTERNAL = appeared from outside the recording),
 the module it ran inside, and its scalar constants. Nothing is inferred from names or source text.
 """
-import re, math, cmath, numbers, weakref, collections, contextlib, signal
+import re, sys, math, cmath, numbers, weakref, collections, contextlib, signal
 import torch
 from torch.utils._python_dispatch import TorchDispatchMode
 from torch.utils._pytree import tree_flatten, tree_map
@@ -14,6 +14,241 @@ aten = torch.ops.aten
 
 import opclass          # F10: the one fail-closed transparency classifier (qualified overloads, registry evidence)
 CONTROL_SINKS = {"_local_scalar_dense", "is_nonzero", "equal", "item"}
+
+# ---- F09 (P2.2): values that leave the recording into Python ("escapes") and tensors built from Python values.
+# A tensor built from Python values (aten::lift_fresh of a tensor the recording never produced: torch.tensor(list),
+# as_tensor, new_tensor, from_numpy ...) is credited ONLY by observed evidence, never by matching values:
+#   static  no escape whose recorded ancestry reaches a model input, a parameter, a checkpoint (persistent) buffer, an
+#           external tensor or a storage read is still open before it in this recording, so its Python values can only
+#           come from config, literals, tensor shapes, or untainted escapes; its COMPLETE values are kept (PY_CONST_CAP)
+#   copy    the direct-copy contract: `torch.tensor(x.tolist(), <loads only>)` - the tolist result is consumed by the
+#           constructor's CALL with only load instructions between (never stored, so no Python code could change it),
+#           same frame, same object, same shape / dtype / bits; the node's input edge IS the escaped tensor, and that
+#           escape is sealed (its values reached no other Python code)
+#   unexplained  anything else: a G4 unknown (the recording cannot show the values do not come from an input or a
+#           weight through Python it did not see). Matching values never earn credit (F09: Python square on 0/1, a
+#           4097-element transform, a Python relu on non-negative inputs all return the escaped values).
+PY_BUILT_OPS = {"lift_fresh", "lift_fresh_copy"}
+PY_CONST_CAP = 1 << 20          # elements of a static Python-built tensor whose values are kept (above: unknown); also
+                                # the most leaves a constructor's data walk follows (above: the build is not shown)
+_INDEX_FAMILY = {"index", "_index_put_impl_", "index_put", "index_put_"}
+_LOAD_OPS = {"CACHE", "LOAD_CONST", "LOAD_GLOBAL", "LOAD_ATTR", "LOAD_FAST", "LOAD_FAST_CHECK", "LOAD_DEREF",
+             "LOAD_NAME", "KW_NAMES", "PUSH_NULL", "NOP", "EXTENDED_ARG", "LOAD_FAST_LOAD_FAST", "LOAD_SMALL_INT"}
+_CALL_OPS = {"CALL", "CALL_KW"}
+_INSTR = {}
+# F09-5 (Soumil 2026-10-17): ops that PLACE values (no arithmetic) into a larger tensor. A 0-d build whose value the
+# recording cannot explain, placed by one of these at ONE position of a tensor of more than one element (copy_ into a
+# one-element view, index_put_ at one index, or combined with other values: stack / cat / scatter ...), makes that tensor
+# a G4 unknown: it is assembled element by element. Writing one value into MANY positions (fill_, a broadcast copy_,
+# torch.full) is a broadcast, i.e. the value used as an argument: F09-3 (counted, decided in F11).
+PLACE_ONE = {"copy_", "index_put_", "index_put", "_index_put_impl_"}          # in place: assembly iff one position
+PLACE_NEW = {"stack", "cat", "concat", "hstack", "vstack", "column_stack", "select_scatter", "slice_scatter",
+             "index_copy", "index_copy_", "scatter", "scatter_", "masked_scatter", "masked_scatter_",
+             "diagonal_scatter", "as_strided_scatter"}
+# F09-6 (Soumil 2026-10-17): ops whose written operand's previous values are NOT read (a full or partial overwrite):
+# writing memory that holds no recorded values is not a read of it
+OVERWRITE_OPS = {"copy_", "fill_", "zero_", "normal_", "uniform_", "random_", "bernoulli_", "exponential_",
+                 "geometric_", "cauchy_", "log_normal_", "index_copy_", "index_fill_", "masked_fill_", "masked_scatter_",
+                 "set_"}                        # (fill_diagonal_ reaches dispatch as as_strided + fill_)
+# overwrite only when the schema argument says the old values are not combined in (round 4, Fable N-3 / own review:
+# index_put_(accumulate=True) and scatter_(reduce=...) DO read their target)
+COND_OVERWRITE = {"index_put_": ("accumulate", False), "_index_put_impl_": ("accumulate", False),
+                  "put_": ("accumulate", False), "index_reduce_": ("include_self", False),
+                  "scatter_reduce_": ("include_self", False), "scatter_": ("reduce", None)}
+RESIZE_OPS = {"resize_", "resize_as_"}      # (R3-S5) metadata: write no value and read none; grown memory is never written
+
+
+def _schema_arg(func, args, kwargs, nm):
+    """The value of schema argument `nm` in this call (its declared default when not passed)."""
+    for i, a in enumerate(func._schema.arguments):
+        if a.name == nm:
+            if i < len(args):
+                return args[i]
+            if nm in kwargs:
+                return kwargs[nm]
+            return a.default_value if a.has_default_value() else None
+    return None
+
+
+def _overwrites(func, name, args, kwargs):
+    """True when this in-place op writes its target without reading the target's previous values (schema evidence)."""
+    if name in OVERWRITE_OPS:
+        return True
+    c = COND_OVERWRITE.get(name)
+    if c is None:
+        return False
+    try:
+        return _schema_arg(func, args, kwargs, c[0]) == c[1]
+    except Exception:
+        return False
+# ops whose tensor operands are read for metadata only (shape / dtype / device), never values
+METADATA_READ_OPS = {"empty", "empty_like", "new_empty", "new_empty_strided", "empty_strided", "empty_permuted",
+                     "zeros_like", "ones_like", "full_like", "rand_like", "randn_like", "randint_like", "new_zeros",
+                     "new_ones", "new_full"}
+ALLOC_ONLY = {"empty", "empty_like", "new_empty", "new_empty_strided", "empty_strided", "empty_permuted"}
+
+
+def _f09_resolve(path):
+    obj = None
+    parts = path.split(".")
+    if parts[0] != "torch":
+        raise KeyError(path)
+    obj = torch
+    for p_ in parts[1:]:
+        obj = getattr(obj, p_)
+    return obj
+
+
+def _load_f09_vocab(path=None, strict=False):
+    """F09-7 vocabulary (everchanging/f09_value_shape_ops.yaml): ({qualified overload}, {callable path: (value_args,
+    value_kwargs)}, errors). A rejected entry is left out and listed (fail closed: dag.analyse then shows no static)."""
+    import os
+    path = path or os.path.join(os.path.dirname(os.path.abspath(__file__)), "everchanging", "f09_value_shape_ops.yaml")
+    errs, disp, calls = [], set(), {}
+    def bad(msg):
+        if strict:
+            raise ValueError("f09_value_shape_ops.yaml: " + msg)
+        errs.append(msg)
+    try:
+        import yaml
+        with open(path) as fh:
+            d = yaml.safe_load(fh) or {}
+    except Exception as e:
+        bad(f"unreadable ({type(e).__name__}: {e})")
+        return disp, calls, errs
+    if set(d) - {"dispatch", "callables"}:
+        bad(f"unknown sections {sorted(set(d) - {'dispatch', 'callables'})}")
+    for k, why in (d.get("dispatch") or {}).items():
+        try:
+            ns, rest = k.split("::", 1)
+            nm, _, ov = rest.partition(".")
+            op = getattr(getattr(getattr(torch.ops, ns), nm), ov or "default")
+            if op.name() != k or not isinstance(why, str) or not why.strip():
+                raise ValueError("not exact / no reason")
+            disp.add(k)
+        except Exception as e:
+            bad(f"dispatch {k!r}: {type(e).__name__}: {e}")
+    for k, ent in (d.get("callables") or {}).items():
+        try:
+            if not isinstance(ent, dict) or set(ent) - {"reason", "value_args", "value_kwargs"} or \
+                    not isinstance(ent.get("reason"), str) or not ent["reason"].strip() or \
+                    not all(isinstance(i, int) for i in ent.get("value_args", [])):
+                raise ValueError("needs exactly {reason, value_args[, value_kwargs]}")
+            if not callable(_f09_resolve(k)):
+                raise ValueError("not callable")
+            calls[k] = (tuple(ent.get("value_args", [])), tuple(ent.get("value_kwargs", [])))
+        except Exception as e:
+            bad(f"callable {k!r}: {type(e).__name__}: {e}")
+    return disp, calls, errs
+
+
+VALUE_SHAPE_OPS, VALUE_SHAPE_CALLABLES, F09_VOCAB_ERRORS = _load_f09_vocab()
+
+
+def _instr_at(code, off):
+    """The instruction (dis, caches hidden) whose span holds byte offset `off` (3.12: f_lasti of a frame suspended in a
+    CALL is the CALL's last inline-cache unit), and the code's instruction list."""
+    import bisect, dis
+    lst = _INSTR.get(code)
+    if lst is None:
+        lst = _INSTR[code] = list(dis.get_instructions(code))
+    offs = [i.offset for i in lst]
+    k = bisect.bisect_right(offs, off) - 1
+    return (k, lst) if k >= 0 else (None, lst)
+
+
+_ESC_KIND = {}
+
+
+def _escape_kind(func, args):
+    """A dispatch-visible escape: a value read into Python (CONTROL_SINKS), an output SHAPE set by values (registry tag
+    dynamic_output_shape / data_dependent_output; an index op only with a boolean / uint8 mask), or an untagged
+    value -> shape overload of the F09-7 vocabulary. Cached per overload (only the index family reads the call)."""
+    k = _ESC_KIND.get(func, "?")
+    if k == "?":
+        name = func.overloadpacket.__name__
+        if name in CONTROL_SINKS:
+            k = name
+        elif func.name() in VALUE_SHAPE_OPS:
+            k = "value_shape:" + name
+        else:
+            try:
+                tags = func.tags
+            except Exception:
+                tags = ()
+            if torch.Tag.dynamic_output_shape in tags or torch.Tag.data_dependent_output in tags:
+                k = ("INDEX:" if name in _INDEX_FAMILY else "") + "dynamic_output_shape:" + name
+            else:
+                k = None
+        _ESC_KIND[func] = k
+    if k is not None and k.startswith("INDEX:"):
+        idx = args[1] if len(args) > 1 and isinstance(args[1], (list, tuple)) else []
+        if not any(isinstance(i, torch.Tensor) and i.dtype in (torch.bool, torch.uint8) for i in idx):
+            return None
+        return k[6:]
+    return k
+
+
+def _python_numbers(v, depth=0):
+    """A model input given as Python numbers (data, not a flag / size): a list / tuple / dict holding numbers at any
+    depth, or a numeric numpy array (any depth). A bare top-level int / float / bool is a setting, not data."""
+    if depth > 6:
+        return False
+    try:
+        import numpy as _np
+        if isinstance(v, _np.ndarray):
+            return v.dtype.kind in "biufc" and v.size > 0
+    except Exception:
+        pass
+    if isinstance(v, dict):
+        return any(_python_numbers(x, depth + 1) for x in v.values())
+    if isinstance(v, (list, tuple)):
+        return any(_python_numbers(x, depth + 1) for x in v)
+    return isinstance(v, (int, float, complex)) and not isinstance(v, bool) and depth > 0
+
+
+def _walk_data(data, cap=None):
+    """A constructor's data argument (C++ reads it with no dispatch): (tensor leaves, number of other leaves, walked).
+    walked False = more than `cap` leaves, or a sequence / ndarray SUBCLASS (C++ reads it through the subclass's own
+    code, whose values the walk cannot see without running it): not followed, the build is not shown."""
+    cap = PY_CONST_CAP if cap is None else cap
+    tens, n, stack = [], 0, [data]
+    try:
+        import numpy as _np
+        nd = _np.ndarray
+    except Exception:
+        nd = ()
+    while stack:
+        x = stack.pop()
+        if isinstance(x, torch.Tensor):
+            tens.append(x)
+        elif isinstance(x, (list, tuple)):
+            if type(x) not in (list, tuple):    # (round 4b) C++ reads a sequence SUBCLASS through its own __len__ /
+                return tens, n, False           # __getitem__ / __iter__ (program code, any values): not followed
+            stack.extend(reversed(x))           # (R3-S2: popped in data order: edges follow the data)
+        elif nd and isinstance(x, nd):
+            if type(x) is not nd:               # (an ndarray subclass: its own code runs on every read)
+                return tens, n, False
+            if x.dtype.kind == "O":
+                stack.extend(reversed(x.reshape(-1).tolist()))
+            else:
+                n += x.size
+        else:
+            n += 1
+        if len(tens) + n > cap:
+            return tens, n, False
+    return tens, n, True
+
+
+F09_CREDITED = ("static", "copy", "assembled")       # every other class of a graded build is a G4 unknown
+F09_KEYS = ("python_built", "python_built_unexplained", "python_built_unexplained_examples",
+            "python_built_scalar_unexplained_info", "python_mediated_values", "escapes_info",
+            "python_scalar_args_while_open_info", "f09_vocabulary_errors")
+
+
+def f09_fields(a):
+    """The F09 part of an analyse() result, for every pass record (Opus B1: a record without it reads as not shown)."""
+    return {k: a.get(k) for k in F09_KEYS}
 
 
 # ---- F07: the zero-skip returns an op's EXACT result without arithmetic, one rule per op (dossier
@@ -935,8 +1170,31 @@ def _identical(a, b):
         return bool(torch.equal(na, nb)) and bool(torch.equal(a[~na], b[~nb]))
 
 
+CARRIED = {"n": 0, "why": None}     # F09-13 (Soumil): one worker run = one process; failed attempts' open tainted reads
+
+
+def carry_from(rec, why):
+    """Register a FAILED attempt's open (unsealed, tainted) reads: every recorder made later in this process starts with
+    them open (F09-13). Its Python caches may hold those values; state restore puts back attributes, not caches."""
+    n = getattr(rec, "_open_tainted", 0)
+    if n:
+        CARRIED["n"] = max(CARRIED["n"], n); CARRIED["why"] = why
+
+
+def _plumbing_files():
+    """Source files of torch's own dispatch machinery (module identity, whatever the torch version wraps a mode's
+    __torch_dispatch__ in: torch 2.14 adds torch/_compile.py inner + torch/_dynamo/eval_frame.py _fn): their frames
+    are never the program's."""
+    fs = {__file__}
+    for mn in ("torch.utils._python_dispatch", "torch._compile", "torch._dynamo.eval_frame"):
+        f = getattr(sys.modules.get(mn), "__file__", None)
+        if f:
+            fs.add(f)
+    return fs
+
+
 class DagRecorder(TorchDispatchMode):
-    def __init__(self, model, inputs: dict, skip=True, decompose=True):
+    def __init__(self, model, inputs: dict, skip=True, decompose=True, py_inputs=None):
         super().__init__()
         self.skip = skip
         self.decompose = decompose  # F10: record an op PyTorch decomposes AS its decomposition (one group node)
@@ -971,6 +1229,284 @@ class DagRecorder(TorchDispatchMode):
             self._hooks.append(mod.register_forward_pre_hook(lambda m, a, n=n: (self.stack.append(n), None)[1]))
             self._hooks.append(mod.register_forward_hook(lambda m, a, o, n=n: (self._pop(n), None)[1]))
         self.called = set()
+        # F09: escapes and Python-built tensors
+        self.escapes = []           # {pos, kind, ref, tainted, module, sealed}
+        self.pyb = {}               # node index -> {class, numel, shape, dtype, module, after | copy_of}  (graded rows)
+        self.pyconst = {}           # node index -> (dtype, shape, complete values) of a credited Python-built tensor
+        self._open_tainted = 0      # tainted escapes not sealed by the direct-copy contract
+        self._storage_nodes = set() # nodes whose call took a Storage object (their values come from raw memory)
+        self._read_taint = set()    # nodes that read a tainted or never-written storage (B2, F09-6): taint sources
+        self._sc_nodes = set()      # F09-5: single values whose computation the recording cannot show (and scalar ops on them)
+        self._st_taint = set()      # B2: storages a tainted recorded op wrote (views written through keep the taint)
+        self._uninit = set()        # F09-6: storages allocated / loaded with no recorded write yet
+        self._uninit_seen = set()   # F09-6: storages already reported (one unknown per storage)
+        self._seen_ws = weakref.WeakSet()   # F09-6: storage OBJECTS the recording knows (named tensors, every recorded
+                                            # op's outputs): a set_ from any other storage is a load (Fable S-2)
+        self._st_final = set()      # storages whose death forgets them from the three sets (addresses are reused at once)
+        self._taint = {}            # memo: node index -> its value ancestry reaches an input / weight / unknown origin
+        self._in_handler = 0        # > 0 inside __torch_dispatch__ (the harness's own tolist / numpy are not escapes)
+        self._hook_depth = 0
+        self._pending = None        # the last tolist escape eligible for the direct-copy contract
+        self._ctor = None           # the hooked constructor call in progress: {copy, tensors, numbers, walked}
+        self._subst = None          # (id of the raw tensor, [refs]) while that lift_fresh is recorded
+        self._unseen_why = None     # F09-9: why a build was not seen (named in its unknown)
+        self._resize_pre = None     # (R3-S5) storage bytes before a resize_
+        self._last = None           # (tensor operands, storage operand?, write targets, outputs) of the last core call
+        self.scalar_args_open = 0   # F09-3 info: recorded calls with numeric arguments while a tainted read was open
+        self.escape_hooks_ok = True
+        self.persistent_buffers = set()
+        for mn, mod in model.named_modules():
+            for bn in getattr(mod, "_buffers", {}):
+                if bn not in getattr(mod, "_non_persistent_buffers_set", set()):
+                    self.persistent_buffers.add(f"{mn}.{bn}" if mn else bn)
+        # B5: the id-keyed name tables stay true only while their tensors live: keep them alive for the recording (a
+        # replaced attribute / buffer would free its tensor and CPython would hand its id to the next tensor)
+        self._named_keep = [t for _, t in model.named_parameters(remove_duplicate=False)] + \
+            [t for _, t in model.named_buffers(remove_duplicate=False)] + \
+            [v for v in inputs.values() if isinstance(v, torch.Tensor)] + \
+            [av for mod in model.modules() for av in vars(mod).values() if isinstance(av, torch.Tensor)]
+        for t in self._named_keep:
+            try:
+                self._seen_ws.add(t.untyped_storage())      # (a storage object lives exactly as long as its StorageImpl)
+            except Exception:
+                pass
+        # data given as Python numbers (F09-4b; Opus S2 / Fable S2: from the call's ORIGINAL arguments on every pass)
+        if CARRIED["n"]:                            # F09-13: a failed attempt's open reads, every later pass of the run
+            self.carry_open_taint(CARRIED["n"], CARRIED["why"])
+        for k, v in (inputs if py_inputs is None else py_inputs).items():
+            if not isinstance(v, torch.Tensor) and _python_numbers(v):
+                self.escapes.append({"pos": 0, "kind": "python_input", "ref": ("input", k), "tainted": True,
+                                     "module": "(root)", "sealed": False})
+                self._open_tainted += 1
+
+    def _mark(self, which, t):
+        """Add t's storage to one of the storage sets; when that storage dies it is forgotten from all of them (CPython /
+        the allocator reuse a freed storage's address at once: a stale key would taint an unrelated tensor)."""
+        try:
+            st = t.untyped_storage()
+        except Exception:
+            return
+        k = st._cdata
+        which.add(k)
+        if k not in self._st_final:
+            self._st_final.add(k)
+            sets = (self._st_taint, self._uninit, self._uninit_seen, self._st_final)
+            try:
+                weakref.finalize(st, lambda k=k, sets=sets: [x.discard(k) for x in sets])
+            except TypeError:
+                pass
+
+    def carry_open_taint(self, n, why="a failed attempt earlier in this run"):
+        """F09-8: a failed attempt's unsealed tainted reads stay open for the retry (state is put back, values in
+        Python caches are not)."""
+        if n:
+            self.escapes.append({"pos": 0, "kind": "carried:" + why, "ref": ("input", "(carried)"), "tainted": True,
+                                 "module": "(root)", "sealed": False})
+            self._open_tainted += 1
+
+    # ---- F09: taint = the recorded value ancestry reaches a model input, a parameter, a checkpoint buffer, an external
+    #      tensor, a storage read, a read of a tainted / never-written storage, or a build the recording cannot show
+    def _ref_tainted(self, r):
+        k = r[0]
+        if k == "op":
+            return self._node_tainted(r[1])
+        if k in ("input", "param", "external"):
+            return True
+        if k == "buffer":
+            return r[1] in self.persistent_buffers   # non-persistent: built at construction (F08 owns construction)
+        return False                                 # module_constant (F08 owns construction-time values)
+
+    _CREDITED_CONST = ("static",)
+
+    def _node_tainted(self, i):
+        if i in self._taint:
+            return self._taint[i]
+        order, stack, seen = [], [i], set()
+        while stack:
+            j = stack.pop()
+            if j in seen or j in self._taint:
+                continue
+            seen.add(j); order.append(j)
+            c = (self.pyb.get(j) or {}).get("class")
+            if j in self._storage_nodes or j in self._read_taint or (c is not None and c not in ("copy", "assembled")):
+                continue                              # decided by its own class, not by its (raw) input edge
+            for e in self.nodes[j].ins:
+                if e[0] == "op":
+                    stack.append(e[1])
+        for j in reversed(order):                     # children are recorded before parents: memo them first
+            c = (self.pyb.get(j) or {}).get("class")
+            if j in self._storage_nodes or j in self._read_taint:
+                t = True
+            elif c in self._CREDITED_CONST:
+                t = False
+            elif c is not None and c not in ("copy", "assembled"):
+                t = True                              # unexplained / unwatched / assembled_unexplained / ...
+            else:
+                t = any(self._ref_tainted(e) for e in self.nodes[j].ins)
+            self._taint[j] = t
+        return self._taint[i]
+
+    def _log_escape(self, kind, ref, t=None, module=None):
+        k = _skey(t) if isinstance(t, torch.Tensor) else None
+        e = {"pos": len(self.nodes), "kind": kind, "ref": ref, "module": module or self.stack[-1], "sealed": False,
+             "tainted": bool(self._ref_tainted(ref) or (k is not None and (k in self._st_taint or k in self._uninit)))}
+        self.escapes.append(e)
+        if e["tainted"]:
+            self._open_tainted += 1
+        return e
+
+    def _quiet(self):
+        return self._in_handler > 0
+
+    # ---- F09: Python-level hooks for value reads the dispatcher never sees (probe p5: tolist, numpy, __array__,
+    #      __dlpack__, to_dlpack, pickle; repr / str read through tolist or item), the F09-7 callables, and every
+    #      constructor whose data C++ reads with no dispatch (torch.tensor / as_tensor / asarray / from_numpy /
+    #      Tensor.new_tensor / legacy torch.Tensor(...)). Not hookable, so not watched: the typed legacy classes
+    #      (torch.LongTensor(...) ...: immutable types) - a build through them is "unwatched" (a G4 unknown). Residual:
+    #      raw memory through data_ptr (ctypes) and C extensions.
+    def _install_hooks(self):
+        rec = self
+        saved = self._saved_hooks = []
+        def patch(owner, name, make, required=True):
+            try:
+                had = name in vars(owner)
+                orig = getattr(owner, name)
+                setattr(owner, name, make(orig))
+                saved.append((owner, name, orig, had))
+            except Exception:
+                if required:
+                    rec.escape_hooks_ok = False
+        def escape(kind):
+            def make(orig):
+                def hooked(t, *a, **k):
+                    out = orig(t, *a, **k)
+                    if not rec._quiet() and isinstance(t, torch.Tensor):
+                        rec._log_escape(kind, rec.ref(t), t)
+                    return out
+                return hooked
+            return make
+        def make_reduce(orig):
+            import copy as _copy
+            def reduce_ex(t, *a, **k):
+                out = orig(t, *a, **k)
+                # copy.copy(x) reduces and rebuilds on the same storage: no value reaches Python (Fable note)
+                if not rec._quiet() and isinstance(t, torch.Tensor) and sys._getframe(1).f_code is not _copy.copy.__code__:
+                    rec._log_escape("__reduce_ex__", rec.ref(t), t)
+                return out
+            return reduce_ex
+        def make_tolist(orig):
+            def tolist(t, *a, **k):
+                out = orig(t, *a, **k)
+                if rec._quiet() or not isinstance(t, torch.Tensor):
+                    return out
+                e = rec._log_escape("tolist", rec.ref(t), t)
+                rec._pending = None
+                try:
+                    f = sys._getframe(1)
+                    k_, lst = _instr_at(f.f_code, f.f_lasti)
+                    if (k_ is not None and k_ >= 1 and lst[k_].opname in _CALL_OPS and lst[k_].arg == 0
+                            and lst[k_ - 1].opname == "LOAD_ATTR" and isinstance(out, list)):
+                        rec._pending = {"list": out, "frame": f, "k": k_, "esc": e, "tensor": t, "ref": e["ref"]}
+                except Exception:
+                    rec._pending = None
+                return out
+            return tolist
+        def ctor(data_pos, legacy=False):
+            def make(orig):
+                def built(*a, **k):
+                    if legacy:                       # torch.Tensor.__new__(cls, *data): only a list / ndarray is data
+                        if len(a) < 2 or not (isinstance(a[1], (list, tuple)) or type(a[1]).__name__ == "ndarray"):
+                            return orig(*a, **k)
+                    p, rec._pending = rec._pending, None
+                    if rec._quiet():
+                        return orig(*a, **k)
+                    data = a[data_pos] if len(a) > data_pos else k.get("data", k.get("ndarray"))
+                    ok = False
+                    if p is not None:
+                        try:
+                            f = sys._getframe(1)
+                            if data is p["list"] and f is p["frame"]:
+                                k_, lst = _instr_at(f.f_code, f.f_lasti)
+                                ok = (k_ is not None and k_ > p["k"] and lst[k_].opname in _CALL_OPS
+                                      and all(i.opname in _LOAD_OPS for i in lst[p["k"] + 1:k_]))
+                        except Exception:
+                            ok = False
+                    # B3 / Fable B1: C++ reads every tensor inside the data with no dispatch: they become the build's
+                    # recorded edges (an "assembled" build); the other leaves are Python values (the barrier rule)
+                    tens, n, walked = _walk_data(data)
+                    outer, rec._ctor = rec._ctor, {"copy": p if ok else None, "refs": [rec.ref(t_) for t_ in tens],
+                                                   "numbers": n, "walked": walked, "tensors": tens}
+                    try:
+                        return orig(*a, **k)
+                    finally:
+                        rec._ctor = outer
+                return built
+            return make
+        def value_callable(path, vargs, vkw):
+            def make(orig):
+                def called(*a, **k):
+                    if not rec._quiet():
+                        for i_, x in enumerate(a):
+                            if (i_ in vargs) and isinstance(x, torch.Tensor):
+                                rec._log_escape("value_shape:" + path, rec.ref(x), x)
+                        for kn, x in k.items():
+                            if kn in vkw and isinstance(x, torch.Tensor):
+                                rec._log_escape("value_shape:" + path, rec.ref(x), x)
+                    return orig(*a, **k)
+                return called
+            return make
+        patch(torch.Tensor, "tolist", make_tolist)
+        for n in ("numpy", "__array__", "__dlpack__"):    # (repr / str read through tolist / item: p5)
+            patch(torch.Tensor, n, escape(n))
+        patch(torch.Tensor, "__reduce_ex__", make_reduce)
+        import torch.utils.dlpack as _dl
+        patch(_dl, "to_dlpack", escape("to_dlpack"))
+        for n in ("tensor", "as_tensor", "asarray", "from_numpy"):
+            patch(torch, n, ctor(0))
+        patch(torch.Tensor, "new_tensor", ctor(1))
+        patch(torch.Tensor, "__new__", lambda orig: staticmethod(ctor(1, legacy=True)(orig)))
+        for path, (vargs, vkw) in VALUE_SHAPE_CALLABLES.items():
+            owner_path, _, nm = path.rpartition(".")
+            try:
+                owner = _f09_resolve(owner_path)
+            except Exception:
+                rec.escape_hooks_ok = False
+                continue
+            patch(owner, nm, value_callable(path, vargs, vkw))
+        if F09_VOCAB_ERRORS:
+            rec.escape_hooks_ok = False              # a rejected value -> shape entry: an escape channel is not watched
+
+    def _remove_hooks(self):
+        for owner, name, orig, had in reversed(getattr(self, "_saved_hooks", [])):
+            try:
+                if had:
+                    setattr(owner, name, orig)
+                else:
+                    delattr(owner, name)
+            except Exception:
+                setattr(owner, name, orig)
+        self._saved_hooks = []
+        self._pending = None; self._ctor = None
+
+    def __enter__(self):
+        if self._hook_depth == 0:
+            self._install_hooks()
+        self._hook_depth += 1
+        try:
+            return super().__enter__()
+        except BaseException:
+            self._hook_depth -= 1
+            if self._hook_depth == 0:
+                self._remove_hooks()
+            raise
+
+    def __exit__(self, *exc):
+        try:
+            return super().__exit__(*exc)
+        finally:
+            self._hook_depth -= 1
+            if self._hook_depth == 0:
+                self._remove_hooks()
 
     def _pop(self, n):
         if self.stack and self.stack[-1] == n:
@@ -1296,16 +1832,348 @@ class DagRecorder(TorchDispatchMode):
         return out, [start, end, body_out, agree, unrep], None
 
     def __torch_dispatch__(self, func, types, args=(), kwargs=None):
+        """F09 bookkeeping around the recording of one call (_dispatch_core), only for a call the PROGRAM made (not a
+        decomposition's, not the harness's own): a Python-built tensor is classified before it is recorded; after it:
+        storage reads / writes (B2 taint through views, F09-6 never-written memory), F09-5 placement of single values
+        the recording cannot explain, and escapes (a value read into Python, a value-set output shape)."""
+        kwargs = kwargs or {}
+        top = self._in_handler == 0
+        name = func.overloadpacket.__name__
+        pyb, self._subst = None, None
+        if top and name in RESIZE_OPS and args and isinstance(args[0], torch.Tensor):
+            self._resize_pre = args[0].untyped_storage().nbytes()
+        if top and name in PY_BUILT_OPS and args and isinstance(args[0], torch.Tensor) and \
+                self.ref(args[0])[0] == "external":
+            pyb = self._classify_build(args[0])
+        self._in_handler += 1
+        try:
+            out = self._dispatch_core(func, types, args, kwargs)
+        finally:
+            self._in_handler -= 1
+            self._subst = None
+        if top:
+            self._after_call(func, name, args, kwargs, pyb)
+        # never return while the recorder still holds the call's tensors: PyTorch then hands the program a fresh alias
+        # through an extra aten::detach (a factory's output held by the mode), which changes the recorded graph
+        self._last = None
+        return out
+
+    _SUBSCR = {"BINARY_SUBSCR", "STORE_SUBSCR"}
+    _SIMPLE_LOAD = {"LOAD_FAST", "LOAD_FAST_CHECK", "LOAD_DEREF", "LOAD_NAME", "LOAD_GLOBAL", "LOAD_CONST"}
+
+    def _index_build(self):
+        """A build with no constructor in progress: C++ indexing (Tensor.__getitem__ / __setitem__) turning a Python LIST
+        index into a tensor (whisper: init_tokens[batch_idx_map]). The class cannot be hooked (patching __getitem__ makes
+        tensors sequences in C++), so the index is read from the program frame: the innermost frame outside the recorder
+        must be AT a subscript, and its index operand must be a simple load (locals / globals / constants, or a tuple of
+        them). Then its list parts are walked like a constructor's data; otherwise None (the build stays unwatched)."""
+        try:
+            f = sys._getframe(2)
+            # skip the recorder's own frames, ANY class (CaptureRecorder / WitnessRecorder call super() from their own
+            # __torch_dispatch__: their frame is not the program's), and torch's dispatch plumbing
+            plumbing = _plumbing_files()             # (R3-S1: torch 2.14 wraps __torch_dispatch__ in dynamo's disable)
+            while f is not None and (f.f_code.co_filename in plumbing or f.f_locals.get("self") is self):
+                f = f.f_back
+            if f is None:
+                return None
+            k, lst = _instr_at(f.f_code, f.f_lasti)
+            if k is None or lst[k].opname not in self._SUBSCR:
+                self._unseen_why = ("built by a constructor the recorder cannot watch (a typed legacy class such as "
+                                    "torch.LongTensor(...) is an immutable C type): its data was read with no record")
+                return None
+            self._unseen_why = ("a Python list index not resolvable from the program frame (an index expression "
+                                "beyond plain loads, plain data attributes, range / list / tuple of resolvable values and "
+                                "integer arithmetic): C++ read it with no record")
+            def load(ins):
+                if ins.opname == "LOAD_CONST":
+                    return True, ins.argval
+                nm = ins.argval
+                loc = f.f_locals
+                if ins.opname != "LOAD_GLOBAL" and nm in loc:
+                    return True, loc[nm]
+                if ins.opname in ("LOAD_GLOBAL", "LOAD_NAME"):
+                    if nm in f.f_globals:
+                        return True, f.f_globals[nm]
+                    b = f.f_builtins
+                    if nm in b:
+                        return True, b[nm]
+                return False, None
+            import builtins as _bi, operator as _op, types as _types
+            ARITH = {"+": _op.add, "-": _op.sub, "*": _op.mul, "//": _op.floordiv, "%": _op.mod}
+            CALLS = (_bi.range, _bi.list, _bi.tuple)
+            def has(v, slot):                         # (round 4b) a static type lookup: no metaclass code runs
+                return any(slot in vars(K) for K in type(v).__mro__)
+            def attr(obj, nm):
+                """A PLAIN data attribute only (S-1): from the instance __dict__ unless a class data descriptor shadows
+                it, or a class attribute that is not a descriptor; a property / __getattr__ / __getattribute__ is never
+                run (round 4b: the instance dict is read through the builtin slot, never the class's own lookup)."""
+                mro = type(obj).__mro__
+                dd = next((vars(C)["__dict__"] for C in mro if "__dict__" in vars(C)), None)
+                d = None
+                if dd is not None:
+                    if type(dd) not in (_types.GetSetDescriptorType, _types.MemberDescriptorType):
+                        raise ValueError("__dict__ descriptor")
+                    d = object.__getattribute__(obj, "__dict__")
+                if type(d) is dict and nm in d:
+                    if any(nm in vars(C) and has(vars(C)[nm], "__set__") for C in mro):
+                        raise ValueError("data descriptor")
+                    return d[nm]
+                for C in mro:
+                    if nm in vars(C):
+                        v = vars(C)[nm]
+                        if has(v, "__get__"):
+                            raise ValueError("descriptor")
+                        return v
+                raise ValueError("no plain attribute")
+            def plain(v):                             # (round 4b) exact types: a subclass's __add__ never runs
+                return type(v) in (int, float)
+            def pos(v):                               # an index / slice bound read with no __index__ call
+                return v is None or type(v) is int
+            def expr(j):
+                """(value, first instruction index) of the expression whose last instruction is lst[j]: simple loads,
+                plain data attributes, BUILD_LIST / TUPLE / SLICE, builtin range / list / tuple of such values, integer
+                arithmetic and list / tuple / range subscripts; anything else is not resolvable."""
+                if j < 0:
+                    raise ValueError("start")
+                ins = lst[j]
+                if ins.opname in self._SIMPLE_LOAD:
+                    ok, v = load(ins)
+                    if not ok:
+                        raise ValueError("unresolved name")
+                    return v, j
+                if ins.opname == "LOAD_ATTR" and not (ins.arg or 0) & 1:
+                    obj, start = expr(j - 1)
+                    return attr(obj, ins.argval), start
+                if ins.opname in ("BUILD_LIST", "BUILD_TUPLE", "BUILD_SLICE"):
+                    vals, j2 = [], j - 1
+                    for _ in range(ins.arg or 0):
+                        v, start = expr(j2)
+                        vals.append(v); j2 = start - 1
+                    vals.reverse()
+                    if ins.opname == "BUILD_LIST":
+                        return vals, j2 + 1
+                    if ins.opname == "BUILD_TUPLE":
+                        return tuple(vals), j2 + 1
+                    return slice(*vals), j2 + 1
+                if ins.opname == "CALL":
+                    vals, j2 = [], j - 1
+                    for _ in range(ins.arg or 0):
+                        v, start = expr(j2)
+                        vals.append(v); j2 = start - 1
+                    vals.reverse()
+                    fn, start = expr(j2)
+                    if start >= 1 and lst[start - 1].opname == "PUSH_NULL":
+                        start -= 1
+                    if not any(fn is c for c in CALLS):
+                        raise ValueError("call")
+                    if fn is _bi.range and not all(type(v) is int for v in vals):
+                        raise ValueError("range args")
+                    if fn is not _bi.range and not all(type(v) in (list, tuple, range) for v in vals):
+                        raise ValueError("list / tuple args")
+                    return fn(*vals), start
+                if ins.opname == "BINARY_OP" and ins.argrepr in ARITH:
+                    b, sb = expr(j - 1)
+                    a, sa = expr(sb - 1)
+                    if not (plain(a) and plain(b)):
+                        raise ValueError("arith")
+                    return ARITH[ins.argrepr](a, b), sa
+                if ins.opname == "BINARY_SUBSCR":
+                    key, sk = expr(j - 1)
+                    cont, sc = expr(sk - 1)
+                    if not (type(cont) in (list, tuple, range) and (type(key) is int or (type(key) is slice and
+                            pos(key.start) and pos(key.stop) and pos(key.step)))):
+                        raise ValueError("subscr")
+                    return cont[key], sc
+                if ins.opname == "BINARY_SLICE":
+                    hi, sh = expr(j - 1)
+                    lo, sl = expr(sh - 1)
+                    cont, sc = expr(sl - 1)
+                    if not (type(cont) in (list, tuple, range) and pos(lo) and pos(hi)):
+                        raise ValueError("slice")
+                    return cont[lo:hi], sc
+                raise ValueError(ins.opname)
+            idx, _ = expr(k - 1)
+            parts = list(idx) if type(idx) is tuple else [idx]
+            if any(isinstance(x, (list, tuple, range)) and type(x) not in (list, tuple, range) for x in parts):
+                return None                         # (round 4b) a sequence subclass: C++ reads it through its own code
+            lists = [x for x in parts if type(x) in (list, range)]
+            if not lists:
+                return None
+            tens, n, walked = _walk_data([list(x) if isinstance(x, range) else x for x in lists])
+            return {"copy": None, "refs": [self.ref(t_) for t_ in tens], "numbers": n, "walked": walked, "tensors": tens}
+        except Exception:
+            return None
+
+    def _classify_build(self, raw):
+        """F09: the class of a tensor built from Python values (aten::lift_fresh of a tensor the recording never made)."""
+        cb, open_ = self._ctor, self._open_tainted > 0
+        self._unseen_why = "built outside every watched constructor"
+        if cb is None and raw.dim() >= 1:
+            cb = self._index_build()
+        last = next((e for e in reversed(self.escapes) if e["tainted"] and not e["sealed"]), None)
+        after = last and {"kind": last["kind"], "module": last["module"]}
+        # (R3-S4) C++ reads the leaves (and a copy's source list came from its tensor) with no dispatch: the same storage
+        # checks as a recorded read - never-written memory is an F09-6 unknown (never sealed), a tainted storage taints
+        leaves = [] if cb is None else ([cb["copy"]["tensor"]] if cb["copy"] is not None else cb.get("tensors") or [])
+        # (a copy's source is its leaf: nothing but load instructions ran since its tolist, so its storage state is the
+        # same now - the copy contract's bit guard refuses a source changed in between)
+        never = [t for t in leaves if t.numel() and _skey(t) in self._uninit]
+        st_taint = any(t.numel() and _skey(t) in self._st_taint for t in leaves)
+        if never:
+            for t in never:
+                self._uninit_seen.add(_skey(t))
+            pyb = {"class": "uninitialised_read", "after": {"kind": "constructor read memory with no recorded write"}}
+            refs = [cb["copy"]["ref"]] if cb["copy"] is not None else list(cb["refs"])
+            if refs:
+                self._subst = (id(raw), refs)
+                pyb["edges"] = True
+        elif cb is None:
+            # no watched constructor: a 0-d build carries one Python value (Tensor.__setitem__ of a number); a build
+            # with a dimension came through a constructor the recorder cannot see into (typed legacy classes)
+            pyb = ({"class": "unexplained" if open_ else "static", "after": after if open_ else None}
+                   if raw.dim() == 0 else {"class": "unwatched", "after": {"kind": self._unseen_why}})   # (F09-9: named)
+        elif not cb["walked"]:
+            pyb = {"class": "unexplained", "after": {"kind": "constructor data not followed (over the cap, or a sequence subclass read through its own code)"}}
+        elif cb["copy"] is not None and not cb["refs"] and raw.shape == cb["copy"]["tensor"].shape and \
+                raw.dtype == cb["copy"]["tensor"].dtype and _bit_equal(raw, cb["copy"]["tensor"]):
+            p = cb["copy"]
+            pyb = {"class": "copy", "copy_of": p["ref"]}
+            self._subst = (id(raw), [p["ref"]])
+            if p["esc"]["tainted"] and not p["esc"]["sealed"]:
+                self._open_tainted -= 1
+            p["esc"]["sealed"] = True                   # its values reached no other Python code
+        elif any(r[0] == "op" and r[1] in self._sc_nodes for r in cb["refs"]):
+            pyb = {"class": "assembled_unexplained", "after": {"kind": "single values the recording cannot show"},
+                   "edges": True}
+            self._subst = (id(raw), list(cb["refs"]))
+        elif cb["numbers"] and open_:
+            pyb = {"class": "unexplained", "after": after}
+            if cb["refs"]:
+                self._subst = (id(raw), list(cb["refs"]))
+                pyb["edges"] = True
+        elif cb["refs"]:
+            pyb = {"class": "assembled", "edges": True}   # B3: the tensors C++ read are the build's recorded edges
+            self._subst = (id(raw), list(cb["refs"]))
+        else:
+            pyb = {"class": "static"}
+        if st_taint:
+            pyb["reads_tainted_storage"] = True
+        pyb.update(numel=raw.numel(), ndim=raw.dim(), shape=list(raw.shape), dtype=str(raw.dtype),
+                   module=self.stack[-1], raw=raw)
+        return pyb
+
+    def _after_call(self, func, name, args, kwargs, pyb):
+        idx = len(self.nodes) - 1
+        tens, storage_arg, targets, outs, has_num = self._last
+        node = self.nodes[idx]
+        if storage_arg:
+            self._storage_nodes.add(idx)
+        if pyb is not None:
+            raw = pyb.pop("raw")
+            if pyb.pop("reads_tainted_storage", False) or pyb["class"] == "uninitialised_read":
+                self._read_taint.add(idx)
+            self.pyb[idx] = pyb
+            if pyb["class"] in ("static", "assembled") and pyb["numel"]:
+                # F09-4a: its complete values are kept (a credited build never exceeds PY_CONST_CAP: the constructor's
+                # data walk stops there and the build is then "not shown")
+                self.pyconst[idx] = (pyb["dtype"], pyb["shape"], raw.detach().reshape(-1).clone())
+            if pyb["ndim"] == 0 and pyb["class"] in ("unexplained", "unwatched"):
+                self._sc_nodes.add(idx)
+        # storages: what this call read (B2 tainted storage, F09-6 never-written memory); only while either set holds one
+        if self._st_taint or self._uninit:
+            write_only = set()
+            if name in RESIZE_OPS or _overwrites(func, name, args, kwargs):
+                write_only = {id(t) for t in targets}
+            o_ = kwargs.get("out")
+            if o_ is not None:
+                write_only |= {id(t) for t in tree_flatten(o_)[0] if isinstance(t, torch.Tensor)}
+            in_keys = {_skey(t) for t in tens}
+            view = bool(outs) and not targets and all(_skey(o) in in_keys for o in outs)
+            for t in tens:
+                if id(t) in write_only or t.numel() == 0:
+                    continue
+                k = _skey(t)
+                if k in self._st_taint:
+                    self._read_taint.add(idx)
+                if k in self._uninit and not view and name not in METADATA_READ_OPS:
+                    self._read_taint.add(idx)
+                    if k not in self._uninit_seen:
+                        self._uninit_seen.add(k)
+                        self.pyb.setdefault(idx, {"class": "uninitialised_read", "numel": t.numel(), "ndim": max(1, t.dim()),
+                                                  "shape": list(t.shape), "dtype": str(t.dtype), "module": node.module,
+                                                  "after": {"kind": f"{name} read memory with no recorded write"}})
+        # F09-5: a single value the recording cannot show, placed into a tensor of more than one element
+        sc_in = any(e[0] == "op" and e[1] in self._sc_nodes for e in node.ins)
+        if sc_in:
+            if name in PLACE_ONE:
+                if name == "copy_":
+                    one = all(t.numel() == 1 for t in targets)
+                else:
+                    ix = args[1] if len(args) > 1 and isinstance(args[1], (list, tuple)) else []
+                    one = all(i is None or (isinstance(i, torch.Tensor) and i.numel() == 1) for i in ix)
+                big = [t for t in targets if t.untyped_storage().nbytes() > t.element_size()] if one else []
+            elif name in PLACE_NEW:
+                big = [o for o in outs if o.numel() > 1] + [t for t in targets if t.numel() > 1]
+            else:
+                big = []
+            if big:
+                self.pyb.setdefault(idx, {"class": "assembled_unexplained", "numel": big[0].numel(), "ndim": max(1, big[0].dim()),
+                                          "shape": list(big[0].shape), "dtype": str(big[0].dtype), "module": node.module,
+                                          "after": {"kind": f"{name} placed single values the recording cannot show"}})
+            elif outs and all(o.numel() <= 1 for o in outs) and not targets:
+                self._sc_nodes.add(idx)                 # scalar arithmetic on such values stays such a value
+        self._taint.pop(idx, None)
+        tainted = self._node_tainted(idx)
+        for t in targets:                               # writes: a tainted write taints the storage (views included)
+            if name == "set_":                          # (round 4b, Fable S1) no value written: the target now IS the
+                continue                                # source storage and keeps ITS never-written / taint state
+            if name in RESIZE_OPS:                      # (R3-S5) no value written; grown memory is never written
+                if t.untyped_storage().nbytes() > (self._resize_pre or 0):
+                    self._mark(self._uninit, t)
+                continue
+            k = _skey(t)
+            self._uninit.discard(k)
+            if tainted:
+                self._mark(self._st_taint, t)
+        if name in ALLOC_ONLY:                          # F09-6: fresh memory, no recorded value yet
+            for o in outs:
+                self._mark(self._uninit, o)
+        elif name == "set_" and storage_arg:
+            for o in outs:
+                try:
+                    known = o.untyped_storage() in self._seen_ws
+                except Exception:
+                    known = False
+                if not known:                           # memory no recorded tensor holds (a load, a raw buffer)
+                    self._mark(self._uninit, o)
+        for o in outs:                                  # (Fable S-2) every recorded output's storage is known
+            try:
+                self._seen_ws.add(o.untyped_storage())
+            except Exception:
+                pass
+        if self._open_tainted and has_num:
+            self.scalar_args_open += 1                  # F09-3 info (numeric arguments while a tainted read is open)
+        kind = _escape_kind(func, args)
+        if kind is not None:
+            e = {"pos": idx, "kind": kind, "ref": ("op", idx, 0), "module": node.module, "sealed": False,
+                 "tainted": tainted or any(self._ref_tainted(x) for x in node.ins)}
+            self.escapes.append(e)
+            if e["tainted"]:
+                self._open_tainted += 1
+
+    def _dispatch_core(self, func, types, args=(), kwargs=None):
         kwargs = kwargs or {}
         mod = self.stack[-1]
         # F10: registry evidence on the qualified overload (F10-5: a prims:: op inside a recorded decomposition)
         kind, why = opclass.decide(func, types, in_decomposition=self._dec_depth > 0)
         ins, consts, reads_weight = [], [], False
         p_read, b_read = [], []          # credited only once the op has completed (F13: an op that raises reads nothing)
-        ins_ids = []
+        ins_ids, tens, storage_arg = [], [], False
         for a in tree_flatten((args, kwargs))[0]:
+            if isinstance(a, (torch.UntypedStorage, torch.TypedStorage)):
+                storage_arg = True                   # (F09: values from raw memory; folded into this flatten, S7)
             if isinstance(a, torch.Tensor):
-                ins_ids.append(id(a))
+                ins_ids.append(id(a)); tens.append(a)
                 r = self._resolve(a)                 # (a decomposition's operand copy reads as the program's tensor)
                 k = id(r)
                 if k in self.producer:
@@ -1318,6 +2186,13 @@ class DagRecorder(TorchDispatchMode):
                     ins.append(("input", self.input_names[k])); self.used_inputs.add(self.input_names[k])
                 elif k in self.const_names:
                     ins.append(("module_constant", self.const_names[k]))
+                elif self._subst is not None and self._subst[0] == id(a):
+                    # F09: the build's edges are the escaped tensor (copy contract) or the tensors its constructor read
+                    # (assembled); one the recording never produced is external exactly like a direct use (B4)
+                    for r_ in self._subst[1]:
+                        ins.append(r_)
+                        if r_[0] == "external":
+                            self.external.append((tuple(r_[1]), r_[2], mod, "constructor data (external tensor)"))
                 else:
                     ins.append(("external", tuple(a.shape), str(a.dtype), self._ext(r)))
                     self.external.append((tuple(a.shape), str(a.dtype), mod, str(func)))
@@ -1409,6 +2284,7 @@ class DagRecorder(TorchDispatchMode):
             self._track(t, idx, p_ if p_ is not None else "w:" + next(
                 (sa.name for i_, sa in enumerate(func._schema.arguments) if sa.alias_info is not None and sa.alias_info.is_write
                  and ((args[i_] if i_ < len(args) else kwargs.get(sa.name)) is t)), "?"))
+        self._last = (tens, storage_arg, targets, outs, bool(consts))
         return out
 
     def return_structure(self, outputs, max_depth=8):
@@ -1548,6 +2424,18 @@ def analyse(rec: DagRecorder, outputs):
     big = lambda e: (1 if not e[0] else __import__("math").prod(e[0])) > 1
     python_mediated = [e for e in rec.external if big(e) and "lift_fresh" in e[3]]      # torch.tensor(<python list>) inside forward
     ext_nonscalar = [e for e in rec.external if big(e) and "lift_fresh" not in e[3]]
+    # F09: Python-built tensors by class. Graded (F09-5): every build with a dimension and a value (ndim >= 1, numel >= 1:
+    # an empty tensor carries no value); true 0-d single values are info (F11, F09-3) unless placed into a larger tensor
+    pyb = getattr(rec, "pyb", None)
+    if pyb is None:                                   # (a recorder without F09 bookkeeping: nothing is credited)
+        pyb_cls, pyb_unx, pyb_scalar = None, [], []
+    else:
+        graded = {i: p for i, p in pyb.items() if p.get("ndim", 1) >= 1 and p["numel"] >= 1}
+        pyb_cls = dict(collections.Counter(p["class"] for p in graded.values()))
+        pyb_unx = [p for p in graded.values() if p["class"] not in F09_CREDITED]
+        pyb_scalar = [p for p in pyb.values() if p.get("ndim", 1) == 0 and p["class"] not in F09_CREDITED]
+        if not getattr(rec, "escape_hooks_ok", True):  # an escape channel could not be watched: static is not shown
+            pyb_unx = [p for p in graded.values() if p["class"] != "copy"]
     # layer signatures and cross-layer edges
     sig = collections.defaultdict(list)
     for n in prog:
@@ -1597,6 +2485,15 @@ def analyse(rec: DagRecorder, outputs):
             "python_mediated_values": len(python_mediated),
             "python_mediated_examples": [list(map(str, e)) for e in python_mediated[:3]],
             "external_examples": [list(map(str, e)) for e in ext_nonscalar[:5]],
+            "python_built": pyb_cls,
+            "python_built_unexplained": None if pyb is None else len(pyb_unx),
+            "python_built_unexplained_examples": [{k: p.get(k) for k in ("module", "shape", "dtype", "class", "after")}
+                                                  for p in pyb_unx[:5]],
+            "python_built_scalar_unexplained_info": len(pyb_scalar),
+            "escapes_info": dict(collections.Counter(f"{e['kind']}|tainted={e['tainted']}|sealed={e['sealed']}"
+                                                     for e in getattr(rec, "escapes", []))),
+            "python_scalar_args_while_open_info": getattr(rec, "scalar_args_open", None),
+            "f09_vocabulary_errors": list(F09_VOCAB_ERRORS),
             **opv,
             "layer_patterns": patterns,
             "cross_layer_edges": dict(cross.most_common(8)),

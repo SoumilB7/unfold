@@ -79,7 +79,9 @@ def graph(rec, outputs=None):
     rets = rec.return_structure(outputs) if outputs is not None else getattr(rec, "returns", None)
     return {"schema": GRAPH_SCHEMA, "strings": strs, "nodes": nodes,
             "returns": None if rets is None else [[list(p), _ref_out(r, s)] for p, r in rets],
-            "op_strings": {str(j): v for j, v in getattr(rec, "op_strings", {}).items()}}
+            "op_strings": {str(j): v for j, v in getattr(rec, "op_strings", {}).items()},
+            # F09 (R3-S3): builds whose edges are the tensors their constructor read (never a view of one of them)
+            "f09_assembled": sorted(i for i, p in getattr(rec, "pyb", {}).items() if p.get("edges"))}
 
 
 def _ref_out(r, s):
@@ -125,7 +127,7 @@ def nodes_of(g):
     return out
 
 
-def fold_groups(nodes):
+def fold_groups(nodes, assembled=None):
     """F10, the DRAWING view of a recording: every op recorded as its decomposition is shown as the one call the
     program made (its group node, which keeps the call's own operands, arguments and outputs); the decomposition's
     nodes are hidden. Returns (nodes, remap old index -> new index). Grading never folds. A visible node reading a
@@ -135,17 +137,27 @@ def fold_groups(nodes):
         if n.body is not None:
             hidden.update(range(n.body[0], n.body[1]))
     # an OPAQUE op is shown under its qualified name, so no packet matcher reads a custom "add" / "_softmax" as aten's
-    shown = lambda n: n.op if (n.op and isinstance(n.opq, str) and not n.opq.startswith("unknown:")) else n.func
+    asm = None if assembled is None else set(assembled)
+    def shown(n, i):
+        # F09: a build ASSEMBLED from the tensors its constructor read (torch.tensor([t, h, w, 1]), torch.tensor([w, w]),
+        # torch.tensor([t, 1.0])) is drawn under its own name, whatever its edge kinds: the adapter's VIEWS / TRANSPARENT
+        # sets would otherwise read it as a view of one source. By the recorder's own class (graph "f09_assembled",
+        # R3-S3); a bundle without it (pre-F09 builds had no edges) falls back to "two or more op edges". A copy build
+        # (one edge: the escaped tensor) stays "lift_fresh", a view of the very tensor it copies.
+        if n.func in ("lift_fresh", "lift_fresh_copy") and (
+                i in asm if asm is not None else sum(1 for e in n.ins if e[0] == "op") >= 2):
+            return "lift_fresh_assembled"
+        return n.op if (n.op and isinstance(n.opq, str) and not n.opq.startswith("unknown:")) else n.func
     if not hidden:
-        return [n if shown(n) == n.func else Node(shown(n), n.module, n.ins, n.consts, n.n_out, n.shape, n.op, n.args,
-                                                  n.outs, n.cargs, n.opq, n.body) for n in nodes], \
+        return [n if shown(n, i) == n.func else Node(shown(n, i), n.module, n.ins, n.consts, n.n_out, n.shape, n.op, n.args,
+                                                     n.outs, n.cargs, n.opq, n.body) for i, n in enumerate(nodes)], \
             {i: i for i in range(len(nodes))}
     remap, keep = {}, []
     for i, n in enumerate(nodes):
         if i not in hidden:
             remap[i] = len(keep); keep.append(n)
     out = []
-    for n in keep:
+    for i0, n in [(i, n) for i, n in enumerate(nodes) if i not in hidden]:
         ins = []
         for e in n.ins:
             if e[0] == "op":
@@ -153,7 +165,7 @@ def fold_groups(nodes):
                     raise ValueError(f"node {n.func} reads an op inside a decomposition group (index {e[1]})")
                 e = ("op", remap[e[1]]) + tuple(e[2:])
             ins.append(e)
-        out.append(Node(shown(n), n.module, ins, n.consts, n.n_out, n.shape, n.op, n.args, n.outs, n.cargs, n.opq, None))
+        out.append(Node(shown(n, i0), n.module, ins, n.consts, n.n_out, n.shape, n.op, n.args, n.outs, n.cargs, n.opq, None))
     return out, remap
 
 

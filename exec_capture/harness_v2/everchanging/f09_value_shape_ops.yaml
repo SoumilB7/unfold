@@ -1,0 +1,29 @@
+# F09-7 (Soumil 2026-10-17): operations that read tensor VALUES to decide output SHAPES but carry no PyTorch registry
+# tag (dynamic_output_shape / data_dependent_output). The registry tag is evidence, not a complete census: an op listed
+# here is treated exactly like a tagged op (a value read into Python, an escape, tainted by the read tensor's ancestry).
+# Two sections, exactly {reason} per entry (callables also {value_args}):
+#   dispatch: qualified aten overloads (namespace::name[.overload], ".default" omitted, as op.name() prints it) that
+#     reach the recorder under their own name; every tensor operand is a read value.
+#   callables: Python-level functions / methods whose value read happens in C++ BEFORE dispatch (CompositeImplicit:
+#     the recorder only sees the slices it produced). value_args = the positional indices whose TENSOR value is read
+#     (a keyword argument of the same parameter name is read too).
+# dag._load_f09_vocab refuses a key that does not resolve, an entry without a reason, an unknown field. At import a
+# rejected entry is left out and every recording reads as "escape channels incomplete" (no static credit): fail closed.
+# Changing this file changes grading_id and the witness producer id (dag.py reads it).
+# NOT listable (round 4): an OpOverload called directly (torch.ops.aten.tensor_split.tensor_indices_or_sections(...))
+# cannot be hooked - replacing the overload object breaks torch 2.14's own dispatch (`.tags`); a named residual.
+dispatch:
+  "aten::_pack_padded_sequence": "the lengths tensor's values set batch_sizes and the packed data length (probe p8)"
+callables:
+  "torch.tensor_split":
+    reason: "tensor_indices_or_sections given as a tensor: its values set the split points (CompositeImplicit; probes p8, Fable E13)"
+    value_args: [1]
+    value_kwargs: ["indices_or_sections", "tensor_indices_or_sections", "sections", "indices"]
+  "torch.Tensor.tensor_split":
+    reason: "the method form of torch.tensor_split (same C++ read)"
+    value_args: [1]
+    value_kwargs: ["indices_or_sections", "tensor_indices_or_sections", "sections", "indices"]
+  "torch._VF._pad_packed_sequence":
+    reason: "batch_sizes values set the copy ranges of the padded output (pad_packed_sequence; CompositeImplicit)"
+    value_args: [1]
+    value_kwargs: ["batch_sizes"]
