@@ -601,8 +601,9 @@ for label, kw in _schedule():
                 CAP.setdefault("errors", []).append(f"{label}: {type(e).__name__}: {str(e)[:160]}")
         if not label.startswith("stability:") and "router_params" not in S_:
             cands, up, scales = set(), [], set()
+            _bodyn = __import__("dag").body_nodes(rec.nodes)  # F10: the program's own calls, not a decomposition's
             for i, n in enumerate(rec.nodes):
-                if n.func not in ("topk", "argmax", "sort", "argsort", "max"):
+                if n.func not in ("topk", "argmax", "sort", "argsort", "max") or i in _bodyn:
                     continue
                 frontier, depth = [e[1] for e in n.ins if e[0] == "op"], 0
                 while frontier and depth < 6:
@@ -778,13 +779,19 @@ if hasattr(m, "generate") and class_rules.shared(TIED, "generate") and (not any(
     t = time.time()
     try:
         with _limit():
+            _gen_mode = {}
             def _gen(kw):                               # each attempt records alone (F13)
-                try:
-                    return attempts.run(m, m, kw, lambda: m.generate(**kw, max_new_tokens=2, min_new_tokens=2, do_sample=False),
-                                        _ledger, {"entry": "generate", "max_new_tokens": 2})
-                except TypeError as te:
-                    if "unexpected keyword" not in str(te): raise
-                    return attempts.run(m, m, kw, lambda: m.generate(**kw), _ledger, {"entry": "generate"})   # e.g. forecasting models: horizon comes from the config
+                # Fable N3: every call asks for greedy (do_sample=False) where the library's generate() takes it; a
+                # generate() that takes no such flag (e.g. forecasting models sample their horizon) is recorded as such
+                for gk, desc in (({"max_new_tokens": 2, "min_new_tokens": 2, "do_sample": False}, {"max_new_tokens": 2, "deterministic": True}),
+                                 ({"do_sample": False}, {"deterministic": True}),
+                                 ({}, {"deterministic": False, "why": "generate() takes no do_sample: it may sample"})):
+                    try:
+                        r_ = attempts.run(m, m, kw, lambda: m.generate(**kw, **gk), _ledger, {"entry": "generate", **desc})
+                        _gen_mode.clear(); _gen_mode.update(desc)
+                        return r_
+                    except TypeError as te:
+                        if not gk or "unexpected keyword" not in str(te): raise   # (the last form's error is the call's)
             try:
                 rec, out = _gen(gkw)
             except Exception as first_err:
@@ -798,7 +805,8 @@ if hasattr(m, "generate") and class_rules.shared(TIED, "generate") and (not any(
                         continue
                 if not fallback_ok: raise first_err
         a = analyse(rec, out)
-        pass_res["generate"] = {"ok": True, "secs": round(time.time() - t, 2), "attempts": _ledger, **{k: v for k, v in a.items() if k != "structure_signature"}}
+        pass_res["generate"] = {"ok": True, "secs": round(time.time() - t, 2), "attempts": _ledger, **_gen_mode,
+                                **{k: v for k, v in a.items() if k != "structure_signature"}}
         used_params |= rec.used_params; used_buffers |= rec.used_buffers; called |= rec.called; PASS_READS.append(libload_pass(rec))
     except Exception as e:
         tb = traceback.extract_tb(e.__traceback__)
@@ -954,9 +962,12 @@ if ((P_names - used_params) or (persist_bufs - used_buffers)) and any(v["ok"] fo
                             rec, out = attempts.run(m, m, {k: v for k, v in kw.items() if isinstance(v, torch.Tensor)},
                                                     lambda: m(**kw), _ledger, {"entry": "train", "labels": type(lab).__name__, "batch": _bs})
                         newly = (rec.used_params - used_params)
+                        newly_b = (rec.used_buffers - used_buffers) & persist_bufs   # F10-4: checkpoint buffers it alone reads
                         a = analyse(rec, out)
                         pass_res["train"] = {"ok": True, "extra_inputs": sorted(set(ex) | set(mk) | ({"labels"} if lab is not None else set())),
-                                             "newly_used_params": len(newly), "ops": a["ops"], "attempts": train_ledger, "batch": _bs,
+                                             "newly_used_params": len(newly), "newly_used_buffers": len(newly_b),
+                                             "ops": a["ops"], "body_ops": a["body_ops"], "attempts": train_ledger, "batch": _bs,
+                                             **{k_: a[k_] for k_ in ("opaque_ops", "opaque_reasons", "opacity_unknown_ops", "opacity_unknown_reasons", "decomposition_disagrees", "decomposed_ops", "decomposed_random_info")},
                                              "note": "training-mode pass: counts toward T1/T2 only (loss/matching code may route through Python)"}
                         used_params |= rec.used_params; used_buffers |= rec.used_buffers; called |= rec.called; PASS_READS.append(libload_pass(rec))
                         done_train = True
@@ -995,8 +1006,10 @@ if not ok_passes and not ROOT_NO_FORWARD:
                 with _limit():
                     rec2, o2 = attempts.run(m2, m2, synth.flat_tensors(kw2, "synth"), lambda: m2(**kw2), _l2,
                                             {"entry": f"stability:synth:{label}"})
-                sigs["stability:synth"] = (analyse(rec2, o2)["structure_signature"], [(n.module, n.func) for n in rec2.nodes], rec2.nodes)
-                pass_res["stability:synth"] = {"ok": True, "attempts": _l2}
+                _a2 = analyse(rec2, o2)
+                sigs["stability:synth"] = (_a2["structure_signature"], [(n.module, n.func) for n in rec2.nodes], rec2.nodes)
+                pass_res["stability:synth"] = {"ok": True, "attempts": _l2,      # (F10: its ops are classified too)
+                                               **{k_: _a2[k_] for k_ in ("opaque_ops", "opaque_reasons", "opacity_unknown_ops", "opacity_unknown_reasons", "decomposition_disagrees", "decomposed_ops", "decomposed_random_info")}}
             except Exception as e:
                 pass_res["stability:synth"] = {"ok": False, "error": f"{type(e).__name__}: {str(e)[:120]}", "attempts": _l2}
             finally:
@@ -1323,10 +1336,43 @@ pm = sum(v.get("python_mediated_values", 0) for l, v in pass_res.items() if v["o
 checks["T3_closed_dataflow"] = {"pass": ext == 0, "external_nonscalar_tensors": ext, "python_mediated_values_info": pm,
                                 "examples": sum((v.get("external_examples", []) for v in pass_res.values() if v["ok"]), [])[:5],
                                 "dead_ops_info": {l: v.get("dead_ops") for l, v in pass_res.items() if v["ok"]}}
-opq = collections.Counter()
-for v in pass_res.values():
-    if v["ok"]: opq.update(v.get("opaque_ops", {}))
-checks["T4_no_opaque_ops"] = {"pass": not opq, "opaque_ops": dict(opq)}
+# F10 / G4: every credited pass (main, modes, entries, generate, synth, train, stability) on the classifier's verdict per
+# recorded node (dag.analyse): an opaque op fails T4; an op without a recorded overload, or a decomposition that did not
+# reproduce the op's own values, is an UNKNOWN (never a pass, never a failure)
+# The training-mode pass (D6 / G5-1 open: "counts toward weight use only") never fails T4: an opaque op there (e.g. a
+# loss kernel) makes only the tensors that pass alone credits an UNKNOWN (D-F10-5 option A); otherwise it is info.
+opq, _ounk, _odis, _odec = collections.Counter(), collections.Counter(), collections.Counter(), collections.Counter()
+_owhy, _uwhy = {}, {}
+for l, v in pass_res.items():
+    if v["ok"] and l != "train":
+        opq.update(v.get("opaque_ops", {})); _ounk.update(v.get("opacity_unknown_ops", {}))
+        _odis.update(v.get("decomposition_disagrees", {})); _odec.update(v.get("decomposed_ops", {}))
+        for k_, w_ in (v.get("opaque_reasons") or {}).items(): _owhy.setdefault(k_, w_)
+        for k_, w_ in (v.get("opacity_unknown_reasons") or {}).items(): _uwhy.setdefault(k_, w_)
+_tr = pass_res.get("train") or {}
+# F10-4: what the training-mode pass ALONE credits: parameters AND checkpoint (persistent) buffers no other pass read;
+# its opaque ops, ops without an overload and disagreeing decompositions all leave those tensors unshown
+_tr_opq = dict(_tr.get("opaque_ops") or {}) if _tr.get("ok") else {}
+_tr_unk = dict(_tr.get("opacity_unknown_ops") or {}) if _tr.get("ok") else {}
+_tr_dis = dict(_tr.get("decomposition_disagrees") or {}) if _tr.get("ok") else {}
+_tr_alone = (_tr.get("newly_used_params") or 0) + (_tr.get("newly_used_buffers") or 0) if _tr.get("ok") else 0
+checks["T4_no_opaque_ops"] = {"pass": not opq, "opaque_ops": dict(opq), "opaque_reasons": {k_: _owhy.get(k_) for k_ in opq},
+                              "decomposed_ops_info": dict(_odec), "train_pass_opaque_ops_info": _tr_opq,
+                              **({"train_pass_unknown_ops_info": dict(_tr_unk, **_tr_dis)} if (_tr_unk or _tr_dis) else {})}
+if (_tr_opq or _tr_unk or _tr_dis) and _tr_alone > 0:
+    UNKNOWNS.append({"predicate": "G4", "what": "tensors credited only by the training-mode pass (parameters "
+                     f"{_tr.get('newly_used_params') or 0}, checkpoint buffers {_tr.get('newly_used_buffers') or 0}), whose "
+                     "recording's transparency is not shown: " + ("opaque ops " + str(_tr_opq) if _tr_opq else "")
+                     + (" no recorded overload " + str(_tr_unk) if _tr_unk else "")
+                     + (" decomposition did not reproduce the op " + str(_tr_dis) if _tr_dis else ""),
+                     "items": sorted(set(_tr_opq) | set(_tr_unk) | set(_tr_dis))[:20], "count": _tr_alone})
+R["vocabulary_notes"] = __import__("opclass").vocabulary_note()   # (F10-24: rejected vocabulary entries: a note)
+if _ounk or _odis:
+    UNKNOWNS.append({"predicate": "G4", "what": "ops whose transparency is not shown: "
+                     + ("not shown (each with its reason) " + str({k_: _uwhy.get(k_, "no recorded overload") for k_ in _ounk})
+                        if _ounk else "")
+                     + (" decomposition did not reproduce the op " + str(dict(_odis)) if _odis else ""),
+                     "items": sorted(set(_ounk) | set(_odis))[:20], "count": len(set(_ounk) | set(_odis))})
 # T5 stability: first pass vs the same modality with a different input
 first = next((l for l, _ in passes if l in sigs), passes[0][0])
 if first in sigs and ("stability:" + first) in sigs:

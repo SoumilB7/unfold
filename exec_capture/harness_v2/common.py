@@ -8,7 +8,7 @@ per-expert tensors summed into a fused tensor with the same prefix. No model nam
 import re, math, collections
 from witness_io import (AUX, INT_DTYPES, ckpt_split, runtime, WITNESS_SCHEMA, WITNESS_FILES,  # noqa: F401
                         WITNESS_STRUCTURAL_INPUTS, witness_producer_id, vllm_source_id, witness_inputs,
-                        input_fingerprints)                     # (re-exported: the recorder's code, F14)
+                        input_fingerprints, witness_transparent)                     # (re-exported: the recorder's code, F14)
 
 
 
@@ -17,7 +17,8 @@ from witness_io import (AUX, INT_DTYPES, ckpt_split, runtime, WITNESS_SCHEMA, WI
 GRADING_FILES = ("worker_v2.py", "worker_v2_diffusion.py", "run_batch.py", "dag.py", "common.py", "libload.py",
                  "loadtrace.py", "lowcost.py", "inputs.py", "gguf_parts.py", "noweights.py", "synth.py", "opclass.py",
                  "mtp_witness_run.py", "vllm_witness.py", "capture.py", "class_rules.py",
-                 "diffusion_rules.py", "witness_io.py")      # capture.py records graded passes
+                 "diffusion_rules.py", "witness_io.py",
+                 "everchanging/opacity_reviewed.yaml")      # capture.py records graded passes; F10: the reviewed-op vocabulary
 
 
 def grading_id():
@@ -364,7 +365,7 @@ def witness_execution_credit(wit, revision, producer=None):
     fp = lambda r: ins.get(r).get("fingerprints") if isinstance(ins.get(r), dict) else None
     if wit.get("stable_structure") is not True or not distinct_inputs(fp("a"), fp("b")):
         out.append(("G5a", "its two runs are not shown to have the same structure on different inputs"))
-    if wit.get("transparent") is not True:
+    if not witness_transparent(wit):                # (F10-24: recomputed from the record's evidence, the producer's rule)
         out.append(("G4", "opaque ops or tensors from outside the recording" if "op_full" in wit
                     else "old record without full op names"))
     return out

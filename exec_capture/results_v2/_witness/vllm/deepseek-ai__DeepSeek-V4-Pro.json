@@ -1,8 +1,8 @@
 {
  "repo": "deepseek-ai/DeepSeek-V4-Pro",
  "executed_by": "vLLM (source, no compiled extension; custom ops on their pure-PyTorch path)",
- "schema": 2,
- "producer_id": "0822778cf273",
+ "schema": 3,
+ "producer_id": "bae6709be690",
  "vllm_version": "0.30.0",
  "vllm_source_id": "65d9e4beec54b27c",
  "runtime": {
@@ -82,6 +82,6 @@
  "failed_stage": "config",
  "error": "NotImplementedError: DeepSeek-V4 speculative decoding (MTP) is not implemented on CPU.",
  "where": "vllm/models/deepseek_v4/cpu/mtp.py:17",
- "secs": 25.4,
- "peak_rss_gb": 0.5
+ "secs": 20.0,
+ "peak_rss_gb": 0.53
 }

@@ -1,8 +1,8 @@
 {
  "repo": "microsoft/deberta-v3-large",
  "executed_by": "vLLM (source, no compiled extension; custom ops on their pure-PyTorch path)",
- "schema": 2,
- "producer_id": "0822778cf273",
+ "schema": 3,
+ "producer_id": "bae6709be690",
  "vllm_version": "0.30.0",
  "vllm_source_id": "65d9e4beec54b27c",
  "runtime": {
@@ -83,5 +83,5 @@
  "error": "ValidationError: 1 validation error for ModelConfig\n  Value error, Model architectures ['DebertaV2Model'] are not supported for now. Supported architectures: dict_keys(['AfmoeForCausalLM', 'ApertusForCausalLM', 'ArceeForCausalLM', 'AXK1ForCausalLM', 'BailingMoeForCausalLM', 'BailingMoeV2ForCausalLM', 'BailingMoeV2_5",
  "where": "/Users/soumil/Code/Projects/Understand/llmvisualizer/model-benchmark/.venv_vllm/lib/python3.12/site-packages/pydantic/_internal/_dataclasses.py:121",
  "secs": 3.6,
- "peak_rss_gb": 0.48
+ "peak_rss_gb": 0.51
 }

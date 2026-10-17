@@ -1,0 +1,82 @@
+# F10 / INTENT G4: aten op OVERLOADS (qualified, namespace::name[.overload]; ".default" omitted, exactly as
+# op.name() prints it) that are transparent by an owner REVIEW, not by registry evidence. Two sections:
+#   reviewed: overloads that are neither core / pointwise / view / factory / an in-place or out= variant of a
+#     transparent op, nor decomposable by PyTorch's own decomposition tables.
+#   reviewed_over_decomposition (F10-10): overloads PyTorch DOES decompose, whose decomposition does not reproduce the
+#     kernel (each entry says why); they are recorded whole, without the value check. Exactly {reason,
+#     decomposition_unreliable} per entry.
+# opclass._load_reviewed refuses a key that is not the exact name of a real aten overload, an entry without a reason,
+# an entry in the wrong section (a decomposable op in `reviewed`, a non-decomposable op in the second section) and an
+# entry that needs no review. At import a rejected entry is left out (it credits nothing) and every graded row carries
+# a G4 unknown naming it.
+# Packet names are not accepted (an overload must be named). Changing this file changes grading_id and the witness
+# producer id (opclass.py reads it).
+# Removed 2026-10-14 (F10 round 2): aten::_unsafe_view (decomposable: recorded and value-checked as its decomposition);
+# aten::detach_, aten::transpose_ (now evidence: in-place variants of the views detach / transpose.int, F10-6).
+reviewed:
+  "aten::max": "full reduction max (aten::max.dim is core)"
+  "aten::min": "full reduction min (aten::min.dim is core)"
+  "aten::_is_all_true": "all() of a bool tensor (assert / control)"
+  "aten::repeat_interleave.Tensor": "repeat by counts (data-dependent shape: also a value escape)"
+  "aten::cummax": "running max scan"
+  "aten::cummin": "running min scan"
+  "aten::unique_consecutive": "run-length unique (data-dependent shape)"
+  "aten::histc": "histogram (MoE token counts)"
+  # Soumil 2026-10-14 (F10-2 = G4-1, D-F10-4): kernels PyTorch cannot decompose whose computation is fixed by their
+  # operands and documented semantics
+  "aten::_grouped_mm": "grouped matmul, one mm per offsets group (offsets recorded as an input edge)"
+  "aten::searchsorted.Tensor": "binary search of values in a sorted sequence (index output; used by isin's decomposition)"
+  "aten::_upsample_bilinear2d_aa": "anti-aliased bilinear resize: a fixed separable filter of the documented kernel, no learned state"
+  "aten::_upsample_bicubic2d_aa": "anti-aliased bicubic resize: a fixed separable filter of the documented kernel, no learned state"
+  # Soumil 2026-10-14 (F10-6, round 2): fixed-semantics kernels with no PyTorch decomposition, each a documented
+  # function of its operands and recorded arguments
+  "aten::_fft_c2c": "complex-to-complex discrete Fourier transform over the given dims (normalization + direction recorded); FNet token mixing, torch.fft.fftn"
+  "aten::_fft_c2r": "complex-to-real inverse discrete Fourier transform (Hermitian input, last-dim size recorded); irfft / istft"
+  "aten::_unique2": "sorted unique values (+ inverse indices / counts): torch.unique; data-dependent shape"
+  "aten::masked_select": "the elements where a bool mask is true, in order (data-dependent shape)"
+  "aten::bincount": "count of each non-negative integer value (optionally weighted); data-dependent length"
+  "aten::median": "full-reduction median (the lower of the two middle values)"
+  "aten::median.dim": "median along one dim (values + indices)"
+  "aten::kthvalue": "k-th smallest value along one dim (values + indices)"
+  "aten::mode": "most frequent value along one dim (values + indices)"
+  "aten::adaptive_max_pool2d": "max over the documented adaptive windows of a 2-D input (values + indices); no learned state"
+  "aten::adaptive_max_pool3d": "max over the documented adaptive windows of a 3-D input (values + indices); no learned state"
+  "aten::embedding_renorm_": "in-place renormalisation of the looked-up embedding rows to max_norm (nn.Embedding(max_norm))"
+  "aten::sort.stable": "stable sort along one dim (values + indices); the stable flag fixes the order of ties"
+  "aten::_assert_async": "asserts a tensor is nonzero (no output value)"
+  "aten::_assert_async.msg": "asserts a tensor is nonzero, with a message (no output value)"
+  "aten::addbmm": "beta * self + alpha * the sum over the batch of batch1[i] @ batch2[i] (a fixed reduction of matmuls)"
+  "aten::_is_any_true": "any() of a bool tensor (assert / control)"
+  "aten::_embedding_bag_forward_only": "embedding_bag forward without the backward buffers: per-bag sum / mean / max of looked-up rows"
+  # Soumil 2026-10-14 (F10-7, round 2): random sampling ops with no PyTorch decomposition are transparent by their
+  # documented distribution (their values are never value-checked; decomposable random ops are recorded as their
+  # decomposition, and whether a call is random is decided from the call itself)
+  "aten::bernoulli_.Tensor": "in-place Bernoulli sampling with per-element probabilities from a tensor"
+  "aten::bernoulli.p": "Bernoulli(p) sampling into a new tensor"
+  "aten::multinomial": "sampling indices from the categorical distribution given by the rows of a probability tensor"
+  "aten::rrelu_with_noise": "randomized leaky ReLU: in training a slope drawn per element from U(lower, upper) (written to noise); in eval the fixed slope (lower + upper) / 2"
+reviewed_over_decomposition:
+  # Soumil 2026-10-14 (F10-10, round 3): the plain resizes F.interpolate reaches (bilinear / bicubic 2-D, linear 1-D;
+  # aten::upsample_bilinear2d.vec is core-tagged, so it is evidence, not listed). Nearest stays decomposed: it agrees exactly.
+  # F10-14 (Soumil 2026-10-14, round 4): trilinear 3-D joins (video models); nearest 3-D stays decomposed.
+  "aten::upsample_bilinear2d":
+    reason: "bilinear resize: each output is a fixed two-tap-per-axis weighted average of the input at documented source coordinates (align_corners / scales recorded); no learned state"
+    decomposition_unreliable: "PyTorch's decomposition computes the source coordinates with different float rounding than the kernel; it differs by up to ~1e-4 at non-integer ratios (10/60 random sizes beyond the law, crossexam r2 p22/p23)"
+  "aten::upsample_bicubic2d":
+    reason: "bicubic resize: each output is a fixed four-tap-per-axis cubic-convolution average (A = -0.75) at documented source coordinates; no learned state"
+    decomposition_unreliable: "PyTorch's decomposition rounds the source coordinates and cubic weights differently from the kernel (6/60 random sizes beyond the law, crossexam r2 p23)"
+  "aten::upsample_bicubic2d.vec":
+    reason: "bicubic resize (output size or scale factors form): the same fixed cubic-convolution filter"
+    decomposition_unreliable: "decomposes into aten::upsample_bicubic2d, whose decomposition rounds source coordinates differently from the kernel"
+  "aten::upsample_linear1d":
+    reason: "linear 1-D resize: each output is a fixed two-tap weighted average at documented source coordinates; no learned state"
+    decomposition_unreliable: "PyTorch's decomposition rounds the source coordinates differently from the kernel (2/60 random sizes beyond the law, crossexam r2 p23)"
+  "aten::upsample_linear1d.vec":
+    reason: "linear 1-D resize (output size or scale factors form): the same fixed two-tap filter"
+    decomposition_unreliable: "decomposes into aten::upsample_linear1d, whose decomposition rounds source coordinates differently from the kernel"
+  "aten::upsample_trilinear3d":
+    reason: "trilinear 3-D resize: each output is a fixed two-tap-per-axis weighted average at documented source coordinates (align_corners / scales recorded); no learned state"
+    decomposition_unreliable: "PyTorch's decomposition rounds the source coordinates differently from the kernel (9/40 random sizes beyond the F10-9 law at align_corners=False, crossexam r3 p31)"
+  "aten::upsample_trilinear3d.vec":
+    reason: "trilinear 3-D resize (output size or scale factors form): the same fixed two-tap-per-axis filter"
+    decomposition_unreliable: "decomposes into aten::upsample_trilinear3d, whose decomposition rounds source coordinates differently from the kernel"

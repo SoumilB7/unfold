@@ -1,8 +1,8 @@
 {
  "repo": "CMSManhattan/JiRackDeltaNet_27b",
  "executed_by": "vLLM (source, no compiled extension; custom ops on their pure-PyTorch path)",
- "schema": 2,
- "producer_id": "0822778cf273",
+ "schema": 3,
+ "producer_id": "bae6709be690",
  "vllm_version": "0.30.0",
  "vllm_source_id": "65d9e4beec54b27c",
  "runtime": {
@@ -49,7 +49,7 @@
    "VLLM_TARGET_DEVICE": "cpu"
   }
  },
- "revision": "c222674aaaea678c2f1b73081012e7969c46a22d",
+ "revision": "775109e25de710a02a7b0febcd1bb0d974ad0c58",
  "notes": [
   "standard attention: vLLM FlexAttention backend, computed by torch's reference flex implementation (sdpa_dense)",
   "KV-cache write: pure-PyTorch scatter registered as _C_cache_ops.reshape_and_cache_flash (vLLM's kernel is not compiled)",
@@ -75,13 +75,13 @@
  "registry_checked": true,
  "checkpoint_mtp_tensors": 15,
  "revision_pin": {
-  "pinned": 8,
+  "pinned": 6,
   "other_revision": []
  },
  "closed": false,
  "failed_stage": "config",
  "error": "ValueError: Invalid model_type qwen3_5_mtp",
  "where": "vllm/model_executor/models/qwen3_5.py:180",
- "secs": 8.4,
- "peak_rss_gb": 1.1
+ "secs": 9.5,
+ "peak_rss_gb": 1.05
 }

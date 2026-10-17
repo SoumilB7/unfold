@@ -70,7 +70,7 @@ def one(repo):
     md = W.attention_metadata(model, dcfg, n_tok)
     rec_a, out_a = W.run_forward(model, dcfg, n_tok, md, seed_a)
     md = W.attention_metadata(model, dcfg, n_tok)
-    rec_b, _ = W.run_forward(model, dcfg, n_tok, md, seed_b)      # T5: same shape, different values (own seed)
+    rec_b, out_b = W.run_forward(model, dcfg, n_tok, md, seed_b)      # T5: same shape, different values (own seed)
     import torch
     R["inputs"] = {"a": {"seed": rec_a.seed, "n_tokens": n_tok, "fingerprints": rec_a.input_fingerprints},
                    "b": {"seed": rec_b.seed, "n_tokens": n_tok, "fingerprints": rec_b.input_fingerprints}}
@@ -106,15 +106,25 @@ def one(repo):
     R["closed"] = bool(R["executed_checkpoint_keys"]) and not R["loaded_not_used_keys"] and R["stable_structure"] and not R["mapping_error"]
     R["op_kinds"] = sorted({n.func for n in rec_a.nodes})
     # transparency (INTENT.md G4): full op names, every op transparent by registry evidence, nothing from outside
-    import opclass
     from dag import analyse
     R["op_full"] = sorted(set(rec_a.op_full))
-    R["opaque_ops"] = {f: opclass.classify(f)[1] for f in R["op_full"] if not opclass.classify(f)[0]}
-    R["decomposed_on_record"] = dict(rec_a.decomposed)
+    # F10: the one classifier, per recorded node of BOTH runs (dag.analyse), exactly as the main harness grades T4
     _a = analyse(rec_a, out_a)
+    _b = analyse(rec_b, out_b)
+    # (the reason the RECORDER gave, with the call's tensor types: a subclass-dispatched aten::mm is reported as such,
+    #  never re-derived from the bare name as "core"; Fable N1)
+    R["opaque_ops"] = {f: x["opaque_reasons"].get(f) or "opaque" for x in (_a, _b) for f in x["opaque_ops"]}
+    R["opacity_unknown_ops"] = sorted(set(_a["opacity_unknown_ops"]) | set(_b["opacity_unknown_ops"]))
+    R["decomposition_disagrees"] = sorted(set(_a["decomposition_disagrees"]) | set(_b["decomposition_disagrees"]))
+    R["decomposed_on_record"] = dict(rec_a.decomposed)
     R["external_nonscalar"] = _a["external_nonscalar"]
     R["ir_torch_wrap"] = False
-    R["transparent"] = bool(R["op_full"]) and not R["opaque_ops"] and R["external_nonscalar"] == 0
+    import opclass
+    # F10-24: rejected vocabulary entries (this venv's torch) are a NOTE on the record, never part of its transparency:
+    # a dropped entry credits nothing, and every recorded op above was graded on its own evidence
+    R["vocabulary_errors"] = list(opclass.VOCAB_ERRORS)
+    from witness_io import witness_transparent
+    R["transparent"] = witness_transparent(R)
     R["revision_pin"] = _pin_log()
     return R
 

@@ -223,28 +223,19 @@ from dag import DagRecorder as _DagRecorder
 
 
 class WitnessRecorder(_DagRecorder):
-    """The harness recorder, made transparent for the vLLM witness (INTENT.md G4): every op keeps its full name
-    (namespace::op.overload); an aten op that is not transparent by opclass's registry evidence but has a PyTorch
-    reference decomposition is recorded AS that decomposition; the engine's per-request metadata (attention metadata,
-    slot mapping, built before the forward by vLLM's builder) is a named input, not an external tensor."""
+    """The harness recorder for the vLLM witness (INTENT.md G4): the SAME fail-closed classification and
+    decompose-on-record as every main-harness pass (DagRecorder + opclass, F10); every recorded op keeps its full name
+    (namespace::op.overload) in op_full; the engine's per-request metadata (attention metadata, slot mapping, built
+    before the forward by vLLM's builder) is a named input, not an external tensor."""
     def __init__(self, model, inputs, extra_inputs=None):
         super().__init__(model, inputs)
         for k, name in (extra_inputs or {}).items():
             self.input_names.setdefault(k, name)
-        self.op_full, self.decomposed = [], {}
+        self.op_full = []
 
     def __torch_dispatch__(self, func, types, args=(), kwargs=None):
-        import opclass
-        from torch._decomp import decomposition_table, core_aten_decompositions
-        if not hasattr(WitnessRecorder, "_DEC"):
-            WitnessRecorder._DEC = dict(decomposition_table); WitnessRecorder._DEC.update(core_aten_decompositions())
-        name = func.name()
-        if func.namespace == "aten" and not opclass.classify(name)[0] and func in WitnessRecorder._DEC:
-            self.decomposed[name] = self.decomposed.get(name, 0) + 1
-            with self:
-                return WitnessRecorder._DEC[func](*args, **(kwargs or {}))
         out = super().__torch_dispatch__(func, types, args, kwargs)
-        self.op_full.append(name)
+        self.op_full.append(func.name())
         return out
 
 

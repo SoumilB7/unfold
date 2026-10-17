@@ -98,8 +98,13 @@ def verify_cache(cache_run, pshape, wk, wv, layer_prefix):
     bundle's cache-on run of the same pass (its op graph + every stored 4-D tensor with its producing op)."""
     if not cache_run or not cache_run.get("cache"):
         return {}
-    found = cache_run["cache"]["slots"]
-    R = Rec(capture.nodes_of(cache_run["graph"]), pshape); N = R.n
+    try:
+        _cn, _cmap = capture.fold_groups(capture.nodes_of(cache_run["graph"]))     # F10: decomposed ops drawn as one call
+    except ValueError as e:
+        raise NotDrawn(f"cache run: {e}")
+    found = [dict(t, producer=_cmap.get(t["producer"])) if t.get("producer") is not None else t
+             for t in cache_run["cache"]["slots"]]
+    R = Rec(_cn, pshape); N = R.n
     is_w = lambda j: N[j].func in MATMULS and bool(R.weights(j))
     write = {}
     for t in found:
@@ -188,7 +193,15 @@ def _recognize(bundle):
     if P.get("squeezed_retry"):
         raise NotDrawn(f"pass '{label}' needed the 5-D pixel retry: its recording also holds the failed attempt")
     pshape = {k: tuple(v) for k, v in bundle["model"]["param_shapes"].items()}
-    R = Rec(capture.nodes_of(P["graph"]), pshape)
+    # F10: the drawing view folds every op recorded as its decomposition back into the one call the program made
+    try:
+        _nodes, _remap = capture.fold_groups(capture.nodes_of(P["graph"]))
+    except ValueError as e:
+        raise NotDrawn(str(e))
+    P = dict(P, squares=capture.remap_squares(P["squares"], _remap),
+             graph=dict(P["graph"], op_strings={str(_remap[int(j)]): v for j, v in (P["graph"].get("op_strings") or {}).items()
+                                                if int(j) in _remap}))
+    R = Rec(_nodes, pshape)
     N = R.n
     for j, nd in enumerate(N):                  # cat with an empty operand (e.g. full-width rotary's empty pass-through)
         if nd.func == "cat":

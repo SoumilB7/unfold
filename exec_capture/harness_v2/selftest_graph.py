@@ -475,7 +475,7 @@ import common as _common
 for _f in sorted(set(_common.GRADING_FILES) | {"attempts.py"}):
     _p = os.path.join(HD, _f)
     if os.path.exists(_p):
-        if _f == "capture.py":
+        if _f == "capture.py" or not _f.endswith(".py"):     # (F10: the vocabulary YAML is not Python)
             continue                                      # (the bundle writer serialises it FOR the drawing)
         _reads += [f"{_f}:{n_.lineno}" for n_ in _ast.walk(_ast.parse(open(_p).read()))
                    if isinstance(n_, _ast.Attribute) and n_.attr == "consts" and isinstance(n_.ctx, _ast.Load)]

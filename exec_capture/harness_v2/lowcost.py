@@ -100,8 +100,11 @@ def _keeps_zero(n, a, k):
     return False
 
 
+ZERO_VIEW_MIN = 4096     # tensors of at least this many elements are shared zero views (zero_storage; F10-12 private zeros)
+
+
 @contextlib.contextmanager
-def zero_storage(min_numel=4096):
+def zero_storage(min_numel=ZERO_VIEW_MIN):
     real_empty = torch.empty
     def fake_empty(*size, **kw):
         shape = size[0] if len(size) == 1 and isinstance(size[0], (tuple, list, torch.Size)) else size

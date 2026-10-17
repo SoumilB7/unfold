@@ -1,8 +1,8 @@
 {
  "repo": "efwkjn/cohere-asr-ja",
  "executed_by": "vLLM (source, no compiled extension; custom ops on their pure-PyTorch path)",
- "schema": 2,
- "producer_id": "0822778cf273",
+ "schema": 3,
+ "producer_id": "bae6709be690",
  "vllm_version": "0.30.0",
  "vllm_source_id": "65d9e4beec54b27c",
  "runtime": {
@@ -82,6 +82,6 @@
  "failed_stage": "config",
  "error": "ValidationError: 1 validation error for ModelConfig\n  Value error, Model architectures ['CohereAsrForConditionalGeneration'] failed to be inspected. Please check the logs for more details. [type=value_error, input_value=ArgsKwargs((), {'model': ...nderer_num_workers': 1}), input_type=ArgsKwargs]\n    For further info",
  "where": "/Users/soumil/Code/Projects/Understand/llmvisualizer/model-benchmark/.venv_vllm/lib/python3.12/site-packages/pydantic/_internal/_dataclasses.py:121",
- "secs": 22.5,
- "peak_rss_gb": 0.48
+ "secs": 9.6,
+ "peak_rss_gb": 0.51
 }

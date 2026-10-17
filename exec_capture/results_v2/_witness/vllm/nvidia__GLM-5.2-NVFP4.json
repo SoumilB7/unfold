@@ -1,8 +1,8 @@
 {
  "repo": "nvidia/GLM-5.2-NVFP4",
  "executed_by": "vLLM (source, no compiled extension; custom ops on their pure-PyTorch path)",
- "schema": 2,
- "producer_id": "0822778cf273",
+ "schema": 3,
+ "producer_id": "bae6709be690",
  "vllm_version": "0.30.0",
  "vllm_source_id": "65d9e4beec54b27c",
  "runtime": {
@@ -83,5 +83,5 @@
  "error": "NotImplementedError: Sparse Attention is not supported on CPU.",
  "where": "vllm/platforms/cpu.py:145",
  "secs": 17.1,
- "peak_rss_gb": 0.83
+ "peak_rss_gb": 1.16
 }

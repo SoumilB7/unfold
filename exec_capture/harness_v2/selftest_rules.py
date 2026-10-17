@@ -142,7 +142,7 @@ def main():
     rc = getattr(CM, "runtime_credit_needed", None)
     import inspect
     _bind = rc is not None and len(inspect.signature(rc).parameters) >= 4     # F14: bound to revision + witness code
-    BOUND = {"schema": 2, "revision": "r" * 40, "producer_id": "pid", "vllm_version": "0.30.0", "vllm_source_id": "src",
+    BOUND = {"schema": getattr(CM, "WITNESS_SCHEMA", 2), "revision": "r" * 40, "producer_id": "pid", "vllm_version": "0.30.0", "vllm_source_id": "src",
              "runtime": {"torch": "x"}, "registry_checked": True, "revision_pin": {"pinned": 1, "other_revision": []},
              "registry_override": {"before": {"architectures": ["X"]}, "after": {"architectures": ["X"]}}}
     # these DB-3 controls test the credit logic on BOUND records; the F14 binding controls are in selftest_witness.py

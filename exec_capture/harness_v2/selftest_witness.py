@@ -60,7 +60,8 @@ def main():
     good = {"closed": True, "transparent": True, "stable_structure": True, "schema": getattr(CM, "WITNESS_SCHEMA", 2),
             "revision": REV, "producer_id": PID, "vllm_version": "0.30.0", "vllm_source_id": "src1", "runtime": {"torch": "2.14.1"},
             "revision_pin": {"pinned": 3, "other_revision": []},
-            "op_full": ["aten::mm"], "inputs": {"a": {"seed": 0, "fingerprints": fa}, "b": {"seed": 1, "fingerprints": fb}},
+            "op_full": ["aten::mm"], "opaque_ops": {}, "opacity_unknown_ops": [], "decomposition_disagrees": [], "external_nonscalar": 0,
+            "vocabulary_errors": [], "inputs": {"a": {"seed": 0, "fingerprints": fa}, "b": {"seed": 1, "fingerprints": fb}},
             "vllm_mtp_arch": "Qwen3_5MTP", "executed_checkpoint_keys": ["mtp.fc.weight"], "loaded_not_used_keys": []}
     ec = has("witness_execution_credit")
     def credit(w, rev=REV):
@@ -78,10 +79,26 @@ def main():
     check("NEG no vLLM source id: G6 unknown", credit(drop("vllm_source_id")), ["G6"])
     check("NEG no library versions (runtime): G6 unknown", credit(drop("runtime")), ["G6"])
     check("NEG old schema: G6 unknown", credit(dict(good, schema=1)), ["G6"])
+    # F10 (Soumil 2026-10-14, WITNESS_SCHEMA 3): a record made before the fail-closed opacity fields (schema 2) is
+    # never credited as transparent; the current schema is 3
+    check("NEG a schema-2 record (before F10's opacity fields): G6 unknown", credit(dict(good, schema=2)), ["G6"])
+    check("VALID the witness schema is 3 (F10)", getattr(CM, "WITNESS_SCHEMA", None), 3)
     check("NEG revision missing on the record: G6 unknown", credit(drop("revision")), ["G6"])
     check("NEG recorded for another revision: G6 unknown", credit(dict(good, revision="x" * 40)), ["G6"])
     check("NEG graded revision unknown: G6 unknown", credit(good, None), ["G6"])
-    check("NEG not transparent: G4 unknown", credit(dict(good, transparent=False)), ["G4"])
+    # F10-24: transparency is re-derived from the record's evidence by the producer's own rule (common.witness_transparent);
+    # rejected vocabulary entries are a note and never enter it
+    check("NEG an opaque op in the recording: G4 unknown", credit(dict(good, opaque_ops={"f10ctl::secret": "opaque"})), ["G4"])
+    check("NEG an op without transparency shown: G4 unknown", credit(dict(good, opacity_unknown_ops=["aten::x"])), ["G4"])
+    check("NEG a disagreeing decomposition: G4 unknown", credit(dict(good, decomposition_disagrees=["aten::roll"])), ["G4"])
+    check("NEG a tensor from outside the recording: G4 unknown", credit(dict(good, external_nonscalar=1)), ["G4"])
+    check("NEG no full op names: G4 unknown", credit(dict(good, op_full=[])), ["G4"])
+    check("NEG opacity fields missing: G4 unknown, never an exception", credit(drop("opaque_ops")), ["G4"])
+    # (Opus R8d: each opacity field alone; external_nonscalar must be exactly 0, a missing / None count is not "nothing external")
+    check("NEG external_nonscalar missing (op_full and empty opacity fields present): G4 unknown", credit(drop("external_nonscalar")), ["G4"])
+    check("NEG external_nonscalar None: G4 unknown", credit(dict(good, external_nonscalar=None)), ["G4"])
+    check("VALID F10-24 rejected vocabulary entries on a clean recording: a note, proven",
+          credit(dict(good, vocabulary_errors=["'aten::_fft_c2r' needs no review (it is transparent: core)"], transparent=False)), [])
     check("NEG no revision pin log (revision declared, not shown): G6 unknown", credit(drop("revision_pin")), ["G6"])
     check("NEG pin log shows a read of another revision: G6 unknown",
           credit(dict(good, revision_pin={"pinned": 3, "other_revision": ["main2"]})), ["G6"])
@@ -150,6 +167,7 @@ def main():
         files = set(getattr(CM, "WITNESS_FILES", ())) | {"worker_v2.py", "common.py"}
         for f in files:
             if os.path.exists(os.path.join(HERE, f)):
+                os.makedirs(os.path.dirname(os.path.join(tmp, f)), exist_ok=True)     # (F10: a vocabulary subfolder)
                 shutil.copy(os.path.join(HERE, f), os.path.join(tmp, f))
         T = module("witness_io", legacy, tmp) if os.path.exists(os.path.join(tmp, "witness_io.py")) and not legacy else module("common", legacy, tmp)
         pid = getattr(T, "witness_producer_id", None)
@@ -324,7 +342,18 @@ def main():
                      and n.args and isinstance(n.args[0], ast.Constant) else [])
             todo += [x for x in names if x in local]
     check("NEG the recorder's local import closure equals WITNESS_FILES", sorted(seen),
-          sorted(f[:-3] for f in getattr(CM, "WITNESS_FILES", ())))
+          sorted(f[:-3] for f in getattr(CM, "WITNESS_FILES", ()) if f.endswith(".py")))
+    # F10: the data file the classifier reads is stamped too (a reviewed-op change makes every record stale)
+    _oc = source("opclass.py", legacy)
+    # F10-24: the recorder's transparency is the ONE shared rule (witness_io.witness_transparent, also the grader's), and
+    # that rule never reads the rejected-vocabulary note
+    _mw, _wi = source("mtp_witness_run.py", legacy), source("witness_io.py", legacy)
+    _wt = _wi[_wi.find("def witness_transparent"):_wi.find("def witness_producer_id")] if "def witness_transparent" in _wi else ""
+    _body = _wt.split('"""')[-1] if _wt.count('"""') >= 2 else _wt
+    check("NEG F10-24: the recorder's transparency is witness_transparent(R), whose rule ignores vocabulary_errors",
+          'R["transparent"] = witness_transparent(R)' in _mw and bool(_wt) and "vocabulary" not in _body, True)
+    check("NEG the classifier's vocabulary file is in WITNESS_FILES", ("opacity_reviewed.yaml" not in _oc) or
+          "everchanging/opacity_reviewed.yaml" in getattr(CM, "WITNESS_FILES", ()), True)
 
     print(f"\n{bad} unexpected" + (" (legacy: expected to fail)" if legacy else ""))
     sys.exit(1 if bad else 0)

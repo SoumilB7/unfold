@@ -1,8 +1,8 @@
 {
  "repo": "deepseek-ai/DeepSeek-V3",
  "executed_by": "vLLM (source, no compiled extension; custom ops on their pure-PyTorch path)",
- "schema": 2,
- "producer_id": "0822778cf273",
+ "schema": 3,
+ "producer_id": "bae6709be690",
  "vllm_version": "0.30.0",
  "vllm_source_id": "65d9e4beec54b27c",
  "runtime": {
@@ -96,8 +96,8 @@
   }
  },
  "distinct_inputs": true,
- "ops": 936,
- "attention_ops": 81,
+ "ops": 941,
+ "attention_ops": 83,
  "stable_structure": true,
  "auxiliary_tensors_not_fed": 45808,
  "mapping_error": [],
@@ -904,6 +904,7 @@
   "_unsafe_view",
   "add",
   "alias",
+  "all",
   "any",
   "arange",
   "bitwise_not",
@@ -923,6 +924,7 @@
   "gather",
   "ge",
   "index",
+  "index_add_",
   "index_put_",
   "logical_and",
   "logical_not",
@@ -946,11 +948,13 @@
   "split",
   "split_with_sizes",
   "squeeze",
+  "stack",
   "sub",
   "sum",
   "t",
   "topk",
   "transpose",
+  "triu",
   "unbind",
   "unsqueeze",
   "view",
@@ -965,6 +969,7 @@
   "aten::_unsafe_view",
   "aten::add.Tensor",
   "aten::alias",
+  "aten::all",
   "aten::any.dim",
   "aten::any.dims",
   "aten::arange",
@@ -987,6 +992,7 @@
   "aten::gather",
   "aten::ge.Scalar",
   "aten::index.Tensor",
+  "aten::index_add_",
   "aten::index_put_",
   "aten::logical_and",
   "aten::logical_not",
@@ -1010,11 +1016,13 @@
   "aten::split.Tensor",
   "aten::split_with_sizes",
   "aten::squeeze.dim",
+  "aten::stack",
   "aten::sub.Tensor",
   "aten::sum.dim_IntList",
   "aten::t",
   "aten::topk",
   "aten::transpose.int",
+  "aten::triu",
   "aten::unbind.int",
   "aten::unsqueeze",
   "aten::view",
@@ -1023,6 +1031,8 @@
   "aten::zeros_like"
  ],
  "opaque_ops": {},
+ "opacity_unknown_ops": [],
+ "decomposition_disagrees": [],
  "decomposed_on_record": {
   "aten::stack": 2,
   "aten::all": 1,
@@ -1031,11 +1041,16 @@
  },
  "external_nonscalar": 0,
  "ir_torch_wrap": false,
+ "vocabulary_errors": [
+  "'aten::_fft_c2r' needs no review (it is transparent: core)",
+  "'aten::adaptive_max_pool2d' needs no review (it is decompose: PyTorch reference decomposition): an entry for a decomposable op belongs in reviewed_over_decomposition, with why its decomposition is unreliable",
+  "'aten::adaptive_max_pool3d' needs no review (it is decompose: PyTorch reference decomposition): an entry for a decomposable op belongs in reviewed_over_decomposition, with why its decomposition is unreliable"
+ ],
  "transparent": true,
  "revision_pin": {
   "pinned": 167,
   "other_revision": []
  },
- "secs": 45.7,
- "peak_rss_gb": 2.27
+ "secs": 57.4,
+ "peak_rss_gb": 2.71
 }

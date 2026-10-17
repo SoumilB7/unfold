@@ -568,8 +568,24 @@ for cn, m in models.items():
                             "never_executed_groups": dict(collections.Counter(".".join("N" if p.isdigit() else p for p in n.split(".")) for n in never).most_common(6))}
     ext = [e for r in recs for e in r.external if e[2].split(".")[0] == cn and (1 if not e[0] else __import__("math").prod(e[0])) > 1 and "lift_fresh" not in e[3]]
     checks["T3_closed_dataflow"] = {"pass": not ext, "external_nonscalar_tensors": len(ext), "examples": [list(map(str, e)) for e in ext[:4]]}
-    opq = collections.Counter(n.func for r in recs for n in r.nodes if n.module.split(".")[0] == cn and __import__("dag").OPAQUE.search(n.func))
-    checks["T4_no_opaque_ops"] = {"pass": not opq, "opaque_ops": dict(opq)}
+    # F10 / G4: the classifier's verdict per recorded node of this component (dag.opacity: the one rule every pass uses;
+    # an op inside a recorded decomposition is graded too); no overload / a decomposition that did not reproduce the op
+    # = UNKNOWN. The call's returned structure is used where analyse() kept it (else every unreproduced output counts)
+    _t4 = [__import__("dag").opacity(r.nodes, getattr(r, "returns", None), keep=lambda n: n.module.split(".")[0] == cn)
+           for r in recs]
+    _sumc = lambda k: sum((collections.Counter(t[k]) for t in _t4), collections.Counter())
+    opq, _ounk, _odis = _sumc("opaque_ops"), _sumc("opacity_unknown_ops"), _sumc("decomposition_disagrees")
+    _uwhy = {k: w for t in _t4 for k, w in t["opacity_unknown_reasons"].items()}
+    R["vocabulary_notes"] = __import__("opclass").vocabulary_note()   # (F10-24: rejected vocabulary entries: a note)
+    checks["T4_no_opaque_ops"] = {"pass": not opq, "opaque_ops": dict(opq),
+                                  "opaque_reasons": {k: w for t in _t4 for k, w in t["opaque_reasons"].items()},
+                                  "decomposed_ops_info": dict(_sumc("decomposed_ops"))}
+    if _ounk or _odis:
+        UNKNOWNS.append({"predicate": "G4", "component": cn, "what": "ops whose transparency is not shown: "
+                         + ("not shown (each with its reason) " + str({k: _uwhy.get(k, "no recorded overload") for k in _ounk})
+                            if _ounk else "")
+                         + (" decomposition did not reproduce the op " + str(dict(_odis)) if _odis else ""),
+                         "items": sorted(set(_ounk) | set(_odis))[:20], "count": len(set(_ounk) | set(_odis))})
     sa, sb = norm(rec_a.nodes, cn), norm(rec_b.nodes, cn)
     d2_ran = True
     if cn in direct:                                      # structure stability from the two direct runs

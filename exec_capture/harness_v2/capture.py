@@ -13,8 +13,8 @@ import base64, collections, gzip, hashlib, json, os
 import torch
 from dag import DagRecorder, Node, GRAPH_SCHEMA
 
-FORMAT = "exec-capture-bundle/3"      # /2: records which tie-group members the checkpoint ships; /3: graph schema 2 (F06)
-LEGACY_FORMATS = {"exec-capture-bundle/2": 1}   # older bundle format -> the graph schema its graphs carry
+FORMAT = "exec-capture-bundle/4"      # /2: tie-group members shipped; /3: graph schema 2 (F06); /4: graph schema 3 (F10)
+LEGACY_FORMATS = {"exec-capture-bundle/2": 1, "exec-capture-bundle/3": 2}   # older format -> its graphs' schema
 SQUARE_MAX = 1 << 16          # numel limit of a square activation kept from an add (as exec_to_ir's MaskCapture)
 SQUARE_SIDE_MAX = 256         # stored slice is [S, S]; larger sides are not kept
 BUF_MAX = 4096                # non-persistent buffers up to this size are stored with their values
@@ -29,6 +29,12 @@ class CaptureRecorder(DagRecorder):
         super().__init__(*a, **k)
         self.square_adds = {}
         self.op_strings = {}          # node index -> string arguments (e.g. gelu's approximate="tanh"), dropped by DagRecorder
+
+    def _discard_nodes(self, start):
+        super()._discard_nodes(start)                 # (F10: a decomposition that raised; its node indices are reused)
+        for d in (self.op_strings, self.square_adds):
+            for k in [k for k in d if k >= start]:
+                del d[k]
 
     def __torch_dispatch__(self, func, types, args=(), kwargs=None):
         out = super().__torch_dispatch__(func, types, args, kwargs)
@@ -48,7 +54,9 @@ class CaptureRecorder(DagRecorder):
 
 def graph(rec, outputs=None):
     """A recording as interned strings + compact nodes (graph schema 2, F06):
-    [func, module, ins, consts, n_out, shape, op, args, outs, cargs]; an op edge is ["o", node, port], an external edge
+    [func, module, ins, consts, n_out, shape, op, args, outs, cargs, opq, body] (schema 3, F10: opq = None when the op
+    is transparent by registry evidence, else the reason; body = [start, end, body_out edges, agree, unreproduced output
+    ports] for an op recorded as its decomposition); an op edge is ["o", node, port], an external edge
     ["x", shape, dtype, ordinal]. `returns` is the model call's returned structure (dag return_structure): from
     `outputs` when given, else the one analyse() kept on the recorder, else null (UNKNOWN)."""
     strs, sidx = [], {}
@@ -64,7 +72,10 @@ def graph(rec, outputs=None):
                       s(n.op) if n.op is not None else None,
                       [[a, v] for a, v in n.args] if n.args is not None else None,
                       [[list(sh), dt] for sh, dt in n.outs] if n.outs is not None else None,
-                      [[a, v] for a, v in n.cargs] if getattr(n, "cargs", None) is not None else None])
+                      [[a, v] for a, v in n.cargs] if getattr(n, "cargs", None) is not None else None,
+                      n.opq,                                                    # F10: None = transparent, else why not
+                      [n.body[0], n.body[1], [edge(e) for e in n.body[2]], n.body[3], list(n.body[4])]
+                      if n.body is not None else None])
     rets = rec.return_structure(outputs) if outputs is not None else getattr(rec, "returns", None)
     return {"schema": GRAPH_SCHEMA, "strings": strs, "nodes": nodes,
             "returns": None if rets is None else [[list(p), _ref_out(r, s)] for p, r in rets],
@@ -100,13 +111,57 @@ def nodes_of(g):
         func, mod, ins, consts, n_out, shape = row[:6]
         op, args, outs = (row[6:9] if schema >= 2 else (None, None, None))
         cargs = row[9] if schema >= 2 and len(row) > 9 else None
+        # F10: a graph recorded before schema 3 carries no transparency verdict: UNKNOWN (never transparent by omission)
+        opq = row[10] if schema >= 3 else f"unknown: recorded before F10 (graph schema {schema})"
+        body = row[11] if schema >= 3 else None
         out.append(Node(S[func], S[mod], [_edge_in(e, S, schema) for e in ins], consts, n_out,
                         tuple(shape) if shape is not None else None,
                         S[op] if op is not None else None,
                         tuple((a, v) for a, v in args) if args is not None else None,
                         tuple((tuple(sh), dt) for sh, dt in outs) if outs is not None else None,
-                        tuple((a, v) for a, v in cargs) if cargs is not None else None))
+                        tuple((a, v) for a, v in cargs) if cargs is not None else None,
+                        opq, [body[0], body[1], [_edge_in(e, S, schema) for e in body[2]], body[3],
+                              list(body[4]) if len(body) > 4 else []] if body else None))
     return out
+
+
+def fold_groups(nodes):
+    """F10, the DRAWING view of a recording: every op recorded as its decomposition is shown as the one call the
+    program made (its group node, which keeps the call's own operands, arguments and outputs); the decomposition's
+    nodes are hidden. Returns (nodes, remap old index -> new index). Grading never folds. A visible node reading a
+    hidden one would mean the decomposition leaked a value: refused (ValueError), never redrawn."""
+    hidden = set()
+    for n in nodes:
+        if n.body is not None:
+            hidden.update(range(n.body[0], n.body[1]))
+    # an OPAQUE op is shown under its qualified name, so no packet matcher reads a custom "add" / "_softmax" as aten's
+    shown = lambda n: n.op if (n.op and isinstance(n.opq, str) and not n.opq.startswith("unknown:")) else n.func
+    if not hidden:
+        return [n if shown(n) == n.func else Node(shown(n), n.module, n.ins, n.consts, n.n_out, n.shape, n.op, n.args,
+                                                  n.outs, n.cargs, n.opq, n.body) for n in nodes], \
+            {i: i for i in range(len(nodes))}
+    remap, keep = {}, []
+    for i, n in enumerate(nodes):
+        if i not in hidden:
+            remap[i] = len(keep); keep.append(n)
+    out = []
+    for n in keep:
+        ins = []
+        for e in n.ins:
+            if e[0] == "op":
+                if e[1] in hidden:
+                    raise ValueError(f"node {n.func} reads an op inside a decomposition group (index {e[1]})")
+                e = ("op", remap[e[1]]) + tuple(e[2:])
+            ins.append(e)
+        out.append(Node(shown(n), n.module, ins, n.consts, n.n_out, n.shape, n.op, n.args, n.outs, n.cargs, n.opq, None))
+    return out, remap
+
+
+def remap_squares(sq, remap):
+    """squares() keyed by the folded node indices (squares of hidden decomposition nodes dropped)."""
+    if not sq:
+        return sq
+    return dict(sq, by_node={str(remap[int(j)]): v for j, v in sq["by_node"].items() if int(j) in remap})
 
 
 def returns_of(g):
@@ -218,7 +273,7 @@ def write(out_dir, repo, R, cap, model, cfg, build_attn, shipped=None):
         "format": FORMAT, "repo": repo, "transformers": transformers.__version__, "torch": torch.__version__,
         "verdict": R.get("verdict"), "reason": R.get("reason"), "failed_checks": R.get("failed_checks"),
         "leftovers": R.get("leftovers"),
-        "unknowns": R.get("unknowns"),
+        "unknowns": R.get("unknowns"), "vocabulary_notes": R.get("vocabulary_notes"),
         "revision": R.get("revision"), "grading_id": R.get("grading_id"),          # provenance of the graded run (G6)
         "checks": {k: v.get("pass") for k, v in (R.get("checks") or {}).items()},
         "class": R.get("class"), "model_type": R.get("model_type"),
