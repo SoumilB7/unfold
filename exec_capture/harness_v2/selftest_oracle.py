@@ -73,9 +73,28 @@ def _final(F): F["final_norm"] = "layernorm" if F["final_norm"] == "rmsnorm" els
 def _noqk(F): F.update(qk_norm=False, qk_norm_kind=None, qn_extent=None, norm_before_rope=None)
 def _nobias(F): F["bias"] = False
 def _nol3(F): F["rope_note"] = None
+def _layout_swap(F):                                   # fused split drawn in the other layout
+    if F["qkv_layout"] == "qkv_blocks": F.update(qkv_layout="grouped", qkv_group=F["num_heads"] // F["num_kv"])
+    else: F["qkv_layout"] = "qkv_blocks"
+def _wlayout(F): F["w_layout"] = "out_in" if F["w_layout"] == "in_out" else "in_out"
+def _rot_full(F): F["rot_dim"] = None
+def _rot_half(F): F["rot_dim"] = F["rot_dim"] // 2
+def _par_seq(F): F.update(parallel_norms=None, residual="sequential")
+def _par_count(F): F["parallel_norms"] = 3 - F["parallel_norms"]
+def _no_pos(F): F["pos_emb"] = None
+def _no_head_bias(F): F["head_bias"] = False
 WRONG = {   # name: (kind "f" | "ir", edit, applies-to test on the correct page's facts)
+    # ---- fact kinds added with family group 1 (fused QKV / partial rotary / parallel / positions / head bias)
+    "fused Q/K/V split drawn in the other layout": ("f", _layout_swap, lambda P: P.get("fused") and P["num_kv"] != 1),
+    "projection weight layout flipped": ("f", _wlayout, lambda P: P.get("w_layout") == "in_out"),
+    "partial RoPE drawn full width": ("f", _rot_full, lambda P: P.get("rot_dim")),
+    "partial RoPE dims halved": ("f", _rot_half, lambda P: P.get("rot_dim") and P["rot_dim"] % 4 == 0),
+    "parallel residual drawn sequential": ("f", _par_seq, lambda P: P["residual"] == "parallel"),
+    "parallel norm count flipped (1 <-> 2)": ("f", _par_count, lambda P: P["residual"] == "parallel"),
+    "learned positions dropped": ("f", _no_pos, lambda P: P.get("pos_emb")),
+    "LM head bias dropped": ("f", _no_head_bias, lambda P: P.get("head_bias")),
     "RoPE theta x10": ("f", _theta, lambda P: P["rope"]),
-    "pre-norm drawn as post-norm": ("ir", _post, lambda P: True),
+    "pre-norm drawn as post-norm": ("ir", _post, lambda P: P["residual"] == "sequential"),
     "head split wrong (2x heads, half head_dim)": ("f", _split, lambda P: True),
     "activation swapped (silu <-> gelu)": ("f", _act, lambda P: True),
     "score scale 1/d instead of 1/sqrt(d)": ("f", _scale, lambda P: P["scale"] is not None),

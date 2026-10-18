@@ -26,7 +26,7 @@ VIEWS = {"view", "_unsafe_view", "unsqueeze", "squeeze", "expand", "t", "transpo
 SOFTMAX = {"_softmax", "softmax", "_safe_softmax"}
 ACTS = {"silu": "silu", "gelu": "gelu", "relu": "relu", "sigmoid": "sigmoid", "tanh": "tanh"}
 # ops that move or retype values without computing new ones (never need a drawn block of their own)
-TRANSPARENT = VIEWS | {"dropout", "native_dropout", "type_as", "copy", "copy_", "lift_fresh_copy", "cat_identity"}
+TRANSPARENT = VIEWS | {"dropout", "native_dropout", "type_as", "copy", "copy_", "lift_fresh_copy", "cat_identity", "slice_empty"}
 NORM_OPS = {"pow", "mean", "add", "rsqrt", "mul", "sub", "var", "var_mean", "native_layer_norm", "layer_norm", "div", "sqrt"}
 ROPE_OPS = {"neg", "cat", "mul", "add", "slice", "select", "stack", "flatten", "view_as_complex", "view_as_real", "chunk", "split"}
 ROUTING = {"topk", "argmax", "sort", "argsort", "max"}          # the worker's own router evidence
@@ -92,7 +92,117 @@ def norm_kind(R, ops):
     return None
 
 
-def verify_cache(cache_run, pshape, wk, wv, layer_prefix):
+IDX_OPS = {"view", "_unsafe_view", "reshape", "transpose", "permute", "split", "split_with_sizes", "chunk", "slice", "select", "unsqueeze",
+           "squeeze", "expand", "contiguous", "clone", "alias", "detach", "t", "unbind"}       # move values, compute none
+
+
+def _apply_idx(func, x, c):
+    """One recorded shape-only / slicing op applied to an index tensor (its recorded constants as arguments)."""
+    if func in ("view", "_unsafe_view", "reshape"): return x.reshape([int(v) for v in c])
+    if func == "transpose": return x.transpose(int(c[0]), int(c[1]))
+    if func == "permute": return x.permute([int(v) for v in c])
+    if func == "split": return torch.split(x, c[0], dim=int(c[1]) if len(c) > 1 else 0)
+    if func == "split_with_sizes":                       # [size, size, ..., dim]
+        return torch.split(x, [int(v) for v in c[:-1]], dim=int(c[-1]))
+    if func == "chunk": return torch.chunk(x, int(c[0]), dim=int(c[1]) if len(c) > 1 else 0)
+    if func == "unbind": return torch.unbind(x, int(c[0]) if c else 0)
+    if func == "slice":
+        dim, st, en = (list(c) + [0, 0, None])[:3]; step = c[3] if len(c) > 3 else 1
+        ix = [slice(None)] * x.dim(); ix[int(dim)] = slice(st, en, step)
+        return x[tuple(ix)]
+    if func == "select": return x.select(int(c[0]), int(c[1]))
+    if func == "unsqueeze": return x.unsqueeze(int(c[0]))
+    if func == "squeeze": return x.squeeze(int(c[0])) if c else x.squeeze()
+    if func == "expand": return x.expand([int(v) for v in c])
+    if func == "t": return x.t()
+    if func in ("contiguous", "clone", "alias", "detach"): return x
+    raise ValueError(func)
+
+
+def _port(e):
+    return e[2] if len(e) > 2 and e[2] is not None else 0
+
+
+def fused_qkv_split(N, mm, role_paths, head_dim, B, S):
+    """The Q / K / V split of ONE fused projection, read from the recording: the shape-only / slicing ops after the
+    matmul are replayed on an index tensor (value = token * F + output channel), so every query / key / value head
+    element is traced to the exact output channel (and token) it came from. role_paths: {"q"|"k"|"v": ops between the
+    role's consumer and the matmul}. Returns the channel map per role, the layout it forms, and the replayed ops; raises
+    NotDrawn if the split is not exact or not one of the drawn layouts."""
+    shp = N[mm].shape
+    if shp is None: raise NotDrawn("the fused projection's output shape was not recorded")
+    Fw, T = shp[-1], 1
+    for d in shp[:-1]: T *= d
+    if T != B * S: raise NotDrawn(f"the fused projection runs on {T} rows, not the {B}x{S} tokens")
+    vals = {(mm, 0): (torch.arange(T)[:, None] * Fw + torch.arange(Fw)[None, :]).reshape(*shp)}
+    last = max(max(p) for p in role_paths.values() if p)
+    for j in range(mm + 1, last + 1):
+        nd = N[j]
+        if nd.func not in IDX_OPS or len(nd.ins) != 1 or nd.ins[0][0] != "op": continue
+        key = (nd.ins[0][1], _port(nd.ins[0]))
+        if key not in vals: continue
+        try:
+            out = _apply_idx(nd.func, vals[key], list(nd.consts))
+        except Exception as e:
+            raise NotDrawn(f"the fused projection's split op {j} {nd.func} {list(nd.consts)} could not be replayed "
+                           f"({type(e).__name__})")
+        outs = list(out) if isinstance(out, (list, tuple)) else [out]
+        if nd.shape is not None and tuple(outs[0].shape) != tuple(nd.shape):
+            raise NotDrawn(f"replaying the fused projection's split op {j} {nd.func} gives shape "
+                           f"{list(outs[0].shape)}, the recording {list(nd.shape)}")
+        for p, o in enumerate(outs): vals[(j, p)] = o
+    tok_want = (torch.arange(B)[:, None, None, None] * S + torch.arange(S)[None, None, :, None])
+    maps, keys, ops = {}, {}, set()
+    for r in ("q", "k", "v"):
+        multi = ("split", "split_with_sizes", "chunk", "unbind")       # a multi-output op: only the port a role reads
+        cand = sorted({k for j in role_paths[r] for k in (([(j, 0)] if N[j].func not in multi else []) +
+                       [(e[1], _port(e)) for e in N[j].ins if e[0] == "op"])
+                       if k in vals and vals[k].dim() == 4 and vals[k].shape[0] == B and vals[k].shape[2] == S
+                       and vals[k].shape[3] == head_dim})
+        if not cand:
+            raise NotDrawn(f"no [batch, heads, tokens, {head_dim}] {r.upper()} tensor is split from the fused projection "
+                           "by shape-only ops")
+        k = cand[0]; V = vals[k]
+        if not bool((V // Fw == tok_want).all()):
+            raise NotDrawn(f"the fused projection's {r.upper()} split moves values across tokens")
+        ch = V % Fw
+        if not bool((ch == ch[:1, :, :1, :]).all()):
+            raise NotDrawn(f"the fused projection's {r.upper()} channels differ between tokens")
+        maps[r] = ch[0, :, 0, :]
+        keys[r] = k
+        # the replayed ops from the matmul to this role tensor
+        fr = [k[0]]
+        while fr:
+            x = fr.pop()
+            if x == mm or x in ops: continue
+            ops.add(x)
+            fr += [e[1] for e in N[x].ins if e[0] == "op"]
+    allch = torch.cat([maps[r].reshape(-1) for r in "qkv"])
+    if not torch.equal(allch.sort().values, torch.arange(Fw)):
+        raise NotDrawn(f"the fused projection's {Fw} output channels are not each used exactly once by Q, K and V")
+    nh, nkv, hd = maps["q"].shape[0], maps["k"].shape[0], head_dim
+    if maps["v"].shape[0] != nkv or nh % nkv:
+        raise NotDrawn(f"fused projection: {nh} query heads, {nkv} key heads, {maps['v'].shape[0]} value heads")
+    ar = lambda n: torch.arange(n * hd).reshape(n, hd)
+    G = nh // nkv
+    if (torch.equal(maps["q"], ar(nh)) and torch.equal(maps["k"], nh * hd + ar(nkv))
+            and torch.equal(maps["v"], (nh + nkv) * hd + ar(nkv))):
+        layout = "qkv_blocks"
+    else:
+        grp = (G + 2) * hd
+        gq = torch.stack([g * grp + i * hd + torch.arange(hd) for g in range(nkv) for i in range(G)])
+        gk = torch.stack([g * grp + G * hd + torch.arange(hd) for g in range(nkv)])
+        gv = torch.stack([g * grp + (G + 1) * hd + torch.arange(hd) for g in range(nkv)])
+        if torch.equal(maps["q"], gq) and torch.equal(maps["k"], gk) and torch.equal(maps["v"], gv):
+            layout = "grouped"
+        else:
+            raise NotDrawn("the fused projection's output channels split into Q/K/V in a layout that is neither "
+                           "[Q | K | V] blocks nor per-K/V-group [q x G | k | v] blocks")
+    return {"layout": layout, "widths": (nh * hd, nkv * hd, nkv * hd), "heads": (nh, nkv), "keys": keys,
+            "ops": ops, "group": G, "out": Fw}
+
+
+def verify_cache(cache_run, pshape, wk, wv, layer_prefix, fused_head_dim=None):
     """Observed K/V cache behaviour: which op produced the tensors stored in the returned cache, and whether this
     layer's attention read its keys/values from them. Returns {} if no cache was returned. `cache_run` is the
     bundle's cache-on run of the same pass (its op graph + every stored 4-D tensor with its producing op)."""
@@ -107,6 +217,21 @@ def verify_cache(cache_run, pshape, wk, wv, layer_prefix):
              for t in cache_run["cache"]["slots"]]
     R = Rec(_cn, pshape); N = R.n
     is_w = lambda j: N[j].func in MATMULS and bool(R.weights(j))
+    fused_keys = None
+    if wk == wv and fused_head_dim:                 # one fused projection: K / V told apart by the recorded split
+        try:
+            lops_ = [j for j, nd in enumerate(N) if nd.module.startswith(layer_prefix)]
+            sm_ = next(j for j in lops_ if N[j].func in SOFTMAX)
+            sc_, _ = R.back(sm_, lambda j: N[j].func in ("bmm", "matmul") and not R.weights(j))
+            av_ = next(j for j in lops_ if j > sm_ and N[j].func in ("bmm", "matmul") and not R.weights(j))
+            vin_ = [x for x in R.srcs(av_) if x != sm_ and x not in R.cons[sm_]]
+            paths_ = {"q": R.back(R.srcs(sc_)[0], is_w), "k": R.back(R.srcs(sc_)[1], is_w),
+                      "v": R.back(vin_[-1] if vin_ else av_, is_w)}
+            Bs, Ss = N[sm_].shape[0], N[sm_].shape[-2]
+            fused_keys = fused_qkv_split(N, paths_["k"][0], {r: set(v_[1]) for r, v_ in paths_.items()},
+                                         fused_head_dim, Bs, Ss)["keys"]
+        except (NotDrawn, StopIteration, IndexError, TypeError):
+            fused_keys = {}
     write = {}
     for t in found:
         p = t["producer"]
@@ -114,7 +239,11 @@ def verify_cache(cache_run, pshape, wk, wv, layer_prefix):
         hit, path = R.back(p, is_w)
         if hit is None: continue
         w_ = R.weights(hit)[0]
-        role = "key" if w_ == wk else ("value" if w_ == wv else None)
+        if fused_keys is not None and w_ == wk:
+            cons_ = {(e[1], _port(e)) for x in path + [p] for e in N[x].ins if e[0] == "op"} | {(x, 0) for x in path + [p]}
+            role = ("key" if fused_keys.get("k") in cons_ else ("value" if fused_keys.get("v") in cons_ else None))
+        else:
+            role = "key" if w_ == wk else ("value" if w_ == wv else None)
         if role and role not in write:
             funcs = {N[j].func for j in path}
             after = "rope" if ("neg" in funcs and "cat" in funcs) else ("norm" if "rsqrt" in funcs else "projection")
@@ -209,6 +338,15 @@ def _recognize(bundle):
             shp = [N[e[1]].shape if e[0] == "op" else (e[1] if e[0] == "external" else None) for e in nd.ins]
             if len(shp) == 2 and any(x is not None and len(x) and x[-1] == 0 for x in shp):
                 nd.func = "cat_identity"
+    _empty = {j for j, nd in enumerate(N) if nd.func == "slice" and nd.shape is not None and len(nd.shape) and nd.shape[-1] == 0}
+    if _empty:
+        _ec = collections.defaultdict(list)
+        for k, n2 in enumerate(N):
+            for e in n2.ins:
+                if e[0] == "op" and e[1] in _empty: _ec[e[1]].append(k)
+        for j in _empty:
+            if _ec[j] and all(N[c].func == "cat_identity" for c in _ec[j]):
+                N[j].func = "slice_empty"                # moves nothing: an empty tensor joined by a cat that keeps the other
     square_adds = capture.square_tensors(P["squares"])
     ev = collections.defaultdict(list)                     # fact -> evidence strings
 
@@ -320,6 +458,13 @@ def _recognize(bundle):
         if layer_in is None: layer_in = next(iter(ins_))
         prev_out = outs
     stack_out = next(iter(prev_out))
+    def _thru0(x):
+        """Look through shape-only ops (no slicing) to the value an operand stands for."""
+        seen_ = 0
+        while N[x].func in ("view", "_unsafe_view", "reshape", "contiguous", "clone", "alias", "detach", "_to_copy",
+                            "to", "type_as") and R.srcs(x) and seen_ < 20:
+            x = R.srcs(x)[0]; seen_ += 1
+        return x
     def _off(j, k):
         """Is tensor operand k of op j off the hidden-state path (a mask, a table, a parameter, an input)?"""
         e = N[j].ins[k] if k < len(N[j].ins) else None
@@ -538,6 +683,29 @@ def _recognize(bundle):
         keep = {A, rc, neg, second, keep_half, *trig}
         return keep | {j for j in ops if _moves_only(j)}
 
+    first_layer_op = min(L[layer_ids[0]])
+    pos_emb = None
+    S_tok = N[emb].shape[-2] if N[emb].shape and len(N[emb].shape) >= 2 else None
+    for j in sorted(hid):
+        if j >= first_layer_op or N[j].func != "add" or N[j].consts or len(N[j].ins) != 2: continue
+        srcs_ = [e[1] for e in N[j].ins if e[0] == "op"]
+        if len(srcs_) != 2 or emb not in {_thru0(x) for x in srcs_}: continue
+        other = [x for x in srcs_ if _thru0(x) != emb]
+        if len(other) != 1 or other[0] in hid: continue
+        lk = _thru0(other[0])
+        if N[lk].func != "embedding" or len(R.weights(lk)) != 1: continue
+        tbl = R.weights(lk)[0]
+        idx = [e[1] for e in N[lk].ins if e[0] == "op"]
+        if len(idx) != 1 or len(R.pshape.get(tbl, ())) != 2 or R.pshape[tbl][1] != hidden: continue
+        y = idx[0]; hops = 0
+        while hops < 12 and (N[y].func in ("view", "unsqueeze", "expand", "reshape", "_to_copy", "to", "alias", "clone")
+                             or (N[y].func == "add" and list(N[y].consts) in ([0], [0.0]))) and len(R.srcs(y)) == 1:
+            y = R.srcs(y)[0]; hops += 1
+        if N[y].func == "arange" and not N[y].ins and S_tok and list(N[y].consts) in ([S_tok], [0, S_tok]):
+            pos_emb = {"op": j, "lookup": lk, "table": tbl, "shape": list(R.pshape[tbl])}
+            ev["position"].append(f"op {lk} embedding reads {tbl} {list(R.pshape[tbl])} at positions 0..{S_tok - 1}; "
+                                  f"op {j} adds it to the token embedding")
+            break
     last = max(L[layer_ids[-1]])
     head = next((j for j in range(last + 1, len(N)) if N[j].func in MATMULS and R.weights(j)), None)
     if head is None:
@@ -658,15 +826,43 @@ def _recognize(bundle):
     v_proj, v_path = proj(v_in[-1] if v_in else apply_v)
     wq, wk, wv = (R.weights(x)[0] for x in (q_proj, k_proj, v_proj))
     head_dim = N[q_side].shape[-1] if N[q_side].shape else None
-    q_out = R.pshape[wq][0]; k_out = R.pshape[wk][0]
+    def _w_layout(j, w):
+        """How matmul op j reads its weight w: 'out_in' (x @ W^T: through a transpose, or linear) or 'in_out' (x @ W:
+        read directly as the right operand, e.g. Conv1D); None if neither is recorded."""
+        nd = N[j]
+        if nd.func == "linear": return "out_in"
+        if nd.func not in ("mm", "addmm", "matmul") or not nd.ins: return None
+        rhs = nd.ins[-1]
+        if rhs[0] == "param": return "in_out" if rhs[1] == w and len(R.pshape.get(w, ())) == 2 else None
+        if rhs[0] == "op":
+            t_ = N[rhs[1]]
+            if len(t_.ins) == 1 and t_.ins[0][0] == "param" and t_.ins[0][1] == w and len(R.pshape.get(w, ())) == 2:
+                if t_.func == "t": return "out_in"
+                if t_.func in ("transpose", "permute") and sorted(int(c) % 2 for c in list(t_.consts)[:2]) == [0, 1]:
+                    return "out_in"
+        return None
+    lays = {_w_layout(j, w) for j, w in ((q_proj, wq), (k_proj, wk), (v_proj, wv))}
+    if None in lays or len(lays) != 1:
+        raise NotDrawn(f"the Q/K/V projections read their weights in no single recorded layout ({sorted(map(str, lays))})")
+    w_layout = next(iter(lays))
+    odim = (lambda w: R.pshape[w][0]) if w_layout == "out_in" else (lambda w: R.pshape[w][-1])
+    fused = wq == wk == wv
+    split = None
+    if fused:
+        if not (q_proj == k_proj == v_proj):
+            raise NotDrawn(f"one weight ({wq}) is read by several Q/K/V matmuls: that split is not drawn")
+        split = fused_qkv_split(N, q_proj, {"q": set(q_path), "k": set(k_path), "v": set(v_path)}, head_dim,
+                                N[sm].shape[0], N[sm].shape[-2])
+        if split["out"] != odim(wq):
+            raise NotDrawn(f"the fused projection's output ({split['out']}) is not its weight's out width ({odim(wq)})")
+        q_out, k_out = split["widths"][:2]
+        ev["qkv_split"].append(f"fused projection {wq} split by the recorded shape-only ops into "
+                               f"{split['layout']} (Q {q_out}, K {k_out}, V {split['widths'][2]})")
+    else:
+        q_out = odim(wq); k_out = odim(wk)
     num_kv = k_out // head_dim if head_dim else None
     if num_heads is None and head_dim: num_heads = q_out // head_dim
     kind = "mha" if num_kv == num_heads else ("mqa" if num_kv == 1 else "gqa")
-    fused = wq == wk == wv
-    if fused:
-        raise NotDrawn(f"Q, K and V come from one fused projection ({wq}): its split into Q/K/V widths is not drawn yet")
-    if R.pshape[wq][-1] != hidden and R.pshape[wq][0] == hidden:
-        raise NotDrawn(f"projection weights are stored [in, out] ({wq} {list(R.pshape[wq])}): that layout is not drawn yet")
     if head_dim is None or num_kv is None or num_heads is None:
         raise NotDrawn("heads / head width / K-V heads not observable from the recorded shapes")
     ev["attention"].append(f"softmax op {sm} shape {list(N[sm].shape)}; Q from {wq} {list(R.pshape[wq])}, K from {wk}, V from {wv}")
@@ -685,6 +881,7 @@ def _recognize(bundle):
     if qk_norm_q and rope_q and norm_before_rope is False:
         raise NotDrawn("QK-norm runs after the rotation: the drawing has no way to show that order yet")
     theta = None
+    rot_dim = head_dim
     if rope_q:
         rot_muls = [j for j in q_path if j in hid and N[j].func == "mul" and _rot_operands(j)]
         if any(N[j].func == "view_as_complex" for j in q_path):
@@ -700,7 +897,9 @@ def _recognize(bundle):
                            "is not drawn yet")
         # coverage measured on the rotated hidden tensor (the table's own width can differ, e.g. halves)
         widths = {N[h].shape[-1] for j in rot_muls for h in R.srcs(j) if h in hid and N[h].shape}
-        if widths and widths != {head_dim}:
+        if widths and widths != {head_dim} and len(widths) == 1 and 0 < min(widths) < head_dim and min(widths) % 2 == 0:
+            rot_dim = min(widths)                        # partial rotary: proven by _partial_match below
+        elif widths and widths != {head_dim}:
             raise NotDrawn(f"rotary embedding covers {sorted(widths)} of {head_dim} head dimensions (partial rotary): "
                            "not drawn yet")
         bufs = bundle["model"]["computed_buffers"]
@@ -758,16 +957,43 @@ def _recognize(bundle):
                                f"({len(off)} entries differ): not drawn")
             theta = float(f"{raw:.4g}")                 # the buffer is float32: 4 significant digits are real
             ev["rope"].append(f"frequency base from {names[0]} (the buffer feeding every layer's rotation)")
-    cache = verify_cache(bundle.get("cache_run"), pshape, wk, wv, f"{stack}.{layer_ids[0]}")
+    cache = verify_cache(bundle.get("cache_run"), pshape, wk, wv, f"{stack}.{layer_ids[0]}",
+                         fused_head_dim=head_dim if fused else None)
     ev["cache"].append(json.dumps(cache, default=str))
     o_proj = next((j for j in sorted(lset) if j > apply_v and N[j].module.startswith(attn_mod) and N[j].func in MATMULS and R.weights(j)), None)
     wo = R.weights(o_proj)[0] if o_proj is not None else None
-    v_out = R.pshape[wv][0]
+    v_out = split["widths"][2] if fused else odim(wv)
     if v_out != k_out:
         raise NotDrawn(f"the value projection is {v_out} wide and the key projection {k_out}: different K/V widths "
                        "are not drawn yet")
     bias = any(N[x].func == "addmm" for x in (q_proj, k_proj, v_proj))          # Q/K/V projection bias
     o_bias = o_proj is not None and N[o_proj].func == "addmm"
+    def _gelu_tanh_formula(up_, down_):
+        """0.5*x * (1 + tanh(sqrt(2/pi) * (x + 0.044715 * x**3))) with x = up's output, every constant exact, the
+        result read by down. Returns {"out", "ops"} or None."""
+        def c1(j, f, v):
+            return N[j].func == f and len(N[j].consts) == 1 and abs(float(N[j].consts[0]) - v) <= 1e-12 * max(1, abs(v)) \
+                and len(R.srcs(j)) == 1 and len(N[j].ins) == 1
+        x = _thru(up_)
+        hin_d = [_thru(y) for y in R.srcs(down_) if y in hid]
+        if len(hin_d) != 1: return None
+        out = hin_d[0]
+        if N[out].func != "mul" or N[out].consts or len(R.srcs(out)) != 2: return None
+        a, b = R.srcs(out)
+        for m1, a2 in ((a, b), (b, a)):
+            if not (c1(m1, "mul", 0.5) and _thru(R.srcs(m1)[0]) == x and c1(a2, "add", 1.0)): continue
+            t = R.srcs(a2)[0]
+            if N[t].func != "tanh" or len(R.srcs(t)) != 1: continue
+            m3 = R.srcs(t)[0]
+            if not c1(m3, "mul", math.sqrt(2 / math.pi)): continue
+            a1 = R.srcs(m3)[0]
+            if N[a1].func != "add" or N[a1].consts or len(R.srcs(a1)) != 2: continue
+            for xx, m2 in (R.srcs(a1), R.srcs(a1)[::-1]):
+                if _thru(xx) != x or not c1(m2, "mul", 0.044715): continue
+                pw = R.srcs(m2)[0]
+                if c1(pw, "pow", 3.0) and _thru(R.srcs(pw)[0]) == x:
+                    return {"out": out, "ops": {out, m1, a2, t, m3, a1, m2, pw}}
+        return None
     # ---- MLP: weight matmuls of the layer outside the attention module
     mlp_mm = [j for j in lops if N[j].func in MATMULS and R.weights(j) and not N[j].module.startswith(attn_mod)]
     gate = up = down = None; act = None; gated = False
@@ -795,9 +1021,19 @@ def _recognize(bundle):
     act_op = next((j for j in lops if N[j].func in ACTS and up is not None and down is not None and min(x for x in (gate, up) if x is not None) < j < down), None)
     if act == "gelu" and act_op is not None and "tanh" in (P["graph"].get("op_strings") or {}).get(str(act_op), []):
         act = "gelu_pytorch_tanh"
+    act_form = None
+    if not gated and up is not None and down is not None:
+        act_form = _gelu_tanh_formula(up, down)
+        if act_form:
+            act, act_op = "gelu_pytorch_tanh", act_form["out"]
+            ev["activation"].append(f"activation recorded as the tanh-GELU formula (ops {sorted(act_form['ops'])})")
     wg = R.weights(gate)[0] if gate is not None else None
     wu, wd = R.weights(up)[0], R.weights(down)[0]
-    inter = R.pshape[wu][0]
+    for j_, w_ in ((o_proj, wo), (gate, wg), (up, wu), (down, wd)):
+        if j_ is not None and _w_layout(j_, w_) != w_layout:
+            raise NotDrawn(f"{w_} is read as {_w_layout(j_, w_)}, the Q/K/V weights as {w_layout}: mixed weight "
+                           "layouts are not drawn")
+    inter = odim(wu)
     ev["mlp"].append(f"{'gated: ' + wg + ' -> ' + str(act) + ' x ' if gated else ''}{wu} -> {wd}; inner width {inter}")
     # ---- norms and residuals: norm ops whose output feeds the projections; adds that combine branches
     pre_attn_ops = [j for j in lops if j < min(q_proj, k_proj, v_proj) and N[j].module != attn_mod and not N[j].module.startswith(attn_mod + ".")]
@@ -806,21 +1042,59 @@ def _recognize(bundle):
     adds = [j for j in lops if N[j].func == "add" and N[j].module == f"{stack}.{layer_ids[0]}"
             and len(N[j].ins) == 2 and all(e[0] == "op" and e[1] in hid for e in N[j].ins) and not N[j].consts]
     n1 = _norm_match(_region(q_proj, min(lops) - 1) & set(pre_attn_ops))[0]
-    n2 = _norm_match(_region(min(x for x in (gate, up) if x is not None), adds[0] if adds else (o_proj or apply_v))
-                     & set(pre_mlp_ops))[0]
-    residual = "sequential" if len(adds) >= 2 and adds[0] in R.back(adds[1], lambda j: False, 400)[1] else ("parallel" if adds else None)
-    placement = "pre" if n1 and n2 else ("post" if adds else None)
+    mlp_in0 = min(x for x in (gate, up) if x is not None)
+    o_out0 = o_proj if o_proj is not None else apply_v
+    # parallel: the MLP branch does not read the attention output (both branches read the layer input)
+    parallel = bool(adds) and o_out0 not in set(R.back(mlp_in0, lambda j: False, 4000)[1])
+    mlp_lo = (min(lops) - 1) if parallel else (adds[0] if adds else (o_proj or apply_v))
+    n2 = _norm_match(_region(mlp_in0, mlp_lo) & set(pre_mlp_ops))[0]
+    parallel_norms = None
+    if parallel:
+        shared = n2 is None and sorted({_thru(x) for x in R.srcs(mlp_in0) if x in hid}) == \
+            sorted({_thru(x) for x in R.srcs(q_proj) if x in hid})
+        parallel_norms = 1 if shared else (2 if n2 else None)
+        if shared: n2 = n1
+        residual = "parallel"
+        placement = "pre" if n1 and parallel_norms else None
+    else:
+        residual = "sequential" if len(adds) >= 2 and adds[0] in R.back(adds[1], lambda j: False, 400)[1] else ("parallel" if adds else None)
+        placement = "pre" if n1 and n2 else ("post" if adds else None)
     ev["residual"].append(f"{len(adds)} residual adds in the layer module; placement {placement}; topology {residual}")
 
     # FFN bias: an addmm on up/down, or a 1-D weight added right after them
     ffn_bias = any(N[x].func == "addmm" for x in (gate, up, down) if x is not None)
     # ---- the op-accounting gate: every op on the hidden-state path is explained by a block this drawing shows;
     #      anything left over (a mixer branch, a softcap, a multiplier, a position embedding, ...) means NotDrawn
-    q_hid, k_hid, v_hid = (set(x) & hid for x in (q_path, k_path, v_path))
+    q_hid, k_hid, v_hid = (set(x) & hid - (split["ops"] if fused else set()) for x in (q_path, k_path, v_path))
     rope = rope_q and rope_k; qkn = bool(qk_norm_q and qk_norm_k)
     def _scalar_only(j):
         """A multiply / divide by a Python scalar and nothing else from off the hidden-state path."""
         return N[j].func in ("mul", "div") and bool(N[j].consts) and not _off_ops(j) and not any(e[0] == "param" for e in N[j].ins)
+    def _partial_match(ops, m_):
+        """Partial rotary: the rotated tensor is x[..., :r] of one full-width head tensor T and the result is
+        cat(rotated, T[..., r:]) on the last axis. Returns those three ops, or None."""
+        A = [j for j in m_ if N[j].func == "add"]
+        if len(A) != 1: return None
+        A = A[0]
+        rins = {_walk(h) for j in m_ if N[j].func == "mul" for h in R.srcs(j) if h in hid}
+        S1 = [x for x in rins if N[x].func == "slice"]
+        if len(S1) != 1: return None
+        S1 = S1[0]; c1 = list(N[S1].consts)
+        rank = len(N[R.srcs(S1)[0]].shape or ()) if R.srcs(S1) else 0
+        if not (len(c1) >= 3 and c1[0] in (-1, rank - 1) and c1[1] == 0 and c1[2] == rot_dim and (c1[3:] or [1])[0] == 1):
+            return None
+        T = N[S1].ins[0]                                 # the edge (op, port): the full-width head tensor
+        if T[0] != "op": return None
+        S2 = [j for j in ops if N[j].func == "slice" and j != S1 and N[j].ins and N[j].ins[0] == T
+              and list(N[j].consts)[:2] in ([c1[0], rot_dim],) and N[j].consts[2] >= head_dim]
+        if len(S2) != 1: return None
+        S2 = S2[0]
+        C = [j for j in ops if N[j].func == "cat" and len(N[j].ins) == 2 and _last_dim(j, N[j].consts[0] if N[j].consts else 0)
+             and [_thru(e[1]) if e[0] == "op" else None for e in N[j].ins] == [A, S2]
+             and N[j].shape is not None and N[j].shape[-1] == head_dim]
+        if len(C) != 1: return None
+        return {S1, S2, C[0]}
+
     def _proj_path_bad(ops):
         ops = set(ops)
         trig = [j for j in ops if N[j].func == "mul" and _rot_operands(j)]
@@ -839,15 +1113,23 @@ def _recognize(bundle):
                                "position x frequency table (rotate-half halves, cos/sin roles, last axis, positions "
                                "0..S-1, scale 1): that rotation is not drawn")
             explained_ |= m_
+            if rot_dim != head_dim:
+                p_ = _partial_match(ops, m_)
+                if p_ is None:
+                    raise NotDrawn(f"the rotation covers {rot_dim} of {head_dim} head dimensions but is not exactly "
+                                   f"cat(rotate(x[..., :{rot_dim}]), x[..., {rot_dim}:]) of one head tensor: not drawn")
+                explained_ |= p_
         return [j for j in ops if j not in explained_ and not _moves_only(j) and not _scalar_only(j)]
-    explained = {emb, head, q_proj, k_proj, v_proj, scores, sm, apply_v} | set(adds)
+    explained = {emb, head, q_proj, k_proj, v_proj, scores, sm, apply_v} | set(adds) | (split["ops"] if fused else set())
+    if pos_emb: explained.add(pos_emb["op"])
+    explained |= act_form["ops"] if act_form else set()
     explained |= {x for x in (o_proj, gate, up, down, act_op) if x is not None}
     if gated:
         explained |= {j for j in lops if N[j].func == "mul" and j > max(gate, up) and j < down
                       and not N[j].consts and not _off_ops(j) and not any(e[0] == "param" for e in N[j].ins)}
     # the two layer norms and the final norm: exactly a normalization between its input and the projection it feeds
     mlp_in = min(x for x in (gate, up) if x is not None)
-    for tgt, lo, pool in ((q_proj, min(lops) - 1, pre_attn_ops), (mlp_in, adds[0] if adds else (o_proj or apply_v), pre_mlp_ops), (head, last, fin_ops)):
+    for tgt, lo, pool in ((q_proj, min(lops) - 1, pre_attn_ops), (mlp_in, mlp_lo, pre_mlp_ops), (head, last, fin_ops)):
         explained |= _norm_accept(_region(tgt, lo) & set(pool))
     # before softmax: scalar scales and the one mask add only
     explained |= {j for j in pre_sm if j in hid and (N[j].func in TRANSPARENT or _scalar_only(j))}
@@ -887,7 +1169,16 @@ def _recognize(bundle):
         ex = ", ".join(f"{w} op {j} {N[j].func} in {N[j].module or '(root)'}" for w, j in bad[:5])
         raise NotDrawn(f"{len(bad)} recorded ops on the hidden-state path belong to no block this drawing shows "
                        f"(e.g. {ex}): drawing it would omit or misstate them")
-    if not (n1 and n2) or placement != "pre" or residual != "sequential" or len(adds) != 2:
+    def _sum_leaves(j):                              # the terms a chain of residual adds sums
+        return (_sum_leaves(_thru(R.srcs(j)[0])) + _sum_leaves(_thru(R.srcs(j)[1]))) if j in adds else [_thru(j)]
+    lay_out = next(iter(_layer_io(layer_ids[0])[1]))
+    if parallel:
+        if not n1 or parallel_norms not in (1, 2) or len(adds) != 2 or placement != "pre":
+            raise NotDrawn(f"parallel attention + MLP branches, but the norms are not exactly one shared or two separate "
+                           f"pre-branch norms ({n1}, {n2}, {len(adds)} adds): not drawn")
+        if sorted(_sum_leaves(lay_out)) != sorted([_thru(layer_in), _thru(o_out0), _thru(down)]):
+            raise NotDrawn("the parallel layer's output is not layer input + attention output + MLP output: not drawn")
+    elif not (n1 and n2) or placement != "pre" or residual != "sequential" or len(adds) != 2:
         d1 = _norm_desc(_region(q_proj, min(lops) - 1) & set(pre_attn_ops))
         d2 = _norm_desc(_region(mlp_in, adds[0] if adds else (o_proj or apply_v)) & set(pre_mlp_ops))
         raise NotDrawn(f"the layer is not pre-norm sequential (observed: attention-input norm {d1}, MLP-input norm "
@@ -905,7 +1196,7 @@ def _recognize(bundle):
     def _feeds(region):
         return sorted({_thru(x) for j in region for x in R.srcs(j) if x in hid and x not in region})
     reg1 = _region(q_proj, min(lops) - 1) & set(pre_attn_ops)
-    reg2 = _region(mlp_in, adds[0]) & set(pre_mlp_ops)
+    reg2 = _region(mlp_in, mlp_lo) & set(pre_mlp_ops)
     regf = _region(head, last) & set(fin_ops)
     o_out = o_proj if o_proj is not None else apply_v
     v_src = _hin(v_proj)
@@ -913,14 +1204,28 @@ def _recognize(bundle):
         ("attention-input norm <- layer input", _feeds(reg1) == [_thru(layer_in)]),
         ("Q, K, V projections <- one normed input", _hin(q_proj) == _hin(k_proj) == v_src and len(v_src) == 1
          and v_src[0] in reg1),
-        ("weighted sum <- softmax, V", _hin(apply_v) == sorted({_thru(sm), _thru(v_proj)})),
-        ("first residual add <- layer input + attention output", _hin(adds[0]) == sorted({_thru(layer_in), _thru(o_out)})),
-        ("MLP-input norm <- first residual sum", _feeds(reg2) == [adds[0]]),
-        ("MLP projections <- one normed input", len({tuple(_hin(x)) for x in (gate, up) if x is not None}) == 1
-         and len(_hin(up)) == 1 and _hin(up)[0] in reg2),
-        ("second residual add <- first sum + MLP output", _hin(adds[1]) == sorted({adds[0], _thru(down)})),
+        ("weighted sum <- softmax, V", _hin(apply_v) == sorted({_thru(sm), _thru(split["keys"]["v"][0] if fused else v_proj)})),
         ("final norm <- last layer output", _feeds(regf) == [_thru(stack_out)]),
     ]
+    if not parallel:
+        arrows[3:3] = [
+            ("first residual add <- layer input + attention output", _hin(adds[0]) == sorted({_thru(layer_in), _thru(o_out)})),
+            ("MLP-input norm <- first residual sum", _feeds(reg2) == [adds[0]]),
+            ("MLP projections <- one normed input", len({tuple(_hin(x)) for x in (gate, up) if x is not None}) == 1
+             and len(_hin(up)) == 1 and _hin(up)[0] in reg2),
+            ("second residual add <- first sum + MLP output", _hin(adds[1]) == sorted({adds[0], _thru(down)})),
+        ]
+    elif parallel_norms == 2:
+        arrows += [("MLP-input norm <- layer input", _feeds(reg2) == [_thru(layer_in)]),
+                   ("MLP projections <- one normed input", len({tuple(_hin(x)) for x in (gate, up) if x is not None}) == 1
+                    and len(_hin(up)) == 1 and _hin(up)[0] in reg2),
+                   ("layer output = layer input + attention output + MLP output",
+                    sorted(_sum_leaves(lay_out)) == sorted([_thru(layer_in), _thru(o_out), _thru(down)]))]
+    else:
+        arrows += [("MLP projections <- the attention's normed input", len({tuple(_hin(x)) for x in (gate, up) if x is not None}) == 1
+                    and _hin(up) == v_src),
+                   ("layer output = layer input + attention output + MLP output",
+                    sorted(_sum_leaves(lay_out)) == sorted([_thru(layer_in), _thru(o_out), _thru(down)]))]
     if o_proj is not None:
         arrows.append(("output projection <- weighted sum", _hin(o_proj) == [apply_v]))
     if gated:
@@ -929,7 +1234,7 @@ def _recognize(bundle):
                        and _hin(prod[0]) == sorted({act_op, up}) and act_op is not None and _hin(act_op) == [gate]))
     else:
         arrows.append(("down projection <- act(up)", act_op is not None and _hin(down) == [act_op]
-                       and _hin(act_op) == [up]))
+                       and (_hin(act_op) == [up] if not act_form else True)))
     scaled_mm = [x for x in (q_proj, k_proj, v_proj, o_proj, gate, up, down, head)
                  if x is not None and any(c not in (1, 1.0) for c in N[x].consts)]
     arrows.append(("projections are plain matmuls (no alpha / beta multipliers)", not scaled_mm))
@@ -948,7 +1253,13 @@ def _recognize(bundle):
                            "the window is invisible in the recording: sliding attention is not drawn yet")
     facts = dict(repo=repo, arch=arch, vocab=vocab, hidden=hidden, tied=tied, final_norm=final_norm, layers=len(layer_ids),
                  identical=len(identical), layer_ops=len(lops), kind=kind, num_heads=num_heads, num_kv=num_kv, head_dim=head_dim,
-                 q_out=q_out, k_out=k_out, o_shape=R.pshape.get(wo), fused=fused, qk_norm=bool(qk_norm_q and qk_norm_k),
+                 q_out=q_out, k_out=k_out, o_shape=((R.pshape.get(wo) if w_layout == "out_in" else tuple(reversed(R.pshape[wo])))
+                                                    if wo else None), fused=fused,
+                 qkv_layout=split["layout"] if fused else None, qkv_group=split["group"] if fused else None,
+                 qkv_width=split["out"] if fused else None, w_layout=w_layout,
+                 rot_dim=(rot_dim if rope_q and rot_dim != head_dim else None),
+                 parallel_norms=parallel_norms, pos_emb=pos_emb, head_bias=N[head].func == "addmm",
+                 act_form="tanh_formula" if act_form else None, qk_norm=bool(qk_norm_q and qk_norm_k),
                  qk_norm_kind=qk_norm_q, qn_extent=(R.pshape[qn_w][0] if qn_w else None), norm_before_rope=norm_before_rope,
                  rope=rope_q and rope_k, theta=theta, scale=scale, mask=mask, bias=bias, ffn_bias=ffn_bias, o_proj=o_proj is not None,
                  gated=gated, act=act, inter=inter, norm=n1, placement=placement, residual=residual, v_out=v_out,
@@ -1024,6 +1335,23 @@ def _scorecard(F):
         ("model", "max_position_embeddings", "context length", F["max_pos"], "config_declared",
          "config.max_position_embeddings (not observable in one run)", None),
     ]
+    if F.get("fused"):
+        rows.append(("decoder.attention", "qkv_split", "fused Q/K/V split", qkv_split_text(F), "execution_observed",
+                     first("qkv_split"), None))
+    if F.get("w_layout") == "in_out":
+        rows.append(("decoder.layer", "weight_layout", "projection weights", "stored [in, out]", "execution_observed",
+                     "every layer projection reads its weight directly as the right matmul operand (x @ W)", None))
+    if F.get("rot_dim"):
+        rows.append(("decoder.attention", "rotary_dim", "rotary dims", F["rot_dim"], "execution_observed",
+                     "the rotated slice x[..., :r] and the pass-through x[..., r:] joined by one cat", None))
+    if F.get("parallel_norms"):
+        rows.append(("decoder.layer", "parallel_norm_count", "parallel branch norms", F["parallel_norms"],
+                     "execution_observed", "norm ops between the layer input and the attention / MLP projections", None))
+    if F.get("pos_emb"):
+        rows.append(("model", "position_embedding", "position embedding", "learned absolute", "execution_observed",
+                     first("position"), None))
+    if F.get("head_bias"):
+        rows.append(("model", "lm_head_bias", "LM head bias", True, "execution_observed", "addmm on the LM head", None))
     L, facts = FactLedger(), []
     for owner, fact, label, value, status, src, cfg_value in rows:
         L.record(owner, fact, value, status, src or None)
@@ -1038,6 +1366,13 @@ def _scorecard(F):
             "total_ops": F.get("total_ops"), "op_accounting": F.get("accounting") or {}, "facts": facts,
             "source": "execution recording (zero-storage weights, real tokenized prompt)"}
     return L.to_dict(), card
+
+
+def qkv_split_text(F):
+    """The page text of a fused Q/K/V split (the oracle's page_reader parses exactly this)."""
+    if F.get("qkv_layout") == "qkv_blocks":
+        return f"[Q {fmt(F['q_out'])} | K {fmt(F['k_out'])} | V {fmt(F['v_out'])}]"
+    return (f"per K/V group [q × {F['qkv_group']} | k | v] × {F['num_kv']}, head dim {F['head_dim']}")
 
 
 def to_ir(F):
@@ -1059,7 +1394,7 @@ def to_ir(F):
     if F["scale"]:
         inv = 1 / F["scale"]; d = round(inv ** 2)
         scale_txt = f"scores × {F['scale']:.6g} (= 1/√{d})" if abs(math.sqrt(d) - inv) < 1e-3 else f"scores × {F['scale']:.6g}"
-    attn = make(I.AttentionSpec, kind=F["kind"], mixer_state="ordinary_attention", num_heads=F["num_heads"], num_kv_heads=F["num_kv"],
+    attn = make(I.AttentionSpec, rope_dim=F.get("rot_dim"), kind=F["kind"], mixer_state="ordinary_attention", num_heads=F["num_heads"], num_kv_heads=F["num_kv"],
                 head_dim=F["head_dim"], rope_theta=F["theta"], mask=F["mask"], qk_norm=F["qk_norm"], qk_norm_kind=F["qk_norm_kind"],
                 qk_norm_axis="last_dimension" if F["qk_norm"] else None, qk_norm_extent=F["qn_extent"],
                 qk_norm_placement=("after_reshape" if F["qn_extent"] == F["head_dim"] else "before_reshape") if F["qk_norm"] else None,
@@ -1078,21 +1413,32 @@ def to_ir(F):
     if not F["bias"] and not F.get("o_bias"): attn_facts.append("bias-free projections")
     elif F["bias"] and not F.get("o_bias"): attn_facts.append("bias on Q/K/V, none on the output projection")
     elif F.get("o_bias") and not F["bias"]: attn_facts.append("bias on the output projection only")
-    children = [
+    children = ([
+        {"id": "qkv_proj", "title": "Fused QKV projection",
+         "description": f"One recorded matmul produces Q, K and V; its {fmt(F['qkv_width'])} output channels split as "
+                        f"{qkv_split_text(F)} (traced from the recorded split ops).",
+         "facts": [f"{fmt(H)} → {fmt(F['qkv_width'])}", f"split {qkv_split_text(F)}"]}] if F.get("fused") else []) + [
         {"id": "q_proj", "title": "Query projection", "description": "Recorded matmul producing the per-head queries.", "facts": [f"{fmt(H)} → {fmt(F['q_out'])}", f"{nh} Q heads", f"head dim {hd}"]},
         {"id": "k_proj", "title": "Key projection", "description": "Recorded matmul producing the keys.", "facts": [f"{fmt(H)} → {fmt(F['k_out'])}", f"{nkv} KV heads"] + (["cache ports: ⌃ write · ⊥ read"] if cache_ok else [])},
         {"id": "v_proj", "title": "Value projection", "description": "Recorded matmul producing the values.", "facts": [f"{fmt(H)} → {fmt(F['v_out'])}", f"{nkv} KV heads"] + (["cache ports: ⌃ write · ⊥ read"] if cache_ok else [])},
         {"id": "q_reshape", "title": "Reshape query heads", "description": "The projected width is split into heads before the next op.", "facts": [f"head dim {hd}"]},
         {"id": "k_reshape", "title": "Reshape key heads", "description": "The projected width is split into heads before the next op.", "facts": [f"head dim {hd}"]},
     ]
+    if F.get("fused"):
+        children = [c for c in children if c["id"] not in ("q_proj", "k_proj", "v_proj")]
+    if F.get("w_layout") == "in_out": attn_facts.append("weights stored [in, out]")
+    if F.get("rot_dim"): attn_facts.append(f"partial RoPE {F['rot_dim']}/{hd}")
     if F["qk_norm"]:
         where = "before RoPE" if F["norm_before_rope"] else "after RoPE"
         children += [{"id": "q_norm", "title": f"Query {NK.get(F['qk_norm_kind'], 'norm')}", "description": f"Recorded {NK.get(F['qk_norm_kind'])} on Q over the last axis ({F['qn_extent']}), {where}."},
                      {"id": "k_norm", "title": f"Key {NK.get(F['qk_norm_kind'], 'norm')}", "description": f"Recorded {NK.get(F['qk_norm_kind'])} on K over the last axis ({F['qn_extent']}), {where}."}]
     if F["rope"]:
         th = f"θ={F['theta']:.6g}" if F["theta"] else "θ unknown"
-        children += [{"id": "q_rope", "title": "Apply RoPE (Q)", "description": f"Rotate-half rotary embedding recorded on the query heads; frequency base from the built model's buffer: {th}.", "facts": [f"frequency base {th}"]},
-                     {"id": "k_rope", "title": "Apply RoPE (K)", "description": f"Rotate-half rotary embedding recorded on the key heads; {th}.", "facts": [f"frequency base {th}"]}]
+        part = (f" Rotates the first {F['rot_dim']} of {hd} head dims; the other {hd - F['rot_dim']} pass through."
+                if F.get("rot_dim") else "")
+        pf = [f"rotary dims {F['rot_dim']} of {hd}"] if F.get("rot_dim") else []
+        children += [{"id": "q_rope", "title": "Apply RoPE (Q)", "description": f"Rotate-half rotary embedding recorded on the query heads; frequency base from the built model's buffer: {th}." + part, "facts": [f"frequency base {th}"] + pf},
+                     {"id": "k_rope", "title": "Apply RoPE (K)", "description": f"Rotate-half rotary embedding recorded on the key heads; {th}." + part, "facts": [f"frequency base {th}"] + pf}]
     children += [
         {"id": "scaled_scores", "title": "Scaled dot-product scores", "description": f"Q·Kᵀ recorded; {scale_txt or 'no scale constant recorded'}; mask: {F['mask'] or 'none'} (read from the mask tensor's values).",
          "facts": [f"{nh} Q heads", f"{nkv} KV heads"] + ([f"{nh // nkv} Q per KV head"] if nkv and nh % nkv == 0 and nh != nkv else [])},
@@ -1131,6 +1477,7 @@ def to_ir(F):
     else:
         ffn_block = {"id": "ffn", "role": "ffn", "kind": "ffn", "label": "FFN", "title": "Feed-forward", "description": "Recorded two-layer MLP.",
                      "facts": [actl, f"hidden {fmt(F['inter'])}"], "detail": {"ffn": dataclasses.asdict(ffn)}}
+    if F.get("w_layout") == "in_out": ffn_block["facts"] = ffn_block["facts"] + ["weights stored [in, out]"]
     blocks = [
         {"id": "rms1", "role": "norm", "kind": "norm", "label": nlabel, "title": "Pre-attention norm", "description": f"Recorded {nlabel} on the layer input before attention.", "facts": [f"dim {fmt(H)}"]},
         attn_block,
@@ -1139,8 +1486,24 @@ def to_ir(F):
         ffn_block,
         {"id": "add2", "role": "residual", "kind": "residual_add", "residual_from": "rms2", "label": "+", "title": "Residual add", "description": "Recorded add: post-attention + FFN output."},
     ]
+    if F.get("parallel_norms"):                      # parallel branches (the renderer's GPT-NeoX / GPT-J lane layout)
+        two = F["parallel_norms"] == 2
+        blocks = [
+            {"id": "rms1", "role": "norm", "kind": "norm", "label": nlabel,
+             "title": "Pre-block norms (separate)" if two else "Pre-block norm (shared)",
+             "description": (f"Recorded {nlabel} on the layer input before attention; a second, separate {nlabel} on the "
+                             "layer input before the FFN." if two else
+                             f"Recorded {nlabel} on the layer input, feeding both attention and the FFN."),
+             "facts": [f"dim {fmt(H)}"]},
+            attn_block,
+            {"id": "add1", "role": "residual", "kind": "residual_add", "residual_from": "rms1", "label": "+",
+             "title": "Residual add (parallel)", "description": "Recorded adds: layer input + attention output + FFN output."},
+            dict(ffn_block, lane="left", tap_from="attn", feeds="add1", side_align="tap", w=220),
+        ]
     layers = [make(I.LayerSpec, index=i, attention=attn, ffn=ffn, norm_kind=F["norm"], norm_placement=F["placement"],
-                   residual_topology=F["residual"], blocks=blocks) for i in range(F["layers"])]
+                   residual_topology=F["residual"], blocks=blocks,
+                   **({"parallel_norm_count": F["parallel_norms"]} if F.get("parallel_norms") else {}))
+              for i in range(F["layers"])]
     tie_txt = (" — weights tied with the output head (same tensor read; the checkpoint ships one of them)."
                if F["tied"] is True else
                (" — tied to the output head in the model built from the config, but the checkpoint ships both "
@@ -1156,6 +1519,20 @@ def to_ir(F):
         {"id": "final_rms", "role": "norm", "kind": "norm", "label": f"Final {fn}", "title": "Final norm", "description": f"Recorded {fn} over the last hidden state before the output head.", "facts": [f"dim {fmt(H)}"], "resolved": True},
         {"id": "lm_head", "role": "output", "kind": "output", "label": "Linear output layer", "title": "LM head", "description": "Recorded matmul into vocabulary logits" + tie_txt, "facts": [f"{fmt(H)} → {fmt(F['vocab'])}"]},
     ]
+    if F.get("head_bias"):
+        model_blocks[-1]["facts"] = model_blocks[-1]["facts"] + ["with bias"]
+    if F.get("pos_emb"):
+        model_blocks.extend([
+            {"id": "position_ids", "role": "input", "kind": "source", "label": "Position IDs", "title": "Position indices",
+             "description": "Sequence positions 0..S-1 (recorded arange) used to look up learned positional vectors."},
+            {"id": "position_embed", "role": "embedding", "kind": "embedding", "label": "Learned Position Embedding",
+             "title": "Learned Position Embedding",
+             "description": "Looks up one learned positional vector for each sequence position.",
+             "facts": [f"{fmt(F['pos_emb']['shape'][0])} positions", f"{fmt(F['pos_emb']['shape'][1])}-d"]},
+            {"id": "position_add", "role": "residual", "kind": "residual_add", "label": "+", "title": "Token + position embedding",
+             "detail": {"position_kind": "learned_absolute", "position_application": "embedding_add"},
+             "description": "Adds the learned positional vector to the token embedding before the decoder stack."},
+        ])
     extras = {"render": {"family": "transformer", "layout": "decoder_only", "model_blocks": model_blocks},
               "exec_capture": {"source": "execution recording (zero-storage weights, real tokenized prompt)", "total_ops": F["total_ops"],
                                "layers_identical": f"{F['identical']} of {F['layers']}", "evidence": F["evidence"],

@@ -35,6 +35,8 @@ TOPOLOGY = {
                             ("rms2", "norm", None), ("ffn", "ffn", None), ("add2", "residual_add", "rms2")],
     ("post", "sequential"): [("attn", "attention", None), ("add1", "residual_add", "attn"), ("rms1", "norm", None),
                              ("ffn", "ffn", None), ("add2", "residual_add", "ffn"), ("rms2", "norm", None)],
+    ("pre", "parallel"): [("rms1", "norm", None), ("attn", "attention", None), ("add1", "residual_add", "rms1"),
+                          ("ffn", "ffn", None)],
 }
 _N = r"(\d[\d,]*)"
 
@@ -67,6 +69,10 @@ def spec_facts(d):
         mask=a.get("mask"), qkv_bias=bool(a.get("bias")), o_proj=bool(a.get("output_projection")),
         scores_scaled=bool(a.get("scores_scaled")), gated=bool(f.get("gated")), act=f.get("activation"),
         inter=f.get("intermediate_size"), ffn_bias=bool(f.get("bias")),
+        fused=a.get("projection_mode") == "fused_qkv", rot_dim=a.get("rope_dim"),
+        parallel_norms=L0.get("parallel_norm_count"),
+        # from the text / card only (no spec field): filled below
+        qkv_split=None, w_layout="out_in", pos_emb=False, head_bias=False, pos_rows=None, qkv_width=None,
         # facts only the card / text carry (no spec field): taken from the card, checked against the text below
         o_bias=(card.get("decoder.attention.o_bias") or {}).get("value"),
         scale=(card.get("decoder.attention.scores_scale") or {}).get("value"),
@@ -147,7 +153,15 @@ def read_page(ir):
             chips(w, b.get("facts"), [(rf"dim {_N}", lambda m: saw("hidden", _int(m.group(1)), w))])
             text(w + " description", b.get("description"),
                  [(r"Recorded (RMSNorm|LayerNorm) on the layer input before attention\.", lambda m: saw("norm", NK_R[m.group(1)], w)),
-                  (r"Recorded (RMSNorm|LayerNorm) before the FFN\.", lambda m: saw("norm", NK_R[m.group(1)], w))])
+                  (r"Recorded (RMSNorm|LayerNorm) before the FFN\.", lambda m: saw("norm", NK_R[m.group(1)], w)),
+                  (r"Recorded (RMSNorm|LayerNorm) on the layer input before attention; a second, separate (RMSNorm|LayerNorm) on "
+                   r"the layer input before the FFN\.", lambda m: (saw("norm", NK_R[m.group(1)], w), saw("norm", NK_R[m.group(2)], w),
+                                                                  saw("parallel_norms", 2, w))),
+                  (r"Recorded (RMSNorm|LayerNorm) on the layer input, feeding both attention and the FFN\.",
+                   lambda m: (saw("norm", NK_R[m.group(1)], w), saw("parallel_norms", 1, w)))])
+            text(w + " title", b.get("title"), [(r"Pre-attention norm|Pre-FFN norm", lambda m: saw("parallel_norms", None, w)),
+                                                (r"Pre-block norms \(separate\)", lambda m: saw("parallel_norms", 2, w)),
+                                                (r"Pre-block norm \(shared\)", lambda m: saw("parallel_norms", 1, w))])
         elif bid == "attn":
             lab = b.get("label")
             labs = lab if isinstance(lab, list) else [lab]
@@ -171,7 +185,11 @@ def read_page(ir):
                 (r"QK-Norm", lambda m: saw("qk_norm", True, w)),
                 (r"bias-free projections", lambda m: bias_chip.append((False, False))),
                 (r"bias on Q/K/V, none on the output projection", lambda m: bias_chip.append((True, False))),
-                (r"bias on the output projection only", lambda m: bias_chip.append((False, True)))])
+                (r"bias on the output projection only", lambda m: bias_chip.append((False, True))),
+                (r"weights stored \[in, out\]", lambda m: saw("w_layout", "in_out", w)),
+                (rf"partial RoPE {_N}/{_N}", lambda m: (saw("rot_dim", _int(m.group(1)), w), saw("head_dim", _int(m.group(2)), w)))])
+            if "weights stored [in, out]" not in (b.get("facts") or []): saw("w_layout", "out_in", w + " (no layout chip)")
+            if not any(re.fullmatch(r"partial RoPE .*", x) for x in b.get("facts") or []): saw("rot_dim", None, w + " (no partial chip)")
             qb, ob = bias_chip[0] if bias_chip else (True, True)      # no chip = both biased (to_ir's convention)
             saw("qkv_bias", qb, w + " bias chip"); saw("o_bias", ob, w + " bias chip")
             if not any(re.fullmatch(r"RoPE θ .*", s) for s in b.get("facts") or []) and P["rope"] and P["theta"]:
@@ -181,7 +199,7 @@ def read_page(ir):
             if not _same_detail((b.get("detail") or {}).get("attention"), L0["attention"]):
                 fail("attention detail", "the attention block's detail differs from the layer's attention spec")
             kids = {c.get("id"): c for c in b.get("children") or []}
-            want_kids = {"q_proj", "k_proj", "v_proj", "q_reshape", "k_reshape", "scaled_scores", "attn_softmax",
+            want_kids = ({"qkv_proj"} if P["fused"] else {"q_proj", "k_proj", "v_proj"}) | {"q_reshape", "k_reshape", "scaled_scores", "attn_softmax",
                          "attn_apply_v", "concat_heads"} | ({"q_norm", "k_norm"} if P["qk_norm"] else set()) \
                 | ({"q_rope", "k_rope"} if P["rope"] else set()) | ({"o_proj"} if P["o_proj"] else set())
             have = set(kids) - {"kv_cache"}
@@ -206,13 +224,33 @@ def read_page(ir):
                                                      lambda m: (saw("qk_norm_kind", NK_R[m.group(1)], cw), saw("qk_norm_extent", int(m.group(2)), cw),
                                                                 saw("qk_norm_before_rope", m.group(3) == "before", cw)))])
                 elif cid in ("q_rope", "k_rope"):
-                    th = (r"θ=([\d.e+-]+)", lambda m: saw("theta~6g", float(m.group(1)), cw))
-                    chips(cw, F, [(r"frequency base θ=([\d.e+-]+)", lambda m: saw("theta~6g", float(m.group(1)), cw))])
+                    chips(cw, F, [(r"frequency base θ=([\d.e+-]+)", lambda m: saw("theta~6g", float(m.group(1)), cw)),
+                                  (rf"rotary dims {_N} of {_N}", lambda m: (saw("rot_dim", _int(m.group(1)), cw), saw("head_dim", _int(m.group(2)), cw)))])
+                    part = r"(?: Rotates the first (\d+) of (\d+) head dims; the other (\d+) pass through\.)?"
+                    def _rd(m, cw=cw):
+                        saw("theta~6g", float(m.group(1)), cw)
+                        if m.group(2):
+                            saw("rot_dim", int(m.group(2)), cw); saw("head_dim", int(m.group(3)), cw)
+                            if int(m.group(2)) + int(m.group(4)) != int(m.group(3)): fail("rot_dim", f"{cw}: rotated + passed != head dims")
+                        else:
+                            saw("rot_dim", None, cw)
                     text(cw, c.get("description"), [
-                        (r"Rotate-half rotary embedding recorded on the query heads; frequency base from the built model's buffer: θ=([\d.e+-]+)\.",
-                         lambda m: saw("theta~6g", float(m.group(1)), cw)),
-                        (r"Rotate-half rotary embedding recorded on the key heads; θ=([\d.e+-]+)\.",
-                         lambda m: saw("theta~6g", float(m.group(1)), cw))])
+                        (r"Rotate-half rotary embedding recorded on the query heads; frequency base from the built model's buffer: θ=([\d.e+-]+)\." + part, _rd),
+                        (r"Rotate-half rotary embedding recorded on the key heads; θ=([\d.e+-]+)\." + part, _rd)])
+                elif cid == "qkv_proj":
+                    sp = (r"(\[Q (?P<q>[\d,]+) \| K (?P<k>[\d,]+) \| V (?P<v>[\d,]+)\]"
+                          r"|per K/V group \[q × (?P<g>\d+) \| k \| v\] × (?P<n>\d+), head dim (?P<d>\d+))")
+                    def _sp(m, cw=cw):
+                        if m.group("q"):
+                            saw("qkv_split", ("qkv_blocks", _int(m.group("q")), _int(m.group("k")), _int(m.group("v"))), cw)
+                        else:
+                            saw("qkv_split", ("grouped", int(m.group("g")), int(m.group("n")), int(m.group("d"))), cw)
+                    chips(cw, F, [(rf"{_N} → {_N}", lambda m: (saw("hidden", _int(m.group(1)), cw), saw("qkv_width", _int(m.group(2)), cw))),
+                                  ("split " + sp, _sp)])
+                    text(cw + " title", c.get("title"), [(r"Fused QKV projection", lambda m: None)])
+                    text(cw, c.get("description"), [(rf"One recorded matmul produces Q, K and V; its {_N} output channels split as "
+                                                     + sp + r" \(traced from the recorded split ops\)\.",
+                                                     lambda m: (saw("qkv_width", _int(m.group(1)), cw), _sp(m)))])
                 elif cid == "scaled_scores":
                     def _sc(m):
                         x = m.group(1)
@@ -245,6 +283,7 @@ def read_page(ir):
                 (r"Recorded two-layer MLP\.", lambda m: saw("gated", False, w))])
             chips(w, b.get("facts"), [(rf"hidden {_N}", lambda m: saw("inter", _int(m.group(1)), w)),
                                       (r"split gate/up", lambda m: saw("gated", True, w)),
+                                      (r"weights stored \[in, out\]", lambda m: saw("w_layout", "in_out", w)),
                                       (r"(SiLU|GELU|ReLU|gelu_pytorch_tanh|sigmoid|tanh)", lambda m: saw("act", actl(m.group(1)), w))])
             if not _same_detail((b.get("detail") or {}).get("ffn"), L0["ffn"]):
                 fail("ffn detail", "the FFN block's detail differs from the layer's FFN spec")
@@ -269,14 +308,30 @@ def read_page(ir):
                 else:
                     unread(cw, f"FFN sub-block {cid!r} is outside the oracle's grammar")
         elif bid in ("add1", "add2"):
-            pass                                           # wiring: checked by the block sequence above
+            text(w + " description", b.get("description"), [
+                (r"Recorded add: block input \+ attention output\.", lambda m: saw("residual", "sequential", w)),
+                (r"Recorded add: post-attention \+ FFN output\.", lambda m: saw("residual", "sequential", w)),
+                (r"Recorded adds: layer input \+ attention output \+ FFN output\.", lambda m: saw("residual", "parallel", w))])
         else:
             unread(w, f"layer block {bid!r} is outside the oracle's grammar")
 
     # ---- the model blocks
     mb = {b.get("id"): b for b in ((d.get("extras") or {}).get("render") or {}).get("model_blocks") or []}
-    if set(mb) != {"tok_text", "embed", "final_rms", "lm_head"}:
-        unread("model blocks", f"model blocks {sorted(mb)}: the oracle reads exactly tok_text / embed / final_rms / lm_head")
+    base_mb, pos_mb = {"tok_text", "embed", "final_rms", "lm_head"}, {"position_ids", "position_embed", "position_add"}
+    if set(mb) not in (base_mb, base_mb | pos_mb):
+        unread("model blocks", f"model blocks {sorted(mb)}: the oracle reads tok_text / embed / final_rms / lm_head "
+                               "(+ position_ids / position_embed / position_add)")
+    saw("pos_emb", pos_mb <= set(mb), "model blocks")
+    if pos_mb <= set(mb):
+        pe = mb["position_embed"]
+        text("position_embed label", pe.get("label"), [(r"Learned Position Embedding", lambda m: None)])
+        chips("position_embed", pe.get("facts"), [(rf"{_N} positions", lambda m: saw("pos_rows", _int(m.group(1)), "position_embed")),
+                                                  (rf"{_N}-d", lambda m: saw("hidden", _int(m.group(1)), "position_embed"))])
+        if ((mb["position_add"].get("detail") or {}).get("position_kind") != "learned_absolute"
+                or (mb["position_add"].get("detail") or {}).get("position_application") != "embedding_add"):
+            fail("position embedding", "the position add's detail is not a learned absolute embedding add")
+    if "lm_head" in mb:
+        saw("head_bias", "with bias" in (mb["lm_head"].get("facts") or []), "lm_head")
     def tie_of(desc, prefix, where):
         if desc is None or not desc.startswith(prefix):
             unread(where, f"{where} description {desc!r} is outside the grammar"); return
@@ -288,7 +343,7 @@ def read_page(ir):
                                                  (rf"{_N}-d", lambda m: saw("hidden", _int(m.group(1)), "embed"))])
         tie_of(mb["embed"].get("description"), "Maps each token id to its vector", "embed")
     if "lm_head" in mb:
-        chips("lm_head", mb["lm_head"].get("facts"), [width("hidden", "vocab", "lm_head")])
+        chips("lm_head", mb["lm_head"].get("facts"), [width("hidden", "vocab", "lm_head")], free=("with bias",))
         tie_of(mb["lm_head"].get("description"), "Recorded matmul into vocabulary logits", "lm_head")
     if "final_rms" in mb:
         text("final_rms label", mb["final_rms"].get("label"), [(r"Final (RMSNorm|LayerNorm)", lambda m: saw("final_norm", NK_R[m.group(1)], "final_rms"))])
@@ -311,6 +366,17 @@ def read_page(ir):
         elif k == "model.tie_word_embeddings":
             if isinstance(v, str) and ("unverified" in v or "unchecked" in v): v = "unverified"
             saw("tied", v, f"card {k}")
+        elif k == "decoder.attention.qkv_split":
+            m = re.fullmatch(r"\[Q ([\d,]+) \| K ([\d,]+) \| V ([\d,]+)\]|per K/V group \[q × (\d+) \| k \| v\] × (\d+), head dim (\d+)", str(v))
+            if not m: unread(f"card {k}", f"the card's Q/K/V split {v!r} is outside the grammar")
+            elif m.group(1): saw("qkv_split", ("qkv_blocks", _int(m.group(1)), _int(m.group(2)), _int(m.group(3))), f"card {k}")
+            else: saw("qkv_split", ("grouped", int(m.group(4)), int(m.group(5)), int(m.group(6))), f"card {k}")
+        elif k == "decoder.layer.weight_layout":
+            saw("w_layout", "in_out" if v == "stored [in, out]" else v, f"card {k}")
+        elif k == "decoder.attention.rotary_dim": saw("rot_dim", v, f"card {k}")
+        elif k == "decoder.layer.parallel_norm_count": saw("parallel_norms", v, f"card {k}")
+        elif k == "model.position_embedding": saw("pos_emb", v == "learned absolute", f"card {k}")
+        elif k == "model.lm_head_bias": saw("head_bias", v is True, f"card {k}")
         elif k in ("decoder.attention.cached", "model.max_position_embeddings"):
             pass                                           # UNCHECKED
         else:
@@ -326,6 +392,24 @@ def read_page(ir):
     def want(fact):
         if fact in derived: return derived[fact]
         return P.get(fact)
+    # facts only the text / card state (no spec field): every mention must agree; the agreed value is the page fact
+    TEXT_ONLY = ("qkv_split", "w_layout", "pos_emb", "head_bias", "pos_rows", "qkv_width")
+    for f_ in TEXT_ONLY:
+        vs = {v for x, v, _ in seen if x == f_}
+        if len(vs) > 1: fail(f_, f"the page states {f_} as {sorted(map(str, vs))}")
+        elif vs: P[f_] = next(iter(vs))
+    seen[:] = [x for x in seen if x[0] not in TEXT_ONLY]
+    if P["fused"] != (P["qkv_split"] is not None):
+        fail("qkv split", f"the spec says {'a fused' if P['fused'] else 'separate'} Q/K/V projection(s); the text "
+                          f"{'states no split' if P['qkv_split'] is None else 'states a fused split'}")
+    elif P["qkv_split"] and nh and nkv and P["head_dim"]:
+        hd_ = P["head_dim"]
+        want_sp = ((nh * hd_, nkv * hd_, nkv * hd_) if P["qkv_split"][0] == "qkv_blocks" else (nh // nkv, nkv, hd_))
+        if tuple(P["qkv_split"][1:]) != want_sp or (P.get("qkv_width") not in (None, (nh + 2 * nkv) * hd_)):
+            fail("qkv split", f"the stated split {P['qkv_split']} / width {P.get('qkv_width')} disagrees with {nh} Q / "
+                              f"{nkv} K-V heads of {hd_}")
+    if P["rot_dim"] is not None and not (P["rope"] and 0 < P["rot_dim"] < (P["head_dim"] or 0)):
+        fail("rot_dim", f"partial rotary {P['rot_dim']} of {P['head_dim']} head dims")
     ex = [v for f_, v, _ in seen if f_ == "scale~exact"]      # an exact form in the text is the stated value
     if ex and P["scale"] is not None and abs(ex[0] - P["scale"]) <= 5.01e-7: P["scale"] = ex[0]
     for fact, v, where in seen:

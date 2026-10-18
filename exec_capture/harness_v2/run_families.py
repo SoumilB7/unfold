@@ -34,7 +34,10 @@ for p in sorted(glob.glob(os.path.join(cap_dir, "*.capture.json.gz"))):
         model = oracle.build_real(B, 2)
         for wname, (kind, edit, test) in WRONG.items():
             if not applicable(row["page_facts"], test): continue
-            r = oracle.run_bundle(B, model=model, S=(24, 257), seeds=(0,), **edit_kw(kind, edit))
+            try:
+                r = oracle.run_bundle(B, model=model, S=(24, 257), seeds=(0,), **edit_kw(kind, edit))
+            except Exception as e:                   # a crash is reported as such, never as a refusal
+                r = {"verdict": f"ORACLE_CRASH({type(e).__name__}: {str(e)[:120]})"}
             r = {k: r.get(k) for k in ("verdict", "reason", "first_fail", "first_fail_facts", "end_to_end", "errors", "issues")}
             res["wrong_facts"].setdefault(repo, {})[wname] = r
             print(f"   wrong fact [{wname}]: {r['verdict']}  e2e={r['end_to_end']}", flush=True)

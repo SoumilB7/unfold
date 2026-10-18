@@ -88,7 +88,8 @@ def param_map(bundle, P):
     o_op = next((j for j in range(apply_v + 1, mlp_in) if N[j].func in exec_to_ir.MATMULS and R.weights(j)
                  and len(pshape.get(R.weights(j)[0], ())) == 2), None)
     bias_of = lambda j: (R.weights(j)[1] if j is not None and len(R.weights(j)) > 1 else None)
-    M = {"emb": emb, "q": wq, "k": wk, "v": wv, "gate": wg, "up": wu, "down": wd,
+    mp = re.search(r"embedding reads (\S+) \[", ev.get("model.position_embedding", ""))
+    M = {"emb": emb, "q": wq, "k": wk, "v": wv, "gate": wg, "up": wu, "down": wd, "pos": mp.group(1) if mp else None,
          "o": R.weights(o_op)[0] if o_op is not None else None,
          "q_b": bias_of(q_op), "k_b": bias_of(k_op), "v_b": bias_of(v_op), "o_b": bias_of(o_op),
          "gate_b": bias_of(g_op), "up_b": bias_of(u_op), "down_b": bias_of(d_op)}
@@ -98,6 +99,7 @@ def param_map(bundle, P):
     last_layer_op = max(j for j, nd in enumerate(N) if re.match(rf"^{re.escape(stack)}\.\d+(\.|$)", nd.module))
     head = next(j for j in range(len(N) - 1, last_layer_op, -1) if N[j].func in exec_to_ir.MATMULS and R.weights(j))
     M["head"] = R.weights(head)[0]
+    M["head_b"] = bias_of(head)
     for w in sorted(readers, key=rd):                                 # 1-D tensors by where their reader sits
         if w in used or len(pshape.get(w, ())) != 1: continue
         r = rd(w)
@@ -122,13 +124,19 @@ def build_real(bundle, n_layers, dtype=torch.float64):
     cls = getattr(transformers, bundle["class"], None)
     if cls is None:
         raise NotCheckable(f"executed class {bundle['class']} is not in the installed transformers")
-    cfg = dict(bundle["config"])
-    n0 = cfg.get("num_hidden_layers")
+    conf = cls.config_class.from_dict(dict(bundle["config"]))
+    n0 = getattr(conf, "num_hidden_layers", None)
     if n0 and n0 > n_layers:
-        cfg["num_hidden_layers"] = n_layers
-        if isinstance(cfg.get("layer_types"), list): cfg["layer_types"] = cfg["layer_types"][:n_layers]
-    conf = cls.config_class.from_dict(cfg)
+        conf.num_hidden_layers = n_layers
+        if isinstance(getattr(conf, "layer_types", None), list): conf.layer_types = conf.layer_types[:n_layers]
     return cls._from_config(conf, attn_implementation="eager", dtype=dtype).eval()
+
+
+def config_layers(bundle):
+    """The layer count of the model the library builds from this config (through the config class's own names)."""
+    import transformers
+    cls = getattr(transformers, bundle["class"], None)
+    return getattr(cls.config_class.from_dict(dict(bundle["config"])), "num_hidden_layers", None) if cls else None
 
 
 def randomize(model, M, seed):
@@ -179,11 +187,27 @@ class Reference:
         raise NotCheckable(f"norm kind {kind!r} has no reference")
 
     def lin(self, x, w, b=None):
-        y = x @ w.T
+        """A layer projection as the page states its weight layout: x @ W^T ([out, in]) or x @ W ([in, out])."""
+        y = x @ (w if self.P.get("w_layout") == "in_out" else w.T)
         return y + b if b is not None else y
 
+    def qkv(self, h, i):
+        """Q, K, V widths [B, S, heads x hd] from separate projections or the page's fused split."""
+        P, W = self.P, self.W
+        if not P.get("fused"):
+            return tuple(self.lin(h, W(r, i), W(r + "_b", i) if P["qkv_bias"] else None) for r in ("q", "k", "v"))
+        y = self.lin(h, W("q", i), W("q_b", i) if P["qkv_bias"] else None)
+        lay, a, b, c = P["qkv_split"]
+        B, S, _ = y.shape
+        if lay == "qkv_blocks":
+            return y[..., :a], y[..., a:a + b], y[..., a + b:a + b + c]
+        G, n, d = a, b, c                                  # per K/V group: [q x G | k | v], head dim d
+        g = y.reshape(B, S, n, (G + 2) * d)
+        return (g[..., :G * d].reshape(B, S, n * G * d), g[..., G * d:(G + 1) * d].reshape(B, S, n * d),
+                g[..., (G + 1) * d:].reshape(B, S, n * d))
+
     def inv_freq(self):
-        P = self.P; d = P["head_dim"]
+        P = self.P; d = P.get("rot_dim") or P["head_dim"]
         f = [P["theta"] ** (-(2 * i) / d) for i in range(d // 2)]
         if P["llama3"]:
             fac, ctx = P["llama3"]["factor"], P["llama3"]["original_max_position_embeddings"]
@@ -199,6 +223,12 @@ class Reference:
         return torch.tensor(f, dtype=torch.float64)
 
     def rope(self, x, S):
+        r = self.P.get("rot_dim")
+        if r:                                              # partial: rotate the first r dims, pass the rest through
+            return torch.cat([self._rope_full(x[..., :r], S), x[..., r:]], -1)
+        return self._rope_full(x, S)
+
+    def _rope_full(self, x, S):
         pos = torch.arange(S, dtype=torch.float64)
         ang = pos[:, None] * self.inv_freq()[None, :]
         ang = torch.cat([ang, ang], -1)                               # [S, d]
@@ -216,9 +246,7 @@ class Reference:
         P, W = self.P, self.W
         B, S, _ = h.shape
         nh, nkv, hd = P["num_heads"], P["num_kv"], P["head_dim"]
-        q = self.lin(h, W("q", i), W("q_b", i) if P["qkv_bias"] else None)
-        k = self.lin(h, W("k", i), W("k_b", i) if P["qkv_bias"] else None)
-        v = self.lin(h, W("v", i), W("v_b", i) if P["qkv_bias"] else None)
+        q, k, v = self.qkv(h, i)
         per_head = P["qk_norm"] and P["qk_norm_extent"] == hd
         if P["qk_norm"] and not per_head:                             # a norm over the whole projected width
             q, k = self.qk_norm(q, "qn", i), self.qk_norm(k, "kn", i)
@@ -280,6 +308,8 @@ class Reference:
         return self.n1(x, i) if self.P["placement"] == "pre" else x
 
     def mlp_input(self, x, a, i):
+        if self.P["residual"] == "parallel":              # both branches read the layer input
+            return self.n2(x, i) if self.P["parallel_norms"] == 2 else self.n1(x, i)
         return self.n2(x + a, i) if self.P["placement"] == "pre" else self.n1(x + a, i)
 
     def layer_output(self, x, a, m, i):
@@ -288,19 +318,24 @@ class Reference:
         return self.n2(h + m, i)
 
     def layer(self, x, i):
-        if self.P["residual"] != "sequential":
+        if self.P["residual"] not in ("sequential", "parallel") or (
+                self.P["residual"] == "parallel" and self.P["parallel_norms"] not in (1, 2)):
             raise NotCheckable(f"residual topology {self.P['residual']!r} has no reference")
         a = self.attention(self.attn_input(x, i), i)
         return self.layer_output(x, a, self.mlp(self.mlp_input(x, a, i), i), i)
 
     def embed(self, ids):
-        return self.W("emb", 0)[ids]
+        x = self.W("emb", 0)[ids]
+        if self.P.get("pos_emb"):                          # learned absolute positions 0..S-1, added
+            x = x + self.W("pos", 0)[torch.arange(ids.shape[-1])]
+        return x
 
     def final(self, x):
         P = self.P
         h = self.norm(P["final_norm"], x, self.W("nf_w", 0), self.W("nf_b", 0), self.eps["final"])
         head = self.W("emb", 0) if P["tied"] in (True, None) else self.W("head", 0)
-        return h @ head.T
+        y = h @ head.T
+        return y + self.W("head_b", 0) if P.get("head_bias") else y
 
     def model(self, ids, n_layers):
         x = self.embed(ids)
@@ -444,7 +479,7 @@ def undrawn_inputs(cfg, P):
 ROLE_FACT = {"emb": "vocab / hidden", "q": "query heads x head_dim", "k": "K/V heads x head_dim", "v": "K/V heads x head_dim",
              "o": "output projection width", "gate": "FFN width", "up": "FFN width", "down": "FFN width",
              "n1_w": "hidden", "n2_w": "hidden", "nf_w": "hidden", "qn_w": "QK-norm extent", "kn_w": "QK-norm extent",
-             "head": "vocab / hidden"}
+             "head": "vocab / hidden", "pos": "position table", "q_b": "Q/K/V bias width", "head_b": "LM head bias"}
 
 
 def static_checks(P, M, model, cfg):
@@ -453,10 +488,18 @@ def static_checks(P, M, model, cfg):
     names = dict(model.named_parameters(remove_duplicate=False))
     T = lambda r: names.get(M.get(r)) if M.get(r) else None
     H, V, nh, nkv, hd, I = P["hidden"], P["vocab"], P["num_heads"], P["num_kv"], P["head_dim"], P["inter"]
-    want = {"emb": (V, H), "q": (nh * hd, H), "k": (nkv * hd, H), "v": (nkv * hd, H), "up": (I, H), "down": (H, I),
-            "nf_w": (H,), "n1_w": (H,), "n2_w": (H,)}
-    if P["o_proj"]: want["o"] = (H, nh * hd)
-    if P["gated"]: want["gate"] = (I, H)
+    mat = (lambda o, i: (o, i)) if P.get("w_layout") != "in_out" else (lambda o, i: (i, o))   # the page's layout
+    want = {"emb": (V, H), "up": mat(I, H), "down": mat(H, I), "nf_w": (H,), "n1_w": (H,)}
+    if P.get("fused"):
+        want["q"] = mat((nh + 2 * nkv) * hd, H)
+        if P["qkv_bias"]: want["q_b"] = ((nh + 2 * nkv) * hd,)
+    else:
+        want.update(q=mat(nh * hd, H), k=mat(nkv * hd, H), v=mat(nkv * hd, H))
+    if not (P["residual"] == "parallel" and P.get("parallel_norms") == 1): want["n2_w"] = (H,)
+    if P["o_proj"]: want["o"] = mat(H, nh * hd)
+    if P["gated"]: want["gate"] = mat(I, H)
+    if P.get("pos_emb"): want["pos"] = (P.get("pos_rows"), H)
+    if P.get("head_bias"): want["head_b"] = (V,)
     if P["qk_norm"]: want.update(qn_w=(P["qk_norm_extent"],), kn_w=(P["qk_norm_extent"],))
     if P["tied"] is False: want["head"] = (V, H)
     for r, shp in want.items():
@@ -481,8 +524,13 @@ def static_checks(P, M, model, cfg):
         out.append(("FAIL", "tied head", f"the page says the head is the embedding; the model's head reads {M.get('head')}"))
     if P["tied"] is False and same:
         out.append(("FAIL", "tied head", "the page says the head is a separate tensor; the model's head reads the embedding"))
-    if T("head_b") is not None:
-        out.append(("NOT_CHECKABLE", "LM head bias", f"the model's head adds {M['head_b']}, which the page does not state"))
+    for r, kind_ in (("n1", P["norm"]), ("n2", P["norm"]), ("nf", P["final_norm"])):
+        if kind_ == "rmsnorm" and T(r + "_b") is not None:
+            out.append(("FAIL", "norm kind", f"the page draws an RMSNorm (no bias); the model's norm adds {M[r + '_b']}"))
+    if T("head_b") is not None and not P.get("head_bias"):
+        out.append(("FAIL", "LM head bias", f"the page draws no LM head bias; the model's head adds {M['head_b']}"))
+    if P.get("fused") and (M.get("q") != M.get("k") or M.get("q") != M.get("v")):
+        out.append(("FAIL", "fused Q/K/V", "the page draws one fused projection; the recording maps Q / K / V to different tensors"))
     n_cfg = cfg.get("num_hidden_layers")
     if n_cfg is not None and P["layers"] != n_cfg:
         out.append(("FAIL", "layer count", f"the page draws {P['layers']} layers; the model built from the config has {n_cfg}"))
@@ -521,8 +569,11 @@ def run_bundle(B, n_layers=None, seeds=(0, 1), S=24, model=None, randomize_weigh
         row["param_map"] = {k: v for k, v in M.items() if v and not k.startswith("_")}
         eps, l3, und = undrawn_inputs(cfg, P)
         row["undrawn_inputs"] = und
+        cfg = dict(cfg, num_hidden_layers=config_layers(B))
         if model is None:
-            model = build_real(B, n_layers or affordable_layers(cfg))
+            model = build_real(B, n_layers or affordable_layers(
+                {"hidden_size": P["hidden"], "vocab_size": P["vocab"], "intermediate_size": P["inter"],
+                 "num_hidden_layers": P["layers"]}))
         nl = len(model.get_submodule(M["_stack"]))
         row["real_layers_built"], row["drawn_layers"] = nl, P["layers"]
         issues = issues + static_checks(P, M, model, cfg)

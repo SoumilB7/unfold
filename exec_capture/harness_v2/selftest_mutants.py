@@ -9,7 +9,12 @@ A KNOWN_OPEN mutant that becomes refused is reported so it can be moved out of t
 import os, sys, types, math
 CODE = sys.argv[1] if len(sys.argv) > 1 and os.path.isdir(sys.argv[1]) else \
     "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-exec-capture/exec_capture/harness_v2"
-SEL = [a for a in sys.argv[1:] if not os.path.isdir(a)]
+_ARGS, _skip = [], False                 # flags (and a flag's value) are never name filters: "--unfold-pkg PATH" used to
+for a in sys.argv[1:]:                   # become the substring filter "--unfold-pkg", which matched no mutant -> 0 run, exit 0
+    if _skip: _skip = False; continue
+    if a.startswith("--"): _skip = "=" not in a; continue
+    _ARGS.append(a)
+SEL = [a for a in _ARGS if not os.path.isdir(a)]
 sys.path.insert(0, CODE); sys.path.insert(1, "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-exec-capture/exec_capture/harness_v2")
 sys.path.insert(0, "/Users/soumil/Code/Projects/Understand/llmvisualizer/model-benchmark/renderer_snapshot")
 import torch, transformers
@@ -257,9 +262,10 @@ KNOWN_OPEN = {"probabilities transposed before @V (S=8)", "GQA repeat tiled inst
 
 
 def main():
-    fails, still_open, closed = [], [], []
+    fails, still_open, closed, ran = [], [], [], 0
     for name, (patch, bkw) in MUT.items():
         if SEL and not any(s_.lower() in name.lower() for s_ in SEL): continue
+        ran += 1
         try:
             b = bundle_of(patch, **bkw)
         except Exception as e:
@@ -278,7 +284,9 @@ def main():
             tag = "FAIL" if drawn else "ok  "
             if drawn: fails.append(name)
         print(f"{tag} {'drawn  ' if drawn else 'refused'} {name}{': ' + why if why else ''}", flush=True)
-    print(f"\n{len(fails)} unexpected, {len(still_open)} known-open holes still drawn, {len(closed)} newly closed")
+    print(f"\n{ran} mutants run: {len(fails)} unexpected, {len(still_open)} known-open holes still drawn, {len(closed)} newly closed")
+    if ran == 0:
+        print("FAIL: no mutant ran (a gate that runs nothing proves nothing)"); sys.exit(2)
     sys.exit(1 if fails else 0)
 
 mutant("cos/sin broadcast over HEADS not positions (unsqueeze_dim=2, S=heads=4)", S=4, heads=4, kv=4)(
