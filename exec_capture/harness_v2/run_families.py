@@ -22,7 +22,7 @@ for p in sorted(glob.glob(os.path.join(cap_dir, "*.capture.json.gz"))):
     if ONLY and repo not in ONLY: continue
     t0 = time.time()
     try:
-        row = oracle.run_bundle(B, n_layers=NL or None, S=(24, 257), seeds=(0, 1))
+        row = oracle.run_bundle(B, n_layers=NL or None, S=(24, 257), seeds=(0, 1, 2, 3, 4))
     except Exception as e:                           # an oracle crash is reported as such, never as a verdict
         import traceback; traceback.print_exc()
         row = {"repo": repo, "verdict": "ORACLE_ERROR", "reason": f"{type(e).__name__}: {str(e)[:300]}"}
@@ -32,10 +32,10 @@ for p in sorted(glob.glob(os.path.join(cap_dir, "*.capture.json.gz"))):
           flush=True)
     if repo in WRONG_ON and row["verdict"] == "PASS":
         model = oracle.build_real(B, 2)
-        for wname, (kind, edit, test) in WRONG.items():
+        for wname, (kind, edit, test, *_flags) in WRONG.items():
             if not applicable(row["page_facts"], test): continue
             try:
-                r = oracle.run_bundle(B, model=model, S=(24, 257), seeds=(0,), **edit_kw(kind, edit))
+                r = oracle.run_bundle(B, model=model, S=(24, 257), seeds=(0, 2, 3, 4), **edit_kw(kind, edit))
             except Exception as e:                   # a crash is reported as such, never as a refusal
                 r = {"verdict": f"ORACLE_CRASH({type(e).__name__}: {str(e)[:120]})"}
             r = {k: r.get(k) for k in ("verdict", "reason", "first_fail", "first_fail_facts", "end_to_end", "errors", "issues")}

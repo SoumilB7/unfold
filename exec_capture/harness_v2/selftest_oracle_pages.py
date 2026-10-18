@@ -189,9 +189,36 @@ def fable():
         del m
 
 
+# ------------------------------------------------------------------------------------------- G. Opus, group 2 (norms)
+def opus_group2():
+    def U(**kv): return {"f_edit": lambda F: F.update(kv)}
+    def Mf(k, f): return {"f_edit": lambda F: F.update({k: f(F[k])})}
+    common = [("eps x1.1", Mf("norm_eps", lambda e: e * 1.1)), ("eps x10", Mf("norm_eps", lambda e: e * 10)),
+              ("eps /10", Mf("norm_eps", lambda e: e / 10)), ("final eps x10", Mf("final_eps", lambda e: e * 10)),
+              ("final eps x1.1", Mf("final_eps", lambda e: e * 1.1)), ("weight none", U(norm_weight="none")),
+              ("final weight none", U(final_weight="none")),
+              ("weight flip", {"f_edit": lambda F: F.update(norm_weight="1+w" if F["norm_weight"] == "w" else "w")}),
+              ("final weight flip", {"f_edit": lambda F: F.update(final_weight="1+w" if F["final_weight"] == "w" else "w")}),
+              ("embedding scale added", U(embed_scale={"op": -1, "value": 24.0, "source": "constant"}))]
+    qk = [("QK eps x10", Mf("qk_eps", lambda e: e * 10)), ("QK eps x1.1", Mf("qk_eps", lambda e: e * 1.1)),
+          ("QK weight none", U(qk_weight="none")), ("QK weight 1+w", U(qk_weight="1+w"))]
+    pl = lambda p_: ("placement " + p_, U(placement=p_))
+    G = {"HuggingFaceTB__SmolLM2-135M": common + [pl("post"), pl("double")],
+         "Qwen__Qwen3-0.6B": common + qk + [pl("double")],
+         "openai-community__gpt2": common + [pl("post")],
+         "allenai__OLMo-2-0425-1B": common + qk + [pl("pre"), pl("double")]}
+    for slug, cases in G.items():
+        B = load(slug); m = oracle.build_real(B, 2)
+        run(f"G {slug} control", B, m, "PASS", S=(24, 257), seeds=(0, 1, 2, 3, 4))
+        for tag, ed in cases:
+            run(f"G {slug} {tag}", B, m, "FAIL", S=(24, 257), seeds=(0, 2, 3, 4), **ed)
+        del m
+
+
 if __name__ == "__main__":
     opus()
     fable()
+    opus_group2()
     print(f"\n{len(rows) - len(bad)}/{len(rows)} as expected; unexpected: {bad}")
     if OUT: json.dump(rows, open(OUT, "w"), indent=1, default=str)
     sys.exit(1 if bad else 0)

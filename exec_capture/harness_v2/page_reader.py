@@ -15,9 +15,10 @@ UNCHECKED lists the page facts the oracle does not check at all (shown on every 
 import math, re
 
 UNCHECKED = ["K/V cache (decode with a cache is not run)", "context length (max_position_embeddings: config-declared)",
-             "graded verdict / evidence notes", "norm eps (not stated on the page)"]
+             "graded verdict / evidence notes"]
 NK = {"rmsnorm": "RMSNorm", "layernorm": "LayerNorm"}
 NK_R = {v: k for k, v in NK.items()}
+WEIGHT_R = {"weight w": "w", "weight 1 + w": "1+w", "no weight": "none"}
 ACT_LABEL = {"silu": "SiLU", "gelu": "GELU", "relu": "ReLU"}
 ACT_R = {v: k for k, v in ACT_LABEL.items()}
 KIND_TITLE = {"gqa": "Grouped-query attention", "mha": "Multi-head attention", "mqa": "Multi-query attention"}
@@ -33,8 +34,13 @@ TIE_TXT = {
 TOPOLOGY = {
     ("pre", "sequential"): [("rms1", "norm", None), ("attn", "attention", None), ("add1", "residual_add", "rms1"),
                             ("rms2", "norm", None), ("ffn", "ffn", None), ("add2", "residual_add", "rms2")],
-    ("post", "sequential"): [("attn", "attention", None), ("add1", "residual_add", "attn"), ("rms1", "norm", None),
-                             ("ffn", "ffn", None), ("add2", "residual_add", "ffn"), ("rms2", "norm", None)],
+    # post (IR meaning, OLMo-2): the norm on each sublayer's OUTPUT before the residual add: r + norm(sub(h))
+    ("post", "sequential"): [("attn", "attention", None), ("post_attn_ln", "norm", None), ("add1", "residual_add", "attn"),
+                             ("ffn", "ffn", None), ("post_ffn_ln", "norm", None), ("add2", "residual_add", "ffn")],
+    # double (sandwich, Gemma-2/3): a norm before AND after each sublayer: r + post_ln(sub(pre_ln(h)))
+    ("double", "sequential"): [("rms1", "norm", None), ("attn", "attention", None), ("post_attn_ln", "norm", None),
+                               ("add1", "residual_add", "rms1"), ("rms2", "norm", None), ("ffn", "ffn", None),
+                               ("post_ffn_ln", "norm", None), ("add2", "residual_add", "rms2")],
     ("pre", "parallel"): [("rms1", "norm", None), ("attn", "attention", None), ("add1", "residual_add", "rms1"),
                           ("ffn", "ffn", None)],
 }
@@ -73,6 +79,8 @@ def spec_facts(d):
         parallel_norms=L0.get("parallel_norm_count"),
         # from the text / card only (no spec field): filled below
         qkv_split=None, w_layout="out_in", pos_emb=False, head_bias=False, pos_rows=None, qkv_width=None,
+        norm_eps=None, norm_weight=None, final_eps=None, final_weight=None, qk_eps=None, qk_weight=None,
+        embed_scale=d.get("embedding_scale"),
         # facts only the card / text carry (no spec field): taken from the card, checked against the text below
         o_bias=(card.get("decoder.attention.o_bias") or {}).get("value"),
         scale=(card.get("decoder.attention.scores_scale") or {}).get("value"),
@@ -150,7 +158,9 @@ def read_page(ir):
         bid = b.get("id"); w = f"block {bid}"
         if b.get("kind") == "norm":
             text(w + " label", b.get("label"), [(r"(RMSNorm|LayerNorm)", lambda m: saw("norm", NK_R[m.group(1)], w))])
-            chips(w, b.get("facts"), [(rf"dim {_N}", lambda m: saw("hidden", _int(m.group(1)), w))])
+            chips(w, b.get("facts"), [(rf"dim {_N}", lambda m: saw("hidden", _int(m.group(1)), w)),
+                                      (r"eps ([0-9.e+-]+)", lambda m: saw("norm_eps", float(m.group(1)), w)),
+                                      (r"(weight w|weight 1 \+ w|no weight)", lambda m: saw("norm_weight", WEIGHT_R[m.group(1)], w))])
             text(w + " description", b.get("description"),
                  [(r"Recorded (RMSNorm|LayerNorm) on the layer input before attention\.", lambda m: saw("norm", NK_R[m.group(1)], w)),
                   (r"Recorded (RMSNorm|LayerNorm) before the FFN\.", lambda m: saw("norm", NK_R[m.group(1)], w)),
@@ -158,8 +168,11 @@ def read_page(ir):
                    r"the layer input before the FFN\.", lambda m: (saw("norm", NK_R[m.group(1)], w), saw("norm", NK_R[m.group(2)], w),
                                                                   saw("parallel_norms", 2, w))),
                   (r"Recorded (RMSNorm|LayerNorm) on the layer input, feeding both attention and the FFN\.",
-                   lambda m: (saw("norm", NK_R[m.group(1)], w), saw("parallel_norms", 1, w)))])
-            text(w + " title", b.get("title"), [(r"Pre-attention norm|Pre-FFN norm", lambda m: saw("parallel_norms", None, w)),
+                   lambda m: (saw("norm", NK_R[m.group(1)], w), saw("parallel_norms", 1, w))),
+                  (r"Recorded (RMSNorm|LayerNorm) on the (attention|FFN) OUTPUT before the residual add\.",
+                   lambda m: saw("norm", NK_R[m.group(1)], w))])
+            text(w + " title", b.get("title"), [(r"Pre-attention norm|Pre-FFN norm|Post-attention norm|Post-FFN norm",
+                                                 lambda m: saw("parallel_norms", None, w)),
                                                 (r"Pre-block norms \(separate\)", lambda m: saw("parallel_norms", 2, w)),
                                                 (r"Pre-block norm \(shared\)", lambda m: saw("parallel_norms", 1, w))])
         elif bid == "attn":
@@ -219,6 +232,8 @@ def read_page(ir):
                 elif cid in ("q_reshape", "k_reshape"):
                     chips(cw, F, [(rf"head dim {_N}", lambda m: saw("head_dim", _int(m.group(1)), cw))])
                 elif cid in ("q_norm", "k_norm"):
+                    chips(cw, c.get("facts"), [(r"eps ([0-9.e+-]+)", lambda m: saw("qk_eps", float(m.group(1)), cw)),
+                                      (r"(weight w|weight 1 \+ w|no weight)", lambda m: saw("qk_weight", WEIGHT_R[m.group(1)], cw))])
                     text(cw + " title", c.get("title"), [(r"(?:Query|Key) (RMSNorm|LayerNorm)", lambda m: saw("qk_norm_kind", NK_R[m.group(1)], cw))])
                     text(cw, c.get("description"), [(r"Recorded (RMSNorm|LayerNorm) on [QK] over the last axis \((\d+)\), (before|after) RoPE\.",
                                                      lambda m: (saw("qk_norm_kind", NK_R[m.group(1)], cw), saw("qk_norm_extent", int(m.group(2)), cw),
@@ -311,6 +326,8 @@ def read_page(ir):
             text(w + " description", b.get("description"), [
                 (r"Recorded add: block input \+ attention output\.", lambda m: saw("residual", "sequential", w)),
                 (r"Recorded add: post-attention \+ FFN output\.", lambda m: saw("residual", "sequential", w)),
+                (r"Recorded add: block input \+ normed attention output\.", lambda m: saw("residual", "sequential", w)),
+                (r"Recorded add: post-attention \+ normed FFN output\.", lambda m: saw("residual", "sequential", w)),
                 (r"Recorded adds: layer input \+ attention output \+ FFN output\.", lambda m: saw("residual", "parallel", w))])
         else:
             unread(w, f"layer block {bid!r} is outside the oracle's grammar")
@@ -339,7 +356,8 @@ def read_page(ir):
         if t not in TIE_TXT: unread(where, f"{where} tie text {t!r} is outside the grammar"); return
         saw("tied", TIE_TXT[t], where)
     if "embed" in mb:
-        chips("embed", mb["embed"].get("facts"), [(rf"{_N} vocab", lambda m: saw("vocab", _int(m.group(1)), "embed")),
+        chips("embed", mb["embed"].get("facts"), [(r"scaled × ([0-9.e+-]+)", lambda m: saw("embed_scale~8g", float(m.group(1)), "embed")),
+                                                 (rf"{_N} vocab", lambda m: saw("vocab", _int(m.group(1)), "embed")),
                                                  (rf"{_N}-d", lambda m: saw("hidden", _int(m.group(1)), "embed"))])
         tie_of(mb["embed"].get("description"), "Maps each token id to its vector", "embed")
     if "lm_head" in mb:
@@ -347,7 +365,9 @@ def read_page(ir):
         tie_of(mb["lm_head"].get("description"), "Recorded matmul into vocabulary logits", "lm_head")
     if "final_rms" in mb:
         text("final_rms label", mb["final_rms"].get("label"), [(r"Final (RMSNorm|LayerNorm)", lambda m: saw("final_norm", NK_R[m.group(1)], "final_rms"))])
-        chips("final_rms", mb["final_rms"].get("facts"), [(rf"dim {_N}", lambda m: saw("hidden", _int(m.group(1)), "final_rms"))])
+        chips("final_rms", mb["final_rms"].get("facts"), [(rf"dim {_N}", lambda m: saw("hidden", _int(m.group(1)), "final_rms")),
+                                                         (r"eps ([0-9.e+-]+)", lambda m: saw("final_eps", float(m.group(1)), "final_rms")),
+                                      (r"(weight w|weight 1 \+ w|no weight)", lambda m: saw("final_weight", WEIGHT_R[m.group(1)], "final_rms"))])
         text("final_rms description", mb["final_rms"].get("description"),
              [(r"Recorded (RMSNorm|LayerNorm) over the last hidden state before the output head\.", lambda m: saw("final_norm", NK_R[m.group(1)], "final_rms"))])
 
@@ -377,6 +397,13 @@ def read_page(ir):
         elif k == "decoder.layer.parallel_norm_count": saw("parallel_norms", v, f"card {k}")
         elif k == "model.position_embedding": saw("pos_emb", v == "learned absolute", f"card {k}")
         elif k == "model.lm_head_bias": saw("head_bias", v is True, f"card {k}")
+        elif k in ("decoder.layer.norm_eps", "model.final_norm_eps", "decoder.attention.qk_norm_eps"):
+            saw({"decoder.layer.norm_eps": "norm_eps", "model.final_norm_eps": "final_eps",
+                 "decoder.attention.qk_norm_eps": "qk_eps"}[k], v, f"card {k}")
+        elif k in ("decoder.layer.norm_weight", "model.final_norm_weight", "decoder.attention.qk_norm_weight"):
+            saw({"decoder.layer.norm_weight": "norm_weight", "model.final_norm_weight": "final_weight",
+                 "decoder.attention.qk_norm_weight": "qk_weight"}[k], WEIGHT_R.get(v, v), f"card {k}")
+        elif k == "model.embedding_scale": saw("embed_scale~card", v, f"card {k}")
         elif k in ("decoder.attention.cached", "model.max_position_embeddings"):
             pass                                           # UNCHECKED
         else:
@@ -393,11 +420,17 @@ def read_page(ir):
         if fact in derived: return derived[fact]
         return P.get(fact)
     # facts only the text / card state (no spec field): every mention must agree; the agreed value is the page fact
-    TEXT_ONLY = ("qkv_split", "w_layout", "pos_emb", "head_bias", "pos_rows", "qkv_width")
+    TEXT_ONLY = ("qkv_split", "w_layout", "pos_emb", "head_bias", "pos_rows", "qkv_width",
+                 "norm_eps", "norm_weight", "final_eps", "final_weight", "qk_eps", "qk_weight")
     for f_ in TEXT_ONLY:
         vs = {v for x, v, _ in seen if x == f_}
+        if f_.endswith("_eps") and len(vs) > 1 and all(isinstance(v, float) for v in vs) and \
+                max(vs) - min(vs) <= 1e-5 * max(abs(v) for v in vs):
+            # the chip shows 6 significant digits, the card the exact number: one value; the card's is used
+            vs = {next((v for x, v, w_ in seen if x == f_ and w_.startswith("card")), max(vs))}
         if len(vs) > 1: fail(f_, f"the page states {f_} as {sorted(map(str, vs))}")
         elif vs: P[f_] = next(iter(vs))
+    seen_all = list(seen)
     seen[:] = [x for x in seen if x[0] not in TEXT_ONLY]
     if P["fused"] != (P["qkv_split"] is not None):
         fail("qkv split", f"the spec says {'a fused' if P['fused'] else 'separate'} Q/K/V projection(s); the text "
@@ -408,6 +441,12 @@ def read_page(ir):
         if tuple(P["qkv_split"][1:]) != want_sp or (P.get("qkv_width") not in (None, (nh + 2 * nkv) * hd_)):
             fail("qkv split", f"the stated split {P['qkv_split']} / width {P.get('qkv_width')} disagrees with {nh} Q / "
                               f"{nkv} K-V heads of {hd_}")
+    for f_, need in (("norm", True), ("final", True), ("qk", P["qk_norm"])):
+        if need and (P[f_ + "_eps"] is None or P[f_ + "_weight"] not in ("w", "1+w", "none")):
+            unread(f"{f_} norm eps / weight", f"the page states no {f_}-norm eps or weight form the oracle can read "
+                                             f"({P[f_ + '_eps']!r}, {P[f_ + '_weight']!r})")
+    if P["embed_scale"] is not None and not any(x[0].startswith("embed_scale") for x in seen_all):
+        fail("embedding scale", "the spec has an embedding scale the page text does not show")
     if P["rot_dim"] is not None and not (P["rope"] and 0 < P["rot_dim"] < (P["head_dim"] or 0)):
         fail("rot_dim", f"partial rotary {P['rot_dim']} of {P['head_dim']} head dims")
     ex = [v for f_, v, _ in seen if f_ == "scale~exact"]      # an exact form in the text is the stated value
@@ -420,6 +459,8 @@ def read_page(ir):
         elif fact in ("theta~6g", "theta~card"):
             ok = (v is None and P["theta"] is None) or (v is not None and P["theta"] is not None
                                                        and abs(v - P["theta"]) <= 1e-5 * abs(P["theta"]))
+        elif fact in ("embed_scale~8g", "embed_scale~card"):
+            ok = P["embed_scale"] is not None and abs(v - P["embed_scale"]) <= 1e-7 * abs(P["embed_scale"])
         elif fact == "scale~card":                       # the card rounds the scale to 6 decimals (to_ir)
             ok = (v is None and P["scale"] is None) or (v is not None and P["scale"] is not None
                                                        and abs(v - P["scale"]) <= 5.01e-7)

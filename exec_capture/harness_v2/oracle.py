@@ -30,6 +30,12 @@ import capture, exec_to_ir
 
 TOL = 1e-4          # max |real - ref| / max |ref| per stage. float64 everywhere, but the library computes RoPE tables, softmax
                     # and RMSNorm in fp32: measured floor <= 1.3e-6 per stage, 5.4e-6 end to end (SmolLM2, S=257)
+# the eps seeds: every non-norm parameter x 1e-3 so each norm's input is small and its stated eps matters. Seed 2 also
+# shrinks the embedding (the layer and final norms see a small residual stream); seed 3 keeps the embedding at full scale
+# (projections of an O(1) stream are ~1e-3, so a QK-norm's mean square is comparable to its eps and the scores stay O(1))
+# seed 4 shrinks ONLY the embedding (the residual stream) and keeps every projection at full scale: a post / sandwich
+# output norm then sees a sublayer output whose mean square is comparable to eps, while its normalized output is O(1)
+EPS_SEED_SCALE, EPS_SEEDS = 1e-3, {2: "all", 3: "projections", 4: "embedding"}
 CONVENTIONS = [
     "GQA: query head h reads K/V head h // (heads / kv_heads) (contiguous groups; the page says 'N Q per KV head')",
     "RoPE: rotate-half on the full head width, inv_freq[i] = theta^(-2i/head_dim), positions 0..S-1 (the page says "
@@ -100,16 +106,27 @@ def param_map(bundle, P):
     head = next(j for j in range(len(N) - 1, last_layer_op, -1) if N[j].func in exec_to_ir.MATMULS and R.weights(j))
     M["head"] = R.weights(head)[0]
     M["head_b"] = bias_of(head)
+    # the norms between the attention output and the MLP input, and after the MLP output, are named by the page's
+    # placement: pre -> [n2]; post (sublayer output) -> [no1] and [no2]; double (sandwich) -> [no1, n2] and [no2]
+    mid_roles = {"pre": ["n2"], "post": ["no1"], "double": ["no1", "n2"]}.get(P.get("placement"), ["n2"])
+    mid_seen = []
     for w in sorted(readers, key=rd):                                 # 1-D tensors by where their reader sits
         if w in used or len(pshape.get(w, ())) != 1: continue
         r = rd(w)
         ws = [x for x in R.weights(r) if len(pshape.get(x, ())) == 1]
-        slot = "w" if ws.index(w) == 0 and N[r].func != "add" else "b"
+        # a bias is ADDED to a hidden value; a weight is multiplied in (directly, or as 1 + w computed from it alone)
+        hidden_add = N[r].func == "add" and any(e[0] == "op" for e in N[r].ins)
+        slot = "b" if hidden_add or ws.index(w) > 0 else "w"
         if w.startswith(lp + "."):
             if r < min(q_op, k_op, v_op): role = "n1"
             elif r < sm and r in q_anc: role = "qn"
             elif r < sm and r in k_anc: role = "kn"
-            elif (o_op if o_op is not None else apply_v) < r < mlp_in: role = "n2"
+            elif (o_op if o_op is not None else apply_v) < r < mlp_in:
+                if slot == "w": mid_seen.append(w)
+                k_ = len(mid_seen) - 1 if slot == "w" else max(len(mid_seen) - 1, 0)
+                if k_ >= len(mid_roles): continue
+                role = mid_roles[k_]
+            elif r > d_op: role = "no2"
             else: continue
         elif last_layer_op < r < head: role = "nf"
         else: continue
@@ -139,9 +156,10 @@ def config_layers(bundle):
     return getattr(cls.config_class.from_dict(dict(bundle["config"])), "num_hidden_layers", None) if cls else None
 
 
-def randomize(model, M, seed):
+def randomize(model, M, seed, small=1.0, mode="all", emb_div=1.0):
     """Seeded random values for every parameter (asymmetric: norm weights ~ 1 +- 0.3, biases ~ N(0, 0.3), matrices
-    scaled by 1/sqrt(fan_in), embedding N(0, 1)). Shared tensors get one value."""
+    scaled by 1/sqrt(fan_in), embedding N(0, 1)). Shared tensors get one value. `small` < 1 scales every non-norm
+    parameter down, so every norm (layer, final, QK) sees small inputs and its stated eps matters (the eps seed)."""
     g = torch.Generator().manual_seed(seed)
     norm_w = {v for k, v in M.items() if not k.startswith("_") and v and k.endswith("_w")}
     seen = set()
@@ -153,9 +171,13 @@ def randomize(model, M, seed):
             seen.add(id(p))
             r = torch.randn(p.shape, generator=g, dtype=torch.float64)
             if p.dim() >= 2:
-                r = r if id(p) == emb_id else r / math.sqrt(p.shape[-1])
+                # the eps seeds also divide by the page's embedding scale (Gemma x sqrt(H)), so the stream stays small
+                s_emb = small / emb_div if mode in ("all", "embedding") else 1.0
+                s_mat = small if mode in ("all", "projections") else 1.0
+                r = r * s_emb if id(p) == emb_id else r / math.sqrt(p.shape[-1]) * s_mat
             else:
-                r = 1 + 0.3 * r if any(_same_role(name, w) for w in norm_w) else 0.3 * r
+                r = 1 + 0.3 * r if any(_same_role(name, w) for w in norm_w) else \
+                    0.3 * r * (small if mode in ("all", "projections") else 1.0)
             p.copy_(r.to(p.dtype))
 
 
@@ -174,7 +196,9 @@ class Reference:
     def __init__(self, P, W, eps, l3_extra):
         self.P, self.W, self.eps, self.l3_extra = P, W, eps, l3_extra
 
-    def norm(self, kind, x, w, b, eps):
+    def norm(self, kind, x, w, b, eps, wform="w"):
+        if wform == "none": w = None                              # the page's stated weight form decides
+        elif w is not None and wform == "1+w": w = 1 + w
         if kind == "rmsnorm":
             if b is not None: raise NotCheckable("an RMSNorm with a bias has no drawn form")
             y = x * torch.rsqrt(x.pow(2).mean(-1, keepdim=True) + eps)
@@ -239,7 +263,7 @@ class Reference:
 
     def qk_norm(self, x, role, i):
         P = self.P
-        return self.norm(P["qk_norm_kind"], x, self.W(role + "_w", i), self.W(role + "_b", i), self.eps["qk"])
+        return self.norm(P["qk_norm_kind"], x, self.W(role + "_w", i), self.W(role + "_b", i), P["qk_eps"], P["qk_weight"])
 
     def attention_probs(self, h, i):
         """(probabilities [B, nh, S, S], v [B, nkv, S, hd]) from the attention input h."""
@@ -300,39 +324,46 @@ class Reference:
             z = act(self.lin(h, W("up", i), bb("up")))
         return self.lin(z, W("down", i), bb("down"))
 
-    def n1(self, x, i): return self.norm(self.P["norm"], x, self.W("n1_w", i), self.W("n1_b", i), self.eps["layer"])
-    def n2(self, x, i): return self.norm(self.P["norm"], x, self.W("n2_w", i), self.W("n2_b", i), self.eps["layer"])
+    def _ln(self, r, x, i):
+        return self.norm(self.P["norm"], x, self.W(r + "_w", i), self.W(r + "_b", i), self.P["norm_eps"], self.P["norm_weight"])
+    def n1(self, x, i): return self._ln("n1", x, i)
+    def n2(self, x, i): return self._ln("n2", x, i)
+    def no1(self, x, i): return self._ln("no1", x, i) if self.P["placement"] in ("post", "double") else x
+    def no2(self, x, i): return self._ln("no2", x, i) if self.P["placement"] in ("post", "double") else x
 
     # stage predictions from the REAL model's stage inputs (so a mismatch names the stage)
+    # placements (IR meaning): pre r + sub(norm(h)); post r + norm(sub(h)); double r + norm_o(sub(norm_i(h)))
     def attn_input(self, x, i):
-        return self.n1(x, i) if self.P["placement"] == "pre" else x
+        return self.n1(x, i) if self.P["placement"] in ("pre", "double") else x
 
     def mlp_input(self, x, a, i):
         if self.P["residual"] == "parallel":              # both branches read the layer input
             return self.n2(x, i) if self.P["parallel_norms"] == 2 else self.n1(x, i)
-        return self.n2(x + a, i) if self.P["placement"] == "pre" else self.n1(x + a, i)
+        h = x + self.no1(a, i)
+        return self.n2(h, i) if self.P["placement"] in ("pre", "double") else h
 
     def layer_output(self, x, a, m, i):
-        if self.P["placement"] == "pre": return x + a + m
-        h = self.n1(x + a, i)
-        return self.n2(h + m, i)
+        if self.P["residual"] == "parallel": return x + a + m
+        return x + self.no1(a, i) + self.no2(m, i)
 
     def layer(self, x, i):
         if self.P["residual"] not in ("sequential", "parallel") or (
-                self.P["residual"] == "parallel" and self.P["parallel_norms"] not in (1, 2)):
+                self.P["residual"] == "parallel" and self.P["parallel_norms"] not in (1, 2)) or \
+                self.P["placement"] not in ("pre", "post", "double"):
             raise NotCheckable(f"residual topology {self.P['residual']!r} has no reference")
         a = self.attention(self.attn_input(x, i), i)
         return self.layer_output(x, a, self.mlp(self.mlp_input(x, a, i), i), i)
 
     def embed(self, ids):
         x = self.W("emb", 0)[ids]
+        if self.P.get("embed_scale") is not None: x = x * self.P["embed_scale"]      # the page's embedding scale
         if self.P.get("pos_emb"):                          # learned absolute positions 0..S-1, added
             x = x + self.W("pos", 0)[torch.arange(ids.shape[-1])]
         return x
 
     def final(self, x):
         P = self.P
-        h = self.norm(P["final_norm"], x, self.W("nf_w", 0), self.W("nf_b", 0), self.eps["final"])
+        h = self.norm(P["final_norm"], x, self.W("nf_w", 0), self.W("nf_b", 0), P["final_eps"], P["final_weight"])
         head = self.W("emb", 0) if P["tied"] in (True, None) else self.W("head", 0)
         y = h @ head.T
         return y + self.W("head_b", 0) if P.get("head_bias") else y
@@ -399,7 +430,9 @@ def check(model, P, M, eps, l3_extra, n_layers, seeds=(0, 1), S=24, B=2, randomi
     errors = {}
     ref = Reference(P, W, eps, l3_extra)
     for seed in seeds:
-        if randomize_weights: randomize(model, M, 1000 + seed)
+        if randomize_weights:
+            randomize(model, M, 1000 + seed, small=EPS_SEED_SCALE if seed in EPS_SEEDS else 1.0,
+                      mode=EPS_SEEDS.get(seed, "all"), emb_div=abs(P.get("embed_scale") or 1.0))
         g = torch.Generator().manual_seed(seed)
         ids = torch.randint(0, min(P["vocab"], W("emb", 0).shape[0]), (B, S), generator=g)
         cap = collections.defaultdict(dict)
@@ -462,23 +495,23 @@ def check(model, P, M, eps, l3_extra, n_layers, seeds=(0, 1), S=24, B=2, randomi
 
 
 def undrawn_inputs(cfg, P):
-    """Values the reference needs that the page does not state (taken from the config, listed on the row)."""
-    e = next((cfg[k] for k in ("rms_norm_eps", "layer_norm_eps", "norm_eps", "layer_norm_epsilon") if cfg.get(k) is not None), None)
-    if e is None:
-        raise NotCheckable("no norm eps in the config and none on the page")
-    eps = {"layer": e, "final": e, "qk": e}
+    """Values the reference needs that the page does not state (taken from the config, listed on the row). Norm eps is
+    on the page (group 2), so only the llama3 low / high frequency factors remain."""
+    eps = None
     l3 = None
     if P["llama3"]:
         rs = cfg.get("rope_scaling") or cfg.get("rope_parameters") or {}
         l3 = {k: float(rs[k]) for k in ("low_freq_factor", "high_freq_factor")}
-    und = {"norm_eps (all norms)": e}
+    und = {}
     if l3: und.update({f"llama3 {k}": v for k, v in l3.items()})
     return eps, l3, und
 
 
 ROLE_FACT = {"emb": "vocab / hidden", "q": "query heads x head_dim", "k": "K/V heads x head_dim", "v": "K/V heads x head_dim",
              "o": "output projection width", "gate": "FFN width", "up": "FFN width", "down": "FFN width",
-             "n1_w": "hidden", "n2_w": "hidden", "nf_w": "hidden", "qn_w": "QK-norm extent", "kn_w": "QK-norm extent",
+             "n1_w": "attention-input norm", "n2_w": "MLP-input norm (placement / parallel norm count)",
+             "no1_w": "attention-output norm (placement)", "no2_w": "MLP-output norm (placement)",
+             "nf_w": "final norm", "qn_w": "QK-norm extent", "kn_w": "QK-norm extent",
              "head": "vocab / hidden", "pos": "position table", "q_b": "Q/K/V bias width", "head_b": "LM head bias"}
 
 
@@ -489,18 +522,32 @@ def static_checks(P, M, model, cfg):
     T = lambda r: names.get(M.get(r)) if M.get(r) else None
     H, V, nh, nkv, hd, I = P["hidden"], P["vocab"], P["num_heads"], P["num_kv"], P["head_dim"], P["inter"]
     mat = (lambda o, i: (o, i)) if P.get("w_layout") != "in_out" else (lambda o, i: (i, o))   # the page's layout
-    want = {"emb": (V, H), "up": mat(I, H), "down": mat(H, I), "nf_w": (H,), "n1_w": (H,)}
+    want = {"emb": (V, H), "up": mat(I, H), "down": mat(H, I)}
+    pl = P["placement"]
+    lnorms = (["n1_w"] if P["residual"] == "parallel" or pl in ("pre", "double") else []) + \
+        (["n2_w"] if (P["residual"] != "parallel" and pl in ("pre", "double")) or
+         (P["residual"] == "parallel" and P.get("parallel_norms") == 2) else []) + \
+        (["no1_w", "no2_w"] if P["residual"] != "parallel" and pl in ("post", "double") else [])
+    if P.get("norm_weight") != "none": want.update({r: (H,) for r in lnorms})
+    if P.get("final_weight") != "none": want["nf_w"] = (H,)
+    # a norm drawn with NO weight on a model whose norm reads one is a wrong page (the weight would be silently dropped)
+    for form_, roles_, fact_ in ((P.get("norm_weight"), lnorms, "layer norm weight form"),
+                                 (P.get("final_weight"), ["nf_w"], "final norm weight form"),
+                                 (P.get("qk_weight") if P["qk_norm"] else None, ["qn_w", "kn_w"], "QK-norm weight form")):
+        if form_ == "none":
+            have_ = [M[r] for r in roles_ if T(r) is not None]
+            if have_:
+                out.append(("FAIL", fact_, f"the page draws the norm with no weight; the model's norm reads {', '.join(have_)}"))
     if P.get("fused"):
         want["q"] = mat((nh + 2 * nkv) * hd, H)
         if P["qkv_bias"]: want["q_b"] = ((nh + 2 * nkv) * hd,)
     else:
         want.update(q=mat(nh * hd, H), k=mat(nkv * hd, H), v=mat(nkv * hd, H))
-    if not (P["residual"] == "parallel" and P.get("parallel_norms") == 1): want["n2_w"] = (H,)
     if P["o_proj"]: want["o"] = mat(H, nh * hd)
     if P["gated"]: want["gate"] = mat(I, H)
     if P.get("pos_emb"): want["pos"] = (P.get("pos_rows"), H)
     if P.get("head_bias"): want["head_b"] = (V,)
-    if P["qk_norm"]: want.update(qn_w=(P["qk_norm_extent"],), kn_w=(P["qk_norm_extent"],))
+    if P["qk_norm"] and P.get("qk_weight") != "none": want.update(qn_w=(P["qk_norm_extent"],), kn_w=(P["qk_norm_extent"],))
     if P["tied"] is False: want["head"] = (V, H)
     for r, shp in want.items():
         t = T(r)
@@ -524,7 +571,7 @@ def static_checks(P, M, model, cfg):
         out.append(("FAIL", "tied head", f"the page says the head is the embedding; the model's head reads {M.get('head')}"))
     if P["tied"] is False and same:
         out.append(("FAIL", "tied head", "the page says the head is a separate tensor; the model's head reads the embedding"))
-    for r, kind_ in (("n1", P["norm"]), ("n2", P["norm"]), ("nf", P["final_norm"])):
+    for r, kind_ in (("n1", P["norm"]), ("n2", P["norm"]), ("no1", P["norm"]), ("no2", P["norm"]), ("nf", P["final_norm"])):
         if kind_ == "rmsnorm" and T(r + "_b") is not None:
             out.append(("FAIL", "norm kind", f"the page draws an RMSNorm (no bias); the model's norm adds {M[r + '_b']}"))
     if T("head_b") is not None and not P.get("head_bias"):
@@ -538,14 +585,23 @@ def static_checks(P, M, model, cfg):
 
 
 def affordable_layers(cfg, budget_bytes=4.5e9):
-    """All layers when the float64 model fits the budget, else 2 (the page's identical-layer claim covers the rest)."""
-    H, V, I, L = (cfg.get(k) or 0 for k in ("hidden_size", "vocab_size", "intermediate_size", "num_hidden_layers"))
+    """All layers when the float64 model fits the budget, else 2 (the page's identical-layer claim covers the rest).
+    `cfg`: a dict, or a bundle (its config is read through the library's config class: n_embd / n_layer / ...)."""
+    if isinstance(cfg, dict) and "config" in cfg and "class" in cfg:
+        import transformers
+        cls = getattr(transformers, cfg["class"], None)
+        c_ = cls.config_class.from_dict(dict(cfg["config"])) if cls else None
+        g_ = lambda k: getattr(c_, k, None) if c_ is not None else None
+        H, V, L = g_("hidden_size") or 0, g_("vocab_size") or 0, g_("num_hidden_layers") or 0
+        I = g_("intermediate_size") or g_("n_inner") or 4 * H
+    else:
+        H, V, I, L = (cfg.get(k) or 0 for k in ("hidden_size", "vocab_size", "intermediate_size", "num_hidden_layers"))
     per = 4 * H * H + 3 * H * I
     full = (2 * V * H + L * per) * 8
     return L if L and full <= budget_bytes else min(2, L or 2)
 
 
-def run_bundle(B, n_layers=None, seeds=(0, 1), S=24, model=None, randomize_weights=True, f_edit=None, ir_edit=None):
+def run_bundle(B, n_layers=None, seeds=(0, 1, 2, 3, 4), S=24, model=None, randomize_weights=True, f_edit=None, ir_edit=None):
     """One row: NOT_DRAWN / NOT_CHECKABLE / PASS / FAIL. `model`: an already-built real model (the mutant harness);
     `f_edit` edits the recognizer facts before to_ir (a self-consistent wrong page), `ir_edit` edits the rendered IR."""
     row = {"repo": B.get("repo"), "class": B.get("class"), "unchecked_facts": None}
@@ -571,9 +627,7 @@ def run_bundle(B, n_layers=None, seeds=(0, 1), S=24, model=None, randomize_weigh
         row["undrawn_inputs"] = und
         cfg = dict(cfg, num_hidden_layers=config_layers(B))
         if model is None:
-            model = build_real(B, n_layers or affordable_layers(
-                {"hidden_size": P["hidden"], "vocab_size": P["vocab"], "intermediate_size": P["inter"],
-                 "num_hidden_layers": P["layers"]}))
+            model = build_real(B, n_layers or affordable_layers(B))
         nl = len(model.get_submodule(M["_stack"]))
         row["real_layers_built"], row["drawn_layers"] = nl, P["layers"]
         issues = issues + static_checks(P, M, model, cfg)

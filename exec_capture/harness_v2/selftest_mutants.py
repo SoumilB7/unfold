@@ -252,7 +252,9 @@ mutant("embeddings scrambled (transpose+reshape)")(emb_perm)
 
 
 BENIGN = {"scores = K @ Q^T (MHA)", "score scale x 1/sqrt(d) twice (scale drawn as fact?)",
-          "norm: pow 2 then pow 0.5? x / sqrt(mean x^2) (legit RMS, sanity)", "norm: weight is 2*w",
+          "norm: pow 2 then pow 0.5? x / sqrt(mean x^2) (legit RMS, sanity)",
+          # "norm: weight is 2*w" moved out of BENIGN in group 2 (2026-10-18): the page now states the norm weight form (w or
+          # 1 + w); 2*w is neither, so the recognizer must refuse it
           "MLP act on up instead of gate (naming only, expect drawn=ok)",
           "o_proj/down_proj as addmm with bias, alpha=1 (expect drawn: bias)"}
 KNOWN_OPEN = {"probabilities transposed before @V (S=8)", "GQA repeat tiled instead of interleaved",

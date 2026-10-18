@@ -577,6 +577,31 @@ def _recognize(bundle):
     def _norm_accept(region):
         return _norm_match(region)[1]
 
+    def _norm_info(region):
+        """{kind, eps, weight} of the one normalization in `region` (or None): eps is the constant the recorded
+        statistic adds (0.0 when none is added); weight is 'w' (read directly), '1+w' (the weight plus exactly 1,
+        computed from the parameter alone) or 'none'. Any other weight transform raises NotDrawn."""
+        kind_, acc = _norm_match(region)
+        if not kind_: return None
+        ln = [j for j in acc if N[j].func in ("native_layer_norm", "layer_norm")]
+        if ln:
+            ps = [e for e in N[ln[0]].ins if e[0] == "param"]
+            return {"kind": kind_, "eps": float(list(N[ln[0]].consts)[1]), "weight": "w" if ps else "none"}
+        stat = next(j for j in acc if N[j].func in ("rsqrt", "sqrt"))
+        y = _thru(R.srcs(stat)[0]); eps = 0.0
+        if N[y].func == "add" and N[y].consts: eps = float(N[y].consts[0])
+        wmul = [j for j in acc if N[j].func == "mul" and not N[j].consts and any(_param_side(e) for e in N[j].ins)]
+        if not wmul: return {"kind": kind_, "eps": eps, "weight": "none"}
+        e = next(e for e in N[wmul[0]].ins if _param_side(e))
+        if e[0] == "param": return {"kind": kind_, "eps": eps, "weight": "w"}
+        anc = set(R.back(e[1], lambda z: False, 50)[1]) | {e[1]}
+        core = [x for x in anc if N[x].func not in ("_to_copy", "to", "type_as", "alias", "clone", "detach")]
+        if (len(core) == 1 and N[core[0]].func == "add" and list(N[core[0]].consts) in ([1], [1.0])
+                and [e2[0] for e2 in N[core[0]].ins] == ["param"]):
+            return {"kind": kind_, "eps": eps, "weight": "1+w"}
+        raise NotDrawn(f"a {kind_} weight enters through {sorted(N[x].func for x in core)} {[list(N[x].consts) for x in core]}: "
+                       "only the weight itself (w) or 1 + w is drawn")
+
     def _norm_desc(region):
         """What the layout message says about a norm slot: its kind, 'none', or a normalization with extra ops."""
         k_, acc = _norm_match(region)
@@ -684,6 +709,19 @@ def _recognize(bundle):
         return keep | {j for j in ops if _moves_only(j)}
 
     first_layer_op = min(L[layer_ids[0]])
+    embed_scale = None
+    for j in sorted(hid):
+        if j >= first_layer_op or N[j].func != "mul": continue
+        srcs_ = [e for e in N[j].ins if not (e[0] == "op" and _thru0(e[1]) == emb)]
+        if len(N[j].ins) == 2 and len(srcs_) == 1 and srcs_[0][0] == "buffer":
+            bv = ((bundle["model"].get("computed_buffers") or {}).get(srcs_[0][1]) or {}).get("values")
+            if bv and len(bv) == 1: embed_scale = {"op": j, "value": float(bv[0]), "source": f"buffer {srcs_[0][1]}"}
+        elif len(N[j].ins) == 1 and len(N[j].consts) == 1:
+            embed_scale = {"op": j, "value": float(N[j].consts[0]), "source": "constant"}
+        if embed_scale:
+            ev["embedding_scale"].append(f"op {j} multiplies the token embedding by {embed_scale['value']:.8g} "
+                                         f"({embed_scale['source']})")
+            break
     pos_emb = None
     S_tok = N[emb].shape[-2] if N[emb].shape and len(N[emb].shape) >= 2 else None
     for j in sorted(hid):
@@ -1056,9 +1094,22 @@ def _recognize(bundle):
         if shared: n2 = n1
         residual = "parallel"
         placement = "pre" if n1 and parallel_norms else None
-    else:
+    a_out_reg = m_out_reg = None
+    if not parallel:
         residual = "sequential" if len(adds) >= 2 and adds[0] in R.back(adds[1], lambda j: False, 400)[1] else ("parallel" if adds else None)
-        placement = "pre" if n1 and n2 else ("post" if adds else None)
+        def _out_norm(add_j, out_op):
+            """The hidden-path ops between a sublayer's output op and the residual add it feeds, when they are one
+            normalization (post / sandwich placement); else None."""
+            br = [x for x in R.srcs(add_j) if x == out_op or out_op in set(R.back(x, lambda z: False, 400)[1])]
+            if len(br) != 1 or _thru(br[0]) == out_op: return None
+            reg = {x for x in R.back(br[0], lambda z: z == out_op, 400)[1] if x in hid and x > out_op}
+            return reg if _norm_match(reg)[0] else None
+        if len(adds) == 2 and residual == "sequential":
+            a_out_reg, m_out_reg = _out_norm(adds[0], o_out0), _out_norm(adds[1], down)
+        has_out = bool(a_out_reg) and bool(m_out_reg)
+        placement = ("pre" if n1 and n2 and not (a_out_reg or m_out_reg) else
+                     "double" if n1 and n2 and has_out else
+                     "post" if not n1 and not n2 and has_out else None)
     ev["residual"].append(f"{len(adds)} residual adds in the layer module; placement {placement}; topology {residual}")
 
     # FFN bias: an addmm on up/down, or a 1-D weight added right after them
@@ -1131,6 +1182,9 @@ def _recognize(bundle):
     mlp_in = min(x for x in (gate, up) if x is not None)
     for tgt, lo, pool in ((q_proj, min(lops) - 1, pre_attn_ops), (mlp_in, mlp_lo, pre_mlp_ops), (head, last, fin_ops)):
         explained |= _norm_accept(_region(tgt, lo) & set(pool))
+    for reg_ in (a_out_reg, m_out_reg):
+        if reg_: explained |= _norm_accept(reg_)
+    if embed_scale: explained.add(embed_scale["op"])
     # before softmax: scalar scales and the one mask add only
     explained |= {j for j in pre_sm if j in hid and (N[j].func in TRANSPARENT or _scalar_only(j))}
     explained |= {j for j, _ in madds}
@@ -1178,17 +1232,32 @@ def _recognize(bundle):
                            f"pre-branch norms ({n1}, {n2}, {len(adds)} adds): not drawn")
         if sorted(_sum_leaves(lay_out)) != sorted([_thru(layer_in), _thru(o_out0), _thru(down)]):
             raise NotDrawn("the parallel layer's output is not layer input + attention output + MLP output: not drawn")
-    elif not (n1 and n2) or placement != "pre" or residual != "sequential" or len(adds) != 2:
+    elif placement not in ("pre", "post", "double") or residual != "sequential" or len(adds) != 2:
         d1 = _norm_desc(_region(q_proj, min(lops) - 1) & set(pre_attn_ops))
         d2 = _norm_desc(_region(mlp_in, adds[0] if adds else (o_proj or apply_v)) & set(pre_mlp_ops))
-        raise NotDrawn(f"the layer is not pre-norm sequential (observed: attention-input norm {d1}, MLP-input norm "
-                       f"{d2}, {len(adds)} residual add(s) combining two hidden values): only pre-norm sequential "
-                       "layers are drawn yet")
-    if n1 != n2:
-        raise NotDrawn(f"the attention-input norm is {n1} and the MLP-input norm {n2}: a layer is drawn with one norm "
-                       "kind, so mixed kinds are not drawn yet")
+        raise NotDrawn(f"the layer is not a drawn sequential placement (observed: attention-input norm {d1}, MLP-input "
+                       f"norm {d2}, attention-output norm {'yes' if a_out_reg else 'no'}, MLP-output norm "
+                       f"{'yes' if m_out_reg else 'no'}, {len(adds)} residual add(s)): pre, post (sublayer output) and "
+                       "sandwich placements are drawn")
+    regs_ = [r_ for r_ in ((_region(q_proj, min(lops) - 1) & set(pre_attn_ops)) if n1 else None,
+                           (_region(mlp_in, mlp_lo) & set(pre_mlp_ops)) if (n2 and not (parallel and parallel_norms == 1)) else None,
+                           a_out_reg, m_out_reg) if r_]
+    infos_ = [_norm_info(r_) for r_ in regs_]
+    if len({(i_["kind"], i_["eps"], i_["weight"]) for i_ in infos_}) != 1:
+        raise NotDrawn(f"the layer's norms differ ({[(i_['kind'], i_['eps'], i_['weight']) for i_ in infos_]}): one norm "
+                       "kind / eps / weight form is drawn per layer")
+    norm_info = infos_[0]
+    n1 = n2 = norm_info["kind"]
     if final_norm is None:
         raise NotDrawn("no final norm observed before the output head: that model ending is not drawn yet")
+    final_info = _norm_info(_region(head, last) & set(fin_ops))
+    qk_info = None
+    if qkn:
+        qi_ = [_norm_info({j for j in set(p_) & hid if (min([x for x in p_ if x in hid and N[x].func == "mul" and _rot_operands(x)] or [10 ** 9]) > j)})
+               for p_ in (q_path, k_path)]
+        if None in qi_ or qi_[0] != qi_[1]:
+            raise NotDrawn(f"the query and key norms differ in eps / weight form ({qi_}): not drawn")
+        qk_info = qi_[0]
     # ---- wiring: every arrow the drawing shows is a recorded dataflow edge of layer 0 (the other layers are wired
     #      identically, checked above), looking only through shape-only ops
     def _hin(j):
@@ -1200,21 +1269,27 @@ def _recognize(bundle):
     regf = _region(head, last) & set(fin_ops)
     o_out = o_proj if o_proj is not None else apply_v
     v_src = _hin(v_proj)
+    a_res = _thru(next(x for x in R.srcs(adds[0]) if a_out_reg and x in a_out_reg)) if a_out_reg else _thru(o_out)
+    m_res = _thru(next(x for x in R.srcs(adds[1]) if m_out_reg and x in m_out_reg)) if m_out_reg else _thru(down)
     arrows = [
-        ("attention-input norm <- layer input", _feeds(reg1) == [_thru(layer_in)]),
+        ("attention-input norm <- layer input", _feeds(reg1) == [_thru(layer_in)]) if placement != "post" else
+        ("Q, K, V projections <- the layer input", v_src == [_thru(layer_in)]),
         ("Q, K, V projections <- one normed input", _hin(q_proj) == _hin(k_proj) == v_src and len(v_src) == 1
-         and v_src[0] in reg1),
+         and (v_src[0] in reg1 if placement != "post" else True)),
         ("weighted sum <- softmax, V", _hin(apply_v) == sorted({_thru(sm), _thru(split["keys"]["v"][0] if fused else v_proj)})),
         ("final norm <- last layer output", _feeds(regf) == [_thru(stack_out)]),
     ]
     if not parallel:
         arrows[3:3] = [
-            ("first residual add <- layer input + attention output", _hin(adds[0]) == sorted({_thru(layer_in), _thru(o_out)})),
-            ("MLP-input norm <- first residual sum", _feeds(reg2) == [adds[0]]),
+            ("first residual add <- layer input + attention output", _hin(adds[0]) == sorted({_thru(layer_in), a_res})),
+            ("MLP-input norm <- first residual sum", _feeds(reg2) == [adds[0]]) if placement != "post" else
+            ("MLP projections <- first residual sum", _hin(up) == [adds[0]]),
             ("MLP projections <- one normed input", len({tuple(_hin(x)) for x in (gate, up) if x is not None}) == 1
-             and len(_hin(up)) == 1 and _hin(up)[0] in reg2),
-            ("second residual add <- first sum + MLP output", _hin(adds[1]) == sorted({adds[0], _thru(down)})),
+             and len(_hin(up)) == 1 and (_hin(up)[0] in reg2 if placement != "post" else True)),
+            ("second residual add <- first sum + MLP output", _hin(adds[1]) == sorted({adds[0], m_res})),
         ]
+        for nm_, reg_, src_ in (("attention", a_out_reg, o_out), ("MLP", m_out_reg, down)):
+            if reg_: arrows.append((f"{nm_}-output norm <- {nm_} output", _feeds(reg_) == [_thru(src_)]))
     elif parallel_norms == 2:
         arrows += [("MLP-input norm <- layer input", _feeds(reg2) == [_thru(layer_in)]),
                    ("MLP projections <- one normed input", len({tuple(_hin(x)) for x in (gate, up) if x is not None}) == 1
@@ -1259,6 +1334,9 @@ def _recognize(bundle):
                  qkv_width=split["out"] if fused else None, w_layout=w_layout,
                  rot_dim=(rot_dim if rope_q and rot_dim != head_dim else None),
                  parallel_norms=parallel_norms, pos_emb=pos_emb, head_bias=N[head].func == "addmm",
+                 norm_eps=norm_info["eps"], norm_weight=norm_info["weight"], final_eps=final_info["eps"],
+                 final_weight=final_info["weight"], qk_eps=qk_info["eps"] if qk_info else None,
+                 qk_weight=qk_info["weight"] if qk_info else None, embed_scale=embed_scale,
                  act_form="tanh_formula" if act_form else None, qk_norm=bool(qk_norm_q and qk_norm_k),
                  qk_norm_kind=qk_norm_q, qn_extent=(R.pshape[qn_w][0] if qn_w else None), norm_before_rope=norm_before_rope,
                  rope=rope_q and rope_k, theta=theta, scale=scale, mask=mask, bias=bias, ffn_bias=ffn_bias, o_proj=o_proj is not None,
@@ -1335,6 +1413,22 @@ def _scorecard(F):
         ("model", "max_position_embeddings", "context length", F["max_pos"], "config_declared",
          "config.max_position_embeddings (not observable in one run)", None),
     ]
+    rows += [("decoder.layer", "norm_eps", "layer norm eps", F["norm_eps"], "execution_observed",
+              "the constant the recorded norm statistic adds", None),
+             ("decoder.layer", "norm_weight", "layer norm weight", NORM_WEIGHT_TEXT[F["norm_weight"]], "execution_observed",
+              "how the recorded norm reads its weight parameter", None),
+             ("model", "final_norm_eps", "final norm eps", F["final_eps"], "execution_observed",
+              "the constant the recorded final-norm statistic adds", None),
+             ("model", "final_norm_weight", "final norm weight", NORM_WEIGHT_TEXT[F["final_weight"]], "execution_observed",
+              "how the recorded final norm reads its weight parameter", None)]
+    if F.get("qk_eps") is not None:
+        rows += [("decoder.attention", "qk_norm_eps", "QK-norm eps", F["qk_eps"], "execution_observed",
+                  "the constant the recorded QK-norm statistic adds", None),
+                 ("decoder.attention", "qk_norm_weight", "QK-norm weight", NORM_WEIGHT_TEXT[F["qk_weight"]], "execution_observed",
+                  "how the recorded QK-norm reads its weight parameter", None)]
+    if F.get("embed_scale"):
+        rows.append(("model", "embedding_scale", "embedding scale", F["embed_scale"]["value"], "execution_observed",
+                     first("embedding_scale"), None))
     if F.get("fused"):
         rows.append(("decoder.attention", "qkv_split", "fused Q/K/V split", qkv_split_text(F), "execution_observed",
                      first("qkv_split"), None))
@@ -1366,6 +1460,14 @@ def _scorecard(F):
             "total_ops": F.get("total_ops"), "op_accounting": F.get("accounting") or {}, "facts": facts,
             "source": "execution recording (zero-storage weights, real tokenized prompt)"}
     return L.to_dict(), card
+
+
+NORM_WEIGHT_TEXT = {"w": "weight w", "1+w": "weight 1 + w", "none": "no weight"}
+
+
+def norm_chips(eps, weight):
+    """The page chips of a norm's eps and weight form (the oracle's page_reader parses exactly these)."""
+    return [f"eps {eps:g}", NORM_WEIGHT_TEXT[weight]]
 
 
 def qkv_split_text(F):
@@ -1430,8 +1532,8 @@ def to_ir(F):
     if F.get("rot_dim"): attn_facts.append(f"partial RoPE {F['rot_dim']}/{hd}")
     if F["qk_norm"]:
         where = "before RoPE" if F["norm_before_rope"] else "after RoPE"
-        children += [{"id": "q_norm", "title": f"Query {NK.get(F['qk_norm_kind'], 'norm')}", "description": f"Recorded {NK.get(F['qk_norm_kind'])} on Q over the last axis ({F['qn_extent']}), {where}."},
-                     {"id": "k_norm", "title": f"Key {NK.get(F['qk_norm_kind'], 'norm')}", "description": f"Recorded {NK.get(F['qk_norm_kind'])} on K over the last axis ({F['qn_extent']}), {where}."}]
+        children += [{"id": "q_norm", "title": f"Query {NK.get(F['qk_norm_kind'], 'norm')}", "description": f"Recorded {NK.get(F['qk_norm_kind'])} on Q over the last axis ({F['qn_extent']}), {where}.", "facts": norm_chips(F["qk_eps"], F["qk_weight"]) if F.get("qk_eps") is not None else []},
+                     {"id": "k_norm", "title": f"Key {NK.get(F['qk_norm_kind'], 'norm')}", "description": f"Recorded {NK.get(F['qk_norm_kind'])} on K over the last axis ({F['qn_extent']}), {where}.", "facts": norm_chips(F["qk_eps"], F["qk_weight"]) if F.get("qk_eps") is not None else []}]
     if F["rope"]:
         th = f"θ={F['theta']:.6g}" if F["theta"] else "θ unknown"
         part = (f" Rotates the first {F['rot_dim']} of {hd} head dims; the other {hd - F['rot_dim']} pass through."
@@ -1479,13 +1581,26 @@ def to_ir(F):
                      "facts": [actl, f"hidden {fmt(F['inter'])}"], "detail": {"ffn": dataclasses.asdict(ffn)}}
     if F.get("w_layout") == "in_out": ffn_block["facts"] = ffn_block["facts"] + ["weights stored [in, out]"]
     blocks = [
-        {"id": "rms1", "role": "norm", "kind": "norm", "label": nlabel, "title": "Pre-attention norm", "description": f"Recorded {nlabel} on the layer input before attention.", "facts": [f"dim {fmt(H)}"]},
+        {"id": "rms1", "role": "norm", "kind": "norm", "label": nlabel, "title": "Pre-attention norm", "description": f"Recorded {nlabel} on the layer input before attention.", "facts": [f"dim {fmt(H)}"] + norm_chips(F["norm_eps"], F["norm_weight"])},
         attn_block,
         {"id": "add1", "role": "residual", "kind": "residual_add", "residual_from": "rms1", "label": "+", "title": "Residual add", "description": "Recorded add: block input + attention output."},
-        {"id": "rms2", "role": "norm", "kind": "norm", "label": nlabel, "title": "Pre-FFN norm", "description": f"Recorded {nlabel} before the FFN.", "facts": [f"dim {fmt(H)}"]},
+        {"id": "rms2", "role": "norm", "kind": "norm", "label": nlabel, "title": "Pre-FFN norm", "description": f"Recorded {nlabel} before the FFN.", "facts": [f"dim {fmt(H)}"] + norm_chips(F["norm_eps"], F["norm_weight"])},
         ffn_block,
         {"id": "add2", "role": "residual", "kind": "residual_add", "residual_from": "rms2", "label": "+", "title": "Residual add", "description": "Recorded add: post-attention + FFN output."},
     ]
+    if F.get("placement") in ("post", "double"):     # norms on the sublayer OUTPUT (post: OLMo-2; double: sandwich)
+        nf_ = [f"dim {fmt(H)}"] + norm_chips(F["norm_eps"], F["norm_weight"])
+        post_a = {"id": "post_attn_ln", "role": "norm", "kind": "norm", "label": nlabel, "title": "Post-attention norm",
+                  "description": f"Recorded {nlabel} on the attention OUTPUT before the residual add.", "facts": nf_}
+        post_f = {"id": "post_ffn_ln", "role": "norm", "kind": "norm", "label": nlabel, "title": "Post-FFN norm",
+                  "description": f"Recorded {nlabel} on the FFN OUTPUT before the residual add.", "facts": nf_}
+        dbl = F["placement"] == "double"
+        add1_ = {"id": "add1", "role": "residual", "kind": "residual_add", "residual_from": "rms1" if dbl else "attn",
+                 "label": "+", "title": "Residual add", "description": "Recorded add: block input + normed attention output."}
+        add2_ = {"id": "add2", "role": "residual", "kind": "residual_add", "residual_from": "rms2" if dbl else "ffn",
+                 "label": "+", "title": "Residual add", "description": "Recorded add: post-attention + normed FFN output."}
+        blocks = ([blocks[0], attn_block, post_a, add1_, blocks[3], ffn_block, post_f, add2_] if dbl else
+                  [attn_block, post_a, add1_, ffn_block, post_f, add2_])
     if F.get("parallel_norms"):                      # parallel branches (the renderer's GPT-NeoX / GPT-J lane layout)
         two = F["parallel_norms"] == 2
         blocks = [
@@ -1494,7 +1609,7 @@ def to_ir(F):
              "description": (f"Recorded {nlabel} on the layer input before attention; a second, separate {nlabel} on the "
                              "layer input before the FFN." if two else
                              f"Recorded {nlabel} on the layer input, feeding both attention and the FFN."),
-             "facts": [f"dim {fmt(H)}"]},
+             "facts": [f"dim {fmt(H)}"] + norm_chips(F["norm_eps"], F["norm_weight"])},
             attn_block,
             {"id": "add1", "role": "residual", "kind": "residual_add", "residual_from": "rms1", "label": "+",
              "title": "Residual add (parallel)", "description": "Recorded adds: layer input + attention output + FFN output."},
@@ -1516,11 +1631,13 @@ def to_ir(F):
     model_blocks = [
         {"id": "tok_text", "role": "input", "kind": "source", "label": "Tokenized text", "title": "Tokenized text", "description": "Input token IDs.", "facts": [f"shape [1, {F['seq']}] in the recorded run"]},
         {"id": "embed", "role": "embedding", "kind": "embedding", "label": "Token Embedding layer", "title": "Token embedding", "description": "Maps each token id to its vector" + tie_txt, "facts": [f"{fmt(F['vocab'])} vocab", f"{fmt(H)}-d"]},
-        {"id": "final_rms", "role": "norm", "kind": "norm", "label": f"Final {fn}", "title": "Final norm", "description": f"Recorded {fn} over the last hidden state before the output head.", "facts": [f"dim {fmt(H)}"], "resolved": True},
+        {"id": "final_rms", "role": "norm", "kind": "norm", "label": f"Final {fn}", "title": "Final norm", "description": f"Recorded {fn} over the last hidden state before the output head.", "facts": [f"dim {fmt(H)}"] + norm_chips(F["final_eps"], F["final_weight"]), "resolved": True},
         {"id": "lm_head", "role": "output", "kind": "output", "label": "Linear output layer", "title": "LM head", "description": "Recorded matmul into vocabulary logits" + tie_txt, "facts": [f"{fmt(H)} → {fmt(F['vocab'])}"]},
     ]
     if F.get("head_bias"):
         model_blocks[-1]["facts"] = model_blocks[-1]["facts"] + ["with bias"]
+    if F.get("embed_scale"):
+        model_blocks[1]["facts"] = model_blocks[1]["facts"] + [f"scaled × {F['embed_scale']['value']:.8g}"]
     if F.get("pos_emb"):
         model_blocks.extend([
             {"id": "position_ids", "role": "input", "kind": "source", "label": "Position IDs", "title": "Position indices",
@@ -1540,6 +1657,7 @@ def to_ir(F):
     extras["fact_provenance"], extras["execution_evidence"] = _scorecard(F)
     ir = make(I.ModelIR, name=F["repo"].split("/")[-1], architecture=F["arch"], vocab_size=F["vocab"], hidden_size=H,
               max_position_embeddings=F["max_pos"], tie_word_embeddings=F["tied"], embedding_norm_kind=None,
+              **({"embedding_scale": F["embed_scale"]["value"]} if F.get("embed_scale") else {}),
               final_norm_kind=F["final_norm"], layers=layers, cross_layer_edges=[], extras=extras,
               notes=["Built from an execution recording: every fact is observed in the run harness v2 graded "
                      f"(verdict {G.get('verdict')}, pass '{F.get('pass_label')}'; no modeling-code parsing). "
