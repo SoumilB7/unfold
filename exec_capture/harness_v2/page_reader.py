@@ -72,13 +72,15 @@ def spec_facts(d):
         residual=L0["residual_topology"], kind=a["kind"], num_heads=a["num_heads"], num_kv=a["num_kv_heads"],
         head_dim=a["head_dim"], qk_norm=bool(a.get("qk_norm")), qk_norm_kind=a.get("qk_norm_kind"),
         qk_norm_extent=a.get("qk_norm_extent"), rope=bool(a.get("rope")), theta=a.get("rope_theta"), llama3=l3,
-        mask=a.get("mask"), qkv_bias=bool(a.get("bias")), o_proj=bool(a.get("output_projection")),
+        mask=a.get("mask"), window=a.get("window_size"), qkv_bias=bool(a.get("bias")), o_proj=bool(a.get("output_projection")),
+        gate_up_mode=f.get("projection_mode") == "fused_gate_up",
         scores_scaled=bool(a.get("scores_scaled")), gated=bool(f.get("gated")), act=f.get("activation"),
         inter=f.get("intermediate_size"), ffn_bias=bool(f.get("bias")),
         fused=a.get("projection_mode") == "fused_qkv", rot_dim=a.get("rope_dim"),
         parallel_norms=L0.get("parallel_norm_count"),
         # from the text / card only (no spec field): filled below
         qkv_split=None, w_layout="out_in", pos_emb=False, head_bias=False, pos_rows=None, qkv_width=None,
+        attn_softcap=None, final_softcap=None, gate_up=None, attn_softcap_order=None,
         norm_eps=None, norm_weight=None, final_eps=None, final_weight=None, qk_eps=None, qk_weight=None,
         embed_scale=d.get("embedding_scale"),
         # facts only the card / text carry (no spec field): taken from the card, checked against the text below
@@ -88,8 +90,94 @@ def spec_facts(d):
         src={k: (v.get("source") or "") for k, v in card.items()})
 
 
+KIND_ONLY_ATTN = ("mask", "window_size", "rope_theta")
+
+
+KIND_FACTS = ("mask", "window", "theta", "src", "layers")   # what may differ between layer kinds (+ the evidence column)
+
+
+def _kind_neutral(L):
+    """A layer dict with the per-kind facts (mask, window, rotation base, and the attention text that states them)
+    removed: every layer kind must be equal to every other after this."""
+    import copy
+    L = copy.deepcopy({k: v for k, v in L.items() if k != "index"})
+    for k in KIND_ONLY_ATTN: L["attention"].pop(k, None)
+    for b in L.get("blocks") or []:
+        if b.get("id") != "attn": continue
+        b["facts"] = [x for x in b.get("facts") or [] if not re.match(r"^(RoPE θ |sliding window )", x)]
+        b["children"] = [c for c in b.get("children") or [] if c.get("id") not in ("q_rope", "k_rope", "scaled_scores")]
+        if isinstance((b.get("detail") or {}).get("attention"), dict):
+            for k in KIND_ONLY_ATTN: b["detail"]["attention"].pop(k, None)
+    return L
+
+
 def read_page(ir):
+    """(P, issues) of a page; a stack of several layer kinds is read kind by kind (the page's layer pattern)."""
     d = ir.to_dict() if hasattr(ir, "to_dict") else ir
+    card = {x["key"]: x for x in ((d.get("extras") or {}).get("execution_evidence") or {}).get("facts") or []}
+    if "decoder.layer.layer_pattern" not in card or not d.get("layers"):
+        return _read_one(d)
+    import copy
+    issues = []
+    rle = str(card["decoder.layer.layer_pattern"]["value"]); desc = str((card.get("decoder.layer.layer_kinds") or {}).get("value"))
+    letters = []
+    for tok in rle.split():
+        m = re.fullmatch(r"([A-Z])×(\d+)", tok)
+        if not m: return None, [("NOT_CHECKABLE", "layer pattern", f"the layer pattern token {tok!r} is outside the grammar")]
+        letters += [m.group(1)] * int(m.group(2))
+    kd = {}
+    for part in desc.split("; "):
+        m = re.fullmatch(r"([A-Z]) = (?:sliding window (\d+)|causal)(?:, RoPE θ ([\d.e+-]+))?", part)
+        if not m: return None, [("NOT_CHECKABLE", "layer kinds", f"the layer-kind text {part!r} is outside the grammar")]
+        kd[m.group(1)] = {"mask": "sliding" if m.group(2) else "causal", "window": int(m.group(2)) if m.group(2) else None,
+                          "theta": float(m.group(3)) if m.group(3) else None}
+    if len(letters) != len(d["layers"]) or set(letters) != set(kd):
+        return None, [("FAIL", "layer pattern", f"the pattern names {len(letters)} layers of kinds {sorted(set(letters))}; "
+                                                f"the page draws {len(d['layers'])} layers and describes kinds {sorted(kd)}")]
+    order = list(dict.fromkeys(letters))
+    P0 = None
+    for k in order:
+        dk = copy.deepcopy(d)
+        dk["layers"] = [L for L, l_ in zip(d["layers"], letters) if l_ == k]
+        drop = {"model.num_hidden_layers"} | ({"decoder.attention.rope_theta", "decoder.attention.mask"}
+                                              if k != letters[0] else set())   # the card states layer 0's kind
+        dk["extras"]["execution_evidence"]["facts"] = [x for x in dk["extras"]["execution_evidence"]["facts"]
+                                                       if x["key"] not in drop]
+        Pk, ik = _read_one(dk)
+        issues += [(v, f"kind {k}: {f}", msg) for v, f, msg in ik]
+        if Pk is None: return None, issues
+        want = kd[k]
+        got = {"mask": Pk["mask"], "window": Pk["window"], "theta": Pk["theta"]}
+        if got["mask"] != want["mask"] or got["window"] != want["window"] or (
+                (got["theta"] is None) != (want["theta"] is None) or
+                (got["theta"] is not None and abs(got["theta"] - want["theta"]) > 1e-5 * abs(got["theta"]))):
+            issues.append(("FAIL", f"layer kind {k}", f"the pattern says {want}; kind {k}'s layers state {got}"))
+        kd[k]["P"] = Pk
+        if k == letters[0]: P0 = Pk
+    # every fact a kind's own text states beyond its mask / window / rotation base (e.g. the soft-cap and its order,
+    # stated only in the scores text) must be kind A's: the reference applies kind A's to every layer
+    for k in order[1:]:
+        Pk = kd[k]["P"]
+        diff = sorted(f for f in set(P0) | set(Pk) if f not in KIND_FACTS and Pk.get(f) != P0.get(f))
+        if diff:
+            issues.append(("FAIL", "layer kinds", f"kind {k}'s layers state {', '.join(f'{f} = {Pk.get(f)!r}' for f in diff[:3])}"
+                                                  f"; kind {order[0]}'s state {', '.join(repr(P0.get(f)) for f in diff[:3])}"))
+    rep0 = _kind_neutral(d["layers"][letters.index(order[0])])
+    for k in order[1:]:
+        if _kind_neutral(d["layers"][letters.index(k)]) != rep0:
+            issues.append(("FAIL", "layer kinds", f"kind {k}'s layers differ from kind {order[0]} beyond the mask / "
+                                                  "window / rotation base"))
+    if (card.get("model.num_hidden_layers") or {}).get("value") != len(d["layers"]):
+        issues.append(("FAIL", "layers", f"the card states {(card.get('model.num_hidden_layers') or {}).get('value')} "
+                                         f"layers; the page draws {len(d['layers'])}"))
+    P = dict(P0)
+    P["kinds"] = [{"mask": kd[k]["mask"], "window": kd[k]["window"], "theta": kd[k]["P"]["theta"]} for k in order]
+    P["kind_of_layer"] = [order.index(l_) for l_ in letters]
+    P["layers"] = len(d["layers"])
+    return P, issues
+
+
+def _read_one(d):
     issues = []
     fail = lambda fact, msg: issues.append(("FAIL", fact, msg))
     unread = lambda fact, msg: issues.append(("NOT_CHECKABLE", fact, msg))
@@ -123,7 +211,7 @@ def read_page(ir):
         fail("block order", f"the blocks are drawn {drawn_topo[0]}-norm {drawn_topo[1]}, the layer spec says "
                             f"{P['placement']}-norm {P['residual']}")
     # ---- vocabulary of the values the reference supports (a value outside it is named, never passed)
-    for fact, ok in (("norm", P["norm"] in NK), ("final_norm", P["final_norm"] in NK), ("mask", P["mask"] == "causal"),
+    for fact, ok in (("norm", P["norm"] in NK), ("final_norm", P["final_norm"] in NK), ("mask", P["mask"] == "causal" or (P["mask"] == "sliding" and P["window"])),
                      ("act", P["act"] in ("silu", "gelu", "gelu_pytorch_tanh", "relu", "sigmoid", "tanh")),
                      ("kind", P["kind"] in KIND_TITLE),
                      ("qk_norm_kind", (not P["qk_norm"]) or P["qk_norm_kind"] in NK),
@@ -200,6 +288,8 @@ def read_page(ir):
                 (r"bias on Q/K/V, none on the output projection", lambda m: bias_chip.append((True, False))),
                 (r"bias on the output projection only", lambda m: bias_chip.append((False, True))),
                 (r"weights stored \[in, out\]", lambda m: saw("w_layout", "in_out", w)),
+                (rf"sliding window {_N}", lambda m: saw("window", _int(m.group(1)), w)),
+                (r"logit soft-cap ([\d.e+-]+)", lambda m: saw("attn_softcap", float(m.group(1)), w)),
                 (rf"partial RoPE {_N}/{_N}", lambda m: (saw("rot_dim", _int(m.group(1)), w), saw("head_dim", _int(m.group(2)), w)))])
             if "weights stored [in, out]" not in (b.get("facts") or []): saw("w_layout", "out_in", w + " (no layout chip)")
             if not any(re.fullmatch(r"partial RoPE .*", x) for x in b.get("facts") or []): saw("rot_dim", None, w + " (no partial chip)")
@@ -273,10 +363,18 @@ def read_page(ir):
                         else:
                             saw("scale~6g", float(x), cw)
                             if m.group(2): saw("scale~exact", 1 / math.sqrt(int(m.group(2))), cw)
-                        saw("mask", None if m.group(3) == "none" else m.group(3), cw)
+                        if m.group(3):
+                            saw("attn_softcap", float(m.group(3)), cw); saw("attn_softcap", float(m.group(4)), cw)
+                            saw("attn_softcap_order", m.group(5), cw)
+                        if m.group(6):
+                            saw("mask", "sliding", cw); saw("window", int(m.group(6)), cw)
+                        else:
+                            saw("mask", None if m.group(7) == "none" else m.group(7), cw); saw("window", None, cw)
                     text(cw, c.get("description"), [
-                        (r"Q·Kᵀ recorded; (?:scores × ([\d.e+-]+)(?: \(= 1/√(\d+)\))?|no scale constant recorded); "
-                         r"mask: (\w+) \(read from the mask tensor's values\)\.", _sc)])
+                        (r"Q·Kᵀ recorded; (?:scores × ([\d.e+-]+)(?: \(= 1/√(\d+)\))?|no scale constant recorded)"
+                         r"(?:; scores soft-capped tanh\(x / ([\d.e+-]+)\) × ([\d.e+-]+) (before|after) the mask is added)?"
+                         r"; mask: (?:sliding window (\d+) \(causal; window read from the replayed mask construction\)"
+                         r"|(\w+) \(read from the mask tensor's values\))\.", _sc)])
                     chips(cw, F, [(rf"{_N} Q heads", lambda m: saw("num_heads", _int(m.group(1)), cw)),
                                   (rf"{_N} KV heads", lambda m: saw("num_kv", _int(m.group(1)), cw)),
                                   (rf"{_N} Q per KV head", lambda m: saw("q_per_kv", _int(m.group(1)), cw))])
@@ -303,13 +401,25 @@ def read_page(ir):
             if not _same_detail((b.get("detail") or {}).get("ffn"), L0["ffn"]):
                 fail("ffn detail", "the FFN block's detail differs from the layer's FFN spec")
             kids = {c.get("id"): c for c in b.get("children") or []}
-            if P["gated"] and set(kids) != {"gate_proj", "up_proj", "activation", "multiply", "down_proj"}:
+            want_f = ({"gate_up_proj"} if P["gate_up_mode"] else {"gate_proj", "up_proj"}) | {"activation", "multiply", "down_proj"}
+            if P["gated"] and set(kids) != want_f:
                 fail("ffn sub-blocks", f"gated FFN drawn with sub-blocks {sorted(kids)}")
             if not P["gated"] and kids:
                 fail("ffn sub-blocks", f"dense FFN drawn with sub-blocks {sorted(kids)}")
             for cid, c in kids.items():
                 cw = f"{w}.{cid}"
-                if cid in ("gate_proj", "up_proj"):
+                if cid == "gate_up_proj":
+                    gsp = r"\[(gate|up) ([\d,]+) \| (gate|up) ([\d,]+)\]"
+                    def _gu(m, cw=cw):
+                        if {m.group(1), m.group(3)} != {"gate", "up"} or _int(m.group(2)) != _int(m.group(4)):
+                            unread(cw, f"{cw}: a gate/up split {m.group(0)!r} the oracle cannot read"); return
+                        saw("gate_up", ("gate_up" if m.group(1) == "gate" else "up_gate", _int(m.group(2))), cw)
+                        saw("inter", _int(m.group(2)), cw)
+                    chips(cw, c.get("facts"), [(rf"{_N} → {_N}", lambda m: (saw("hidden", _int(m.group(1)), cw), saw("inter2", _int(m.group(2)), cw))),
+                                               ("split " + gsp, _gu)])
+                    text(cw, c.get("description"), [(r"One recorded matmul produces the gate and up halves, split as " + gsp
+                                                     + r" \(traced from the recorded split ops\)\.", _gu)])
+                elif cid in ("gate_proj", "up_proj"):
                     chips(cw, c.get("facts"), [width("hidden", "inter", cw)])
                     if cid == "gate_proj":
                         text(cw, c.get("description"), [(r"Recorded matmul producing the gate path \(through (.+)\)\.", lambda m: saw("act", actl(m.group(1)), cw))])
@@ -361,7 +471,9 @@ def read_page(ir):
                                                  (rf"{_N}-d", lambda m: saw("hidden", _int(m.group(1)), "embed"))])
         tie_of(mb["embed"].get("description"), "Maps each token id to its vector", "embed")
     if "lm_head" in mb:
-        chips("lm_head", mb["lm_head"].get("facts"), [width("hidden", "vocab", "lm_head")], free=("with bias",))
+        chips("lm_head", mb["lm_head"].get("facts"), [width("hidden", "vocab", "lm_head"),
+                                                     (r"logit soft-cap ([\d.e+-]+)", lambda m: saw("final_softcap", float(m.group(1)), "lm_head"))],
+              free=("with bias",))
         tie_of(mb["lm_head"].get("description"), "Recorded matmul into vocabulary logits", "lm_head")
     if "final_rms" in mb:
         text("final_rms label", mb["final_rms"].get("label"), [(r"Final (RMSNorm|LayerNorm)", lambda m: saw("final_norm", NK_R[m.group(1)], "final_rms"))])
@@ -404,6 +516,14 @@ def read_page(ir):
             saw({"decoder.layer.norm_weight": "norm_weight", "model.final_norm_weight": "final_weight",
                  "decoder.attention.qk_norm_weight": "qk_weight"}[k], WEIGHT_R.get(v, v), f"card {k}")
         elif k == "model.embedding_scale": saw("embed_scale~card", v, f"card {k}")
+        elif k == "decoder.attention.logit_softcap": saw("attn_softcap", float(v), f"card {k}")
+        elif k == "model.final_logit_softcap": saw("final_softcap", float(v), f"card {k}")
+        elif k == "decoder.ffn.gate_up_split":
+            m = re.fullmatch(r"\[(gate|up) ([\d,]+) \| (gate|up) ([\d,]+)\]", str(v))
+            if not m: unread(f"card {k}", f"the card's gate/up split {v!r} is outside the grammar")
+            else: saw("gate_up", ("gate_up" if m.group(1) == "gate" else "up_gate", _int(m.group(2))), f"card {k}")
+        elif k in ("decoder.layer.layer_pattern", "decoder.layer.layer_kinds"):
+            pass                                           # read by read_page (the layer kinds)
         elif k in ("decoder.attention.cached", "model.max_position_embeddings"):
             pass                                           # UNCHECKED
         else:
@@ -420,13 +540,15 @@ def read_page(ir):
         if fact in derived: return derived[fact]
         return P.get(fact)
     # facts only the text / card state (no spec field): every mention must agree; the agreed value is the page fact
-    TEXT_ONLY = ("qkv_split", "w_layout", "pos_emb", "head_bias", "pos_rows", "qkv_width",
+    TEXT_ONLY = ("qkv_split", "w_layout", "pos_emb", "head_bias", "pos_rows", "qkv_width", "attn_softcap", "final_softcap",
+                 "gate_up", "attn_softcap_order",
                  "norm_eps", "norm_weight", "final_eps", "final_weight", "qk_eps", "qk_weight")
     for f_ in TEXT_ONLY:
         vs = {v for x, v, _ in seen if x == f_}
-        if f_.endswith("_eps") and len(vs) > 1 and all(isinstance(v, float) for v in vs) and \
+        if f_.endswith(("_eps", "_softcap")) and len(vs) > 1 and all(isinstance(v, float) for v in vs) and \
                 max(vs) - min(vs) <= 1e-5 * max(abs(v) for v in vs):
-            # the chip shows 6 significant digits, the card the exact number: one value; the card's is used
+            # the chip shows 6 significant digits, the card the exact number (compared numerically, e.g. 55.0 vs
+            # 55.00000000000001): one value; the card's is used
             vs = {next((v for x, v, w_ in seen if x == f_ and w_.startswith("card")), max(vs))}
         if len(vs) > 1: fail(f_, f"the page states {f_} as {sorted(map(str, vs))}")
         elif vs: P[f_] = next(iter(vs))
@@ -447,13 +569,22 @@ def read_page(ir):
                                              f"({P[f_ + '_eps']!r}, {P[f_ + '_weight']!r})")
     if P["embed_scale"] is not None and not any(x[0].startswith("embed_scale") for x in seen_all):
         fail("embedding scale", "the spec has an embedding scale the page text does not show")
+    if P["attn_softcap"] is not None and P["attn_softcap_order"] not in ("before", "after"):
+        unread("soft-cap order", "the page states an attention soft-cap but not whether it is applied before or after "
+                                 "the mask is added")
+    if P["gate_up_mode"] != (P["gate_up"] is not None):
+        fail("gate/up split", "the FFN spec and the page text disagree on a fused gate/up projection")
+    if P["gate_up"] is not None and P["gate_up"][1] != P["inter"]:
+        fail("gate/up split", f"the stated halves ({P['gate_up'][1]}) are not the FFN width {P['inter']}")
+    if any(f_ == "inter2" and v != 2 * (P["inter"] or 0) for f_, v, _ in seen_all):
+        fail("gate/up split", "the fused projection's stated width is not twice the FFN width")
     if P["rot_dim"] is not None and not (P["rope"] and 0 < P["rot_dim"] < (P["head_dim"] or 0)):
         fail("rot_dim", f"partial rotary {P['rot_dim']} of {P['head_dim']} head dims")
     ex = [v for f_, v, _ in seen if f_ == "scale~exact"]      # an exact form in the text is the stated value
     if ex and P["scale"] is not None and abs(ex[0] - P["scale"]) <= 5.01e-7: P["scale"] = ex[0]
     for fact, v, where in seen:
-        if fact == "qk_norm_before_rope":
-            continue                                       # text-only fact: read below
+        if fact in ("qk_norm_before_rope", "inter2"):
+            continue                                       # text-only facts: read below
         if fact == "theta~int":
             ok = P["theta"] is not None and abs(v - round(P["theta"])) < 0.5
         elif fact in ("theta~6g", "theta~card"):

@@ -202,6 +202,104 @@ def fused_qkv_split(N, mm, role_paths, head_dim, B, S):
             "ops": ops, "group": G, "out": Fw}
 
 
+_DT = {k_: v_ for n_, v_ in (("bool", torch.bool), ("int64", torch.int64), ("int32", torch.int32), ("float32", torch.float32),
+                              ("float64", torch.float64), ("long", torch.int64)) for k_ in (n_, "torch." + n_)}
+
+
+def replay_mask_condition(N, cond, S_rec, S_new, B=1):
+    """Re-run the recorded boolean mask construction feeding `cond` at sequence length S_new: the recorded aranges /
+    expands of length S_rec are re-sized, every comparison constant (e.g. a window) is kept, the attention-mask input is
+    all ones (no padding, the drawn regime). Returns the bool tensor, or raises NotDrawn on an op it cannot replay."""
+    anc, fr = set(), [cond]
+    while fr:
+        x = fr.pop()
+        if x in anc: continue
+        anc.add(x); fr += [e[1] for e in N[x].ins if e[0] == "op"]
+    vals = {}
+    def arg(e):
+        if e[0] == "op": return vals[(e[1], _port(e))]
+        if e[0] == "input" and "attention_mask" in str(e[1]): return torch.ones(B, S_new, dtype=torch.int64)
+        raise NotDrawn(f"the mask construction reads {e[0]} {str(e[1])[:40]}: it cannot be replayed")
+    rs = lambda v: S_new if v == S_rec else v
+    for j in sorted(anc):
+        nd = N[j]; f = nd.func; c = list(nd.consts); a = [arg(e) for e in nd.ins]
+        dt = _DT.get(str(nd.outs[0][1])) if nd.outs else None
+        if f == "arange":
+            v = torch.arange(int(c[0]), rs(int(c[1]))) if len(c) == 2 else torch.arange(rs(int(c[0])))
+        elif f in ("add", "sub") and len(a) == 2 and not c:
+            v = a[0] + a[1] if f == "add" else a[0] - a[1]
+        elif f in ("add", "sub") and len(a) == 1 and len(c) == 1:
+            v = a[0] + c[0] if f == "add" else a[0] - c[0]
+        elif f == "unsqueeze": v = a[0].unsqueeze(int(c[0]))
+        elif f in ("le", "lt", "gt", "ge", "eq", "ne"):
+            v = getattr(torch, f)(a[0], a[1] if len(a) > 1 else c[0])
+        elif f in ("bitwise_and", "logical_and"): v = a[0] & a[1]
+        elif f in ("bitwise_or", "logical_or"): v = a[0] | a[1]
+        elif f in ("bitwise_not", "logical_not"): v = ~a[0]
+        elif f == "new_ones": v = torch.ones([rs(int(x)) for x in c] if c else (), dtype=dt or torch.bool)
+        elif f == "index": v = a[0][tuple(a[1:])]
+        elif f == "expand": v = a[0].expand([rs(int(x)) for x in c])
+        elif f in ("_to_copy", "to"): v = a[0].to(dt) if dt is not None else a[0]
+        elif f in ("alias", "clone", "contiguous", "detach"): v = a[0]
+        elif f in ("view", "reshape", "_unsafe_view"): v = a[0].reshape([rs(int(x)) for x in c])
+        else:
+            raise NotDrawn(f"the mask construction op {f} {c[:4]} cannot be replayed")
+        vals[(j, 0)] = v
+    return vals[(cond, 0)]
+
+
+def mask_kind_of(Mb):
+    """('causal', None) or ('sliding', w) if the [S, S] bool mask is exactly that band; else None."""
+    S = Mb.shape[-1]
+    Mb = Mb.reshape(-1, S, S)
+    if not bool((Mb == Mb[:1]).all()): return None
+    Mb = Mb[0]
+    i = torch.arange(S)[:, None]; j = torch.arange(S)[None, :]
+    if torch.equal(Mb, j <= i): return ("causal", None)
+    w = int(Mb[-1].sum())
+    if 0 < w < S and torch.equal(Mb, (j <= i) & (j > i - w)): return ("sliding", w)
+    return None
+
+
+def fused_pair_split(N, mm, keys, B, S):
+    """The two halves of ONE fused projection (e.g. gate | up) read by `keys` ({name: (op, port)}): the shape-only ops
+    after the matmul are replayed on an index tensor (token * F + channel); each key must keep every token in place and
+    read the same channels for every token. Returns ({name: channel LongTensor}, replayed ops)."""
+    shp = N[mm].shape
+    if shp is None: raise NotDrawn("the fused projection's output shape was not recorded")
+    Fw, T = shp[-1], 1
+    for d in shp[:-1]: T *= d
+    if T != B * S: raise NotDrawn(f"the fused projection runs on {T} rows, not the {B}x{S} tokens")
+    vals = {(mm, 0): (torch.arange(T)[:, None] * Fw + torch.arange(Fw)[None, :]).reshape(*shp)}
+    last = max(k[0] for k in keys.values())
+    for j in range(mm + 1, last + 1):
+        nd = N[j]
+        if nd.func not in IDX_OPS or len(nd.ins) != 1 or nd.ins[0][0] != "op": continue
+        key = (nd.ins[0][1], _port(nd.ins[0]))
+        if key not in vals: continue
+        try:
+            out = _apply_idx(nd.func, vals[key], list(nd.consts))
+        except Exception as e:
+            raise NotDrawn(f"the fused projection's split op {j} {nd.func} could not be replayed ({type(e).__name__})")
+        outs = list(out) if isinstance(out, (list, tuple)) else [out]
+        for p_, o in enumerate(outs): vals[(j, p_)] = o
+    chans, ops = {}, set()
+    for nm_, k in keys.items():
+        if k not in vals: raise NotDrawn(f"the fused projection's {nm_} half is not reached by shape-only ops")
+        V = vals[k].reshape(T, -1)
+        if not bool((V // Fw == torch.arange(T)[:, None]).all()):
+            raise NotDrawn(f"the fused projection's {nm_} half moves values across tokens")
+        ch = V % Fw
+        if not bool((ch == ch[:1]).all()): raise NotDrawn(f"the fused projection's {nm_} channels differ between tokens")
+        chans[nm_] = ch[0]
+        fr = [k[0]]
+        while fr:
+            x = fr.pop()
+            if x == mm or x in ops: continue
+            ops.add(x); fr += [e[1] for e in N[x].ins if e[0] == "op"]
+    return chans, ops
+
+
 def verify_cache(cache_run, pshape, wk, wv, layer_prefix, fused_head_dim=None):
     """Observed K/V cache behaviour: which op produced the tensors stored in the returned cache, and whether this
     layer's attention read its keys/values from them. Returns {} if no cache was returned. `cache_run` is the
@@ -427,18 +525,24 @@ def _recognize(bundle):
     # producer: an op of the same layer (by position), the one hidden state entering the layer, or the very same
     # shared off-path tensor (e.g. one mask, one rotation table); a layer reading a different value is not identical
     strs_ = P["graph"].get("op_strings") or {}
-    def normseq(i):
+    def normseq(i, loose=False):
         nm = lambda x: re.sub(rf"^{re.escape(stack)}\.{i}(?=\.|$)", "L", x)
         local = {j: k for k, j in enumerate(L[i])}
         def edge(e):
             if e[0] != "op": return (e[0], nm(e[1]) if isinstance(e[1], str) else e[1])
             if e[1] in local: return ("local", local[e[1]])
-            return ("hidden_in",) if e[1] in hid else ("shared", e[1])
+            return ("hidden_in",) if e[1] in hid else (("shared",) if loose else ("shared", e[1]))
         return [(nm(N[j].module), N[j].func, tuple(N[j].consts), tuple(edge(e) for e in N[j].ins), N[j].shape,
                  tuple(tuple(R.pshape.get(e[1], ())) for e in N[j].ins if e[0] == "param"),
                  tuple(strs_.get(str(j), []))) for j in L[i]]
-    ref = normseq(layer_ids[0])
-    identical = [i for i in layer_ids if normseq(i) == ref]
+    ref = normseq(layer_ids[0], loose=True)
+    identical = [i for i in layer_ids if normseq(i, loose=True) == ref]
+    # layers run the same ops, constants, weights and wiring; they may read DIFFERENT shared off-path tensors (a
+    # sliding vs a full mask, a local vs a global rotation table): one kind per distinct set (checked below)
+    _strict = {i: repr(normseq(i)) for i in layer_ids}
+    kind_reps = list(dict.fromkeys(_strict[i] for i in layer_ids))
+    layer_kind = [kind_reps.index(_strict[i]) for i in layer_ids]
+    kind_rep_layer = [layer_ids[layer_kind.index(k)] for k in range(len(kind_reps))]
     if len(identical) < len(layer_ids):
         odd = [i for i in layer_ids if i not in identical]
         raise NotDrawn(f"layers differ: {len(identical)} of {len(layer_ids)} run layer 0's ops, constants, weights and "
@@ -798,9 +902,25 @@ def _recognize(bundle):
             frontier = nxt
         return None
     apply_v = fwd(sm, lambda j: N[j].func in ("bmm", "matmul"))
+    def _softcap_at(t_):
+        """div(x, c) -> tanh -> mul(., c) around tanh op t_ (the same constant c): (c, {ops}) or None."""
+        d_ = R.srcs(t_)
+        if len(d_) != 1 or N[d_[0]].func != "div" or len(N[d_[0]].consts) != 1 or len(N[d_[0]].ins) != 1: return None
+        m_ = [x for x in R.cons[t_] if N[x].func == "mul" and len(N[x].consts) == 1 and len(N[x].ins) == 1]
+        if len(R.cons[t_]) != 1 or len(m_) != 1 or float(N[m_[0]].consts[0]) != float(N[d_[0]].consts[0]): return None
+        return float(N[d_[0]].consts[0]), {d_[0], t_, m_[0]}
+    attn_softcap = None; softcap_ops = set()
+    for j in pre_sm:
+        if j in hid and N[j].func == "tanh":
+            sc_ = _softcap_at(j)
+            if sc_ is None or attn_softcap is not None:
+                raise NotDrawn("a tanh on the attention scores that is not exactly tanh(x / c) * c: not drawn")
+            attn_softcap, softcap_ops = sc_
+            ev["softcap"].append(f"scores soft-capped: tanh(x / {attn_softcap:g}) * {attn_softcap:g} (ops {sorted(softcap_ops)})")
     # score scale: a constant multiplying/dividing the scores or the query
     scale = None
     for j in sorted(set(pre_sm) | set(R.back(scores, lambda j: R.weights(j) != [])[1])):
+        if j in softcap_ops: continue
         if j in hid and N[j].func in ("mul", "div") and N[j].consts and not [e for e in N[j].ins if e[0] == "op"][1:]:
             c = N[j].consts[0]; f = c if N[j].func == "mul" else 1 / c
             scale = f if scale is None else scale * f
@@ -828,10 +948,64 @@ def _recognize(bundle):
         if smi is None: return None
         ms = _mask_adds(R.back(smi, lambda j: N[j].func in ("bmm", "matmul") and not R.weights(j))[1])
         return tuple(sq_ids[j][k] for j, k in ms)
-    masks_seen = {_mask_id(i) for i in layer_ids}
-    if len(masks_seen) > 1:
-        raise NotDrawn(f"the attention masks differ between layers ({len(masks_seen)} distinct, e.g. sliding-window "
-                       "and full layers): per-layer masks are not drawn yet")
+    S_rec = N[emb].shape[-2] if N[emb].shape and len(N[emb].shape) >= 2 else None
+    def _mask_of(i):
+        """('causal', None) or ('sliding', w) for layer i: its mask operand's recorded boolean construction, replayed at
+        a length beyond every comparison constant it uses; the captured values at the recorded length must agree."""
+        smi = next((j for j in L[i] if N[j].func in SOFTMAX), None)
+        ms = _mask_adds(R.back(smi, lambda j: N[j].func in ("bmm", "matmul") and not R.weights(j))[1]) if smi is not None else []
+        if len(ms) != 1: return None
+        j_, k_ = ms[0]
+        e_ = N[j_].ins[k_]
+        if e_[0] != "op" or N[e_[1]].func != "where" or not N[e_[1]].ins or N[e_[1]].ins[0][0] != "op":
+            raise NotDrawn(f"layer {i}'s mask is not a where(condition, 0, min) of a recorded boolean construction")
+        cond = N[e_[1]].ins[0][1]
+        ancs, fr = set(), [cond]
+        while fr:
+            x = fr.pop()
+            if x in ancs: continue
+            ancs.add(x); fr += [e[1] for e in N[x].ins if e[0] == "op"]
+        cmax = max([abs(float(c)) for x in ancs if N[x].func in ("add", "sub", "le", "lt", "gt", "ge", "eq", "ne")
+                    for c in N[x].consts if isinstance(c, (int, float)) and not isinstance(c, bool)] + [0])
+        S_new = int(max(64, 2 * cmax + 2))
+        if S_new > 20000:
+            raise NotDrawn(f"the mask construction compares against {cmax:g}: too long to replay")
+        Bb = N[e_[1]].shape[0] if N[e_[1]].shape else 1
+        at_rec = replay_mask_condition(N, cond, S_rec, S_rec, Bb)
+        if at_rec.dim() > 2:
+            sl_ = at_rec.reshape(-1, at_rec.shape[-2], at_rec.shape[-1])
+            if not bool((sl_ == sl_[:1]).all()):
+                raise NotDrawn(f"layer {i}'s mask construction differs across heads or batch rows (a per-head / per-row "
+                               "mask): only one [S, S] mask shared by every head is drawn")
+            at_rec = sl_[0]
+        t = square_adds[j_][k_]
+        allowed = at_rec.reshape(t.shape) if at_rec.numel() == t.numel() else at_rec.expand(t.shape)
+        if not (bool((t[allowed].abs() < 1e-3).all()) and bool((t[~allowed] <= -1e4).all())):
+            raise NotDrawn(f"layer {i}'s captured mask values disagree with its replayed construction")
+        mk = mask_kind_of(replay_mask_condition(N, cond, S_rec, S_new, Bb))
+        if mk is None:
+            raise NotDrawn(f"layer {i}'s replayed mask (length {S_new}) is neither causal nor one causal sliding window")
+        return mk
+    kind_masks = [_mask_of(r_) for r_ in kind_rep_layer]
+    softcap_order = None
+    if attn_softcap is not None and madds:
+        pre_set = set(pre_sm)
+        def _anc(x0):
+            a_, fr_ = set(), [x0]
+            while fr_:
+                x = fr_.pop()
+                for e in N[x].ins:
+                    if e[0] == "op" and e[1] in pre_set and e[1] not in a_: a_.add(e[1]); fr_.append(e[1])
+            return a_
+        cap_div = next(x for x in softcap_ops if N[x].func == "div"); cap_mul = next(x for x in softcap_ops if N[x].func == "mul")
+        if all(cap_mul in _anc(j) for j, _ in madds): softcap_order = "before"
+        elif all(j in _anc(cap_div) for j, _ in madds): softcap_order = "after"
+        else:
+            raise NotDrawn("the attention soft-cap and the mask add are not one after the other on the scores: not drawn")
+        ev["softcap"].append(f"the soft-cap is applied {softcap_order} the mask is added (dataflow of ops "
+                             f"{sorted(softcap_ops)} and mask add {[j for j, _ in madds]})")
+    if None in kind_masks:
+        raise NotDrawn("a layer kind has no single additive mask operand on its scores: the mask is unknown")
     if mask is None and not madds:
         inplace = sorted({N[j].func for j in pre_sm if j in hid and N[j].func in ("add_", "masked_fill", "masked_fill_", "where", "mul_")})
         if inplace:
@@ -850,9 +1024,11 @@ def _recognize(bundle):
         raise NotDrawn(f"{'no' if not madds else len(madds)} additive mask operand(s) found on the scores (masked_fill / "
                        "where / in-place add, extra score biases, or a sequence longer than the captured side): the "
                        "mask is unknown")
-    if mask == "custom":
-        raise NotDrawn("the attention mask added to the scores is not causal (bidirectional, sliding or custom): "
-                       "only causal masks are drawn yet")
+    if mask == "custom":                       # a window shorter than the recorded run: the replay decides
+        if kind_masks[layer_kind[0]][0] != "sliding":
+            raise NotDrawn("the attention mask added to the scores is not causal (bidirectional, sliding or custom): "
+                           "only causal masks are drawn yet")
+        mask = "causal"
     # Q / K / V projections by dataflow from the score and apply-V matmuls
     q_side, k_side = [s for s in R.srcs(scores)][:2]
     def proj(start):
@@ -919,6 +1095,7 @@ def _recognize(bundle):
     if qk_norm_q and rope_q and norm_before_rope is False:
         raise NotDrawn("QK-norm runs after the rotation: the drawing has no way to show that order yet")
     theta = None
+    kind_thetas = [None] * len(kind_rep_layer)
     rot_dim = head_dim
     if rope_q:
         rot_muls = [j for j in q_path if j in hid and N[j].func == "mul" and _rot_operands(j)]
@@ -946,55 +1123,58 @@ def _recognize(bundle):
             muls = [j for j in L[i] if j in hid and N[j].func == "mul" and _rot_operands(j)]
             return sorted({e[1] for j in muls for x in _rot_operands(j)
                            for y in R.back(x, lambda z: False, 200)[1] + [x] for e in N[y].ins if e[0] == "buffer"})
-        per_layer = {tuple(_theta_bufs(i)) for i in layer_ids}
-        if len(per_layer) > 1:
-            raise NotDrawn(f"layers rotate with different frequency tables ({sorted(per_layer)}): per-layer RoPE is "
-                           "not drawn yet")
-        # a frequency table needs entry 0 (must be 1) and entry 1 (gives the base): 2 entries suffice (head_dim 4)
-        fed = [n_ for n_ in _theta_bufs(layer_ids[0]) if n_ in bufs]
-        names = [n_ for n_ in fed if len(bufs[n_]["values"]) >= 2]
-        if fed and not names:
-            raise NotDrawn(f"the buffers feeding the rotation ({fed[:3]}) hold one value each: one entry cannot show the "
-                           "frequency base, so the rotation is not drawn")
-        if len(names) != 1:
-            raise NotDrawn(f"the rotation reads {len(names)} recorded frequency tables ({names[:3]}): its "
-                           "frequencies cannot be checked, so the rotation is not drawn")
-        if names:
-            vals = bufs[names[0]]["values"]; n_ = len(vals)
-            # EVERY frequency: theta^(-i/n) (default), or the llama3 piecewise rescale of that series; the base comes
-            # from entry 1 (a high frequency, unscaled by llama3), every other entry must follow from it
-            raw = float(vals[1] ** (-n_)) if n_ > 1 and vals[1] > 0 else None
-            if raw is None or abs(vals[0] - 1) > 1e-6:
-                raise NotDrawn(f"the rotation frequencies in {names[0]} do not start at 1: not drawn")
-            l3 = next((v for v in rope_cfg if (v.get("rope_type") or v.get("type")) == "llama3"), None)
-            if l3:
-                fac, lo_f, hi_f = float(l3["factor"]), float(l3["low_freq_factor"]), float(l3["high_freq_factor"])
-                old_ctx = float(l3["original_max_position_embeddings"])
-                lo_wl, hi_wl = old_ctx / lo_f, old_ctx / hi_f
-                def _l3(f_):                                 # transformers' _compute_llama3_parameters, per entry
-                    wl = 2 * math.pi / f_
-                    if wl < hi_wl: return f_
-                    if wl > lo_wl: return f_ / fac
-                    sm_ = (old_ctx / wl - lo_f) / (hi_f - lo_f)
-                    return (1 - sm_) * f_ / fac + sm_ * f_
-            def _want(base_):
-                w_ = [base_ ** (-i / n_) for i in range(n_)]
-                return [_l3(f_) for f_ in w_] if l3 else w_
-            def _freq_off(base_):
-                w_ = _want(base_)
-                return [i for i in range(n_) if abs(vals[i] - w_[i]) > 1e-4 * abs(w_[i])], w_
-            # candidate bases: the one entry 1 implies (unscaled in every real llama3 table), else the declared one;
-            # a base is accepted only if EVERY entry follows from it, so the buffer itself proves it
-            decl = next((v.get("rope_theta") for v in rope_cfg if v.get("rope_theta")), None) or cfg.get("rope_theta")
-            off, want = _freq_off(raw)
-            if off and decl and not _freq_off(float(decl))[0]:
-                raw = float(decl); off, want = [], _want(raw)
-            if off:
-                raise NotDrawn(f"rotation frequency {off[0]} of {n_} in {names[0]} is {vals[off[0]]:.6g}, not the "
-                               f"{'llama3-scaled ' if l3 else ''}base-{raw:.4g} value {want[off[0]]:.6g} "
-                               f"({len(off)} entries differ): not drawn")
-            theta = float(f"{raw:.4g}")                 # the buffer is float32: 4 significant digits are real
-            ev["rope"].append(f"frequency base from {names[0]} (the buffer feeding every layer's rotation)")
+        def _theta_of(i_layer):
+            """(theta, buffer) of layer i's rotation: every frequency of its one recorded table must follow from the
+            base (default series, or the declared llama3 rescale of it)."""
+            # a frequency table needs entry 0 (must be 1) and entry 1 (gives the base): 2 entries suffice (head_dim 4)
+            fed = [n_ for n_ in _theta_bufs(i_layer) if n_ in bufs]
+            names = [n_ for n_ in fed if len(bufs[n_]["values"]) >= 2]
+            if fed and not names:
+                raise NotDrawn(f"the buffers feeding the rotation ({fed[:3]}) hold one value each: one entry cannot show the "
+                               "frequency base, so the rotation is not drawn")
+            if len(names) != 1:
+                raise NotDrawn(f"the rotation reads {len(names)} recorded frequency tables ({names[:3]}): its "
+                               "frequencies cannot be checked, so the rotation is not drawn")
+            if names:
+                vals = bufs[names[0]]["values"]; n_ = len(vals)
+                # EVERY frequency: theta^(-i/n) (default), or the llama3 piecewise rescale of that series; the base comes
+                # from entry 1 (a high frequency, unscaled by llama3), every other entry must follow from it
+                raw = float(vals[1] ** (-n_)) if n_ > 1 and vals[1] > 0 else None
+                if raw is None or abs(vals[0] - 1) > 1e-6:
+                    raise NotDrawn(f"the rotation frequencies in {names[0]} do not start at 1: not drawn")
+                l3 = next((v for v in rope_cfg if (v.get("rope_type") or v.get("type")) == "llama3"), None)
+                if l3:
+                    fac, lo_f, hi_f = float(l3["factor"]), float(l3["low_freq_factor"]), float(l3["high_freq_factor"])
+                    old_ctx = float(l3["original_max_position_embeddings"])
+                    lo_wl, hi_wl = old_ctx / lo_f, old_ctx / hi_f
+                    def _l3(f_):                                 # transformers' _compute_llama3_parameters, per entry
+                        wl = 2 * math.pi / f_
+                        if wl < hi_wl: return f_
+                        if wl > lo_wl: return f_ / fac
+                        sm_ = (old_ctx / wl - lo_f) / (hi_f - lo_f)
+                        return (1 - sm_) * f_ / fac + sm_ * f_
+                def _want(base_):
+                    w_ = [base_ ** (-i / n_) for i in range(n_)]
+                    return [_l3(f_) for f_ in w_] if l3 else w_
+                def _freq_off(base_):
+                    w_ = _want(base_)
+                    return [i for i in range(n_) if abs(vals[i] - w_[i]) > 1e-4 * abs(w_[i])], w_
+                # candidate bases: the one entry 1 implies (unscaled in every real llama3 table), else the declared one;
+                # a base is accepted only if EVERY entry follows from it, so the buffer itself proves it
+                decl = next((v.get("rope_theta") for v in rope_cfg if v.get("rope_theta")), None) or cfg.get("rope_theta")
+                off, want = _freq_off(raw)
+                if off and decl and not _freq_off(float(decl))[0]:
+                    raw = float(decl); off, want = [], _want(raw)
+                if off:
+                    raise NotDrawn(f"rotation frequency {off[0]} of {n_} in {names[0]} is {vals[off[0]]:.6g}, not the "
+                                   f"{'llama3-scaled ' if l3 else ''}base-{raw:.4g} value {want[off[0]]:.6g} "
+                                   f"({len(off)} entries differ): not drawn")
+                return float(f"{raw:.4g}"), names[0]          # the buffer is float32: 4 significant digits are real
+            return None, None
+        theta, tbuf = _theta_of(layer_ids[0])
+        kind_thetas = [_theta_of(r_)[0] for r_ in kind_rep_layer]
+        if theta is not None:
+            ev["rope"].append(f"frequency base from {tbuf} (the buffer feeding every layer's rotation)")
     cache = verify_cache(bundle.get("cache_run"), pshape, wk, wv, f"{stack}.{layer_ids[0]}",
                          fused_head_dim=head_dim if fused else None)
     ev["cache"].append(json.dumps(cache, default=str))
@@ -1034,7 +1214,7 @@ def _recognize(bundle):
         return None
     # ---- MLP: weight matmuls of the layer outside the attention module
     mlp_mm = [j for j in lops if N[j].func in MATMULS and R.weights(j) and not N[j].module.startswith(attn_mod)]
-    gate = up = down = None; act = None; gated = False
+    gate = up = down = None; act = None; gated = False; gate_up = None
     for a in mlp_mm:
         for b in mlp_mm:
             if a < b and {R.base(s) for s in R.srcs(a)} & {R.base(s) for s in R.srcs(b)}:
@@ -1051,9 +1231,38 @@ def _recognize(bundle):
                     if gated: break
             if gated: break
         if gated: break
-    if gated:
+    if gated and gate_up is None:
         down = next(j for j in mlp_mm if j > max(gate, up))
-    elif len(mlp_mm) >= 2:
+    if not gated and len(mlp_mm) == 2:
+        # one fused gate/up matmul: down reads act(half_a) x half_b, both halves split from the same matmul output
+        u0, d0 = mlp_mm
+        hd_ = [_thru(y) for y in R.srcs(d0) if y in hid]
+        if len(hd_) == 1 and N[hd_[0]].func == "mul" and not N[hd_[0]].consts and len(N[hd_[0]].ins) == 2:
+            prod_ = hd_[0]
+            for ea, eb in (tuple(N[prod_].ins), tuple(N[prod_].ins)[::-1]):
+                if ea[0] != "op" or eb[0] != "op": continue
+                pa = _thru(ea[1])
+                if N[pa].func not in ACTS or len(N[pa].ins) != 1 or N[pa].ins[0][0] != "op": continue
+                if u0 not in set(R.back(pa, lambda z: False, 60)[1]) or u0 not in set(R.back(eb[1], lambda z: False, 60)[1]):
+                    continue
+                kg = (N[pa].ins[0][1], _port(N[pa].ins[0])); ku = (eb[1], _port(eb))
+                Bt, St = N[emb].shape[0], N[emb].shape[-2]
+                chans, gu_ops = fused_pair_split(N, u0, {"gate": kg, "up": ku}, Bt, St)
+                I_ = chans["gate"].numel(); Fw_ = N[u0].shape[-1]
+                if chans["up"].numel() != I_ or 2 * I_ != Fw_:
+                    raise NotDrawn(f"the fused gate/up projection splits {Fw_} channels into {I_} + {chans['up'].numel()}")
+                if torch.equal(chans["gate"], torch.arange(I_)) and torch.equal(chans["up"], I_ + torch.arange(I_)):
+                    lay_ = "gate_up"
+                elif torch.equal(chans["up"], torch.arange(I_)) and torch.equal(chans["gate"], I_ + torch.arange(I_)):
+                    lay_ = "up_gate"
+                else:
+                    raise NotDrawn("the fused gate/up projection's halves are not two contiguous blocks")
+                gate_up = {"layout": lay_, "inter": I_, "ops": gu_ops, "prod": prod_, "g_edge": kg, "u_edge": ku}
+                gate = up = u0; down = d0; act = ACTS[N[pa].func]; gated = True
+                ev["mlp_split"].append(f"fused gate/up projection split by the recorded ops into "
+                                       f"{'[gate | up]' if lay_ == 'gate_up' else '[up | gate]'} of {I_} each")
+                break
+    if gate_up is None and not gated and len(mlp_mm) >= 2:
         up, down = mlp_mm[0], mlp_mm[-1]
         act = next((ACTS[N[j].func] for j in lops if up < j < down and N[j].func in ACTS), None)
     act_op = next((j for j in lops if N[j].func in ACTS and up is not None and down is not None and min(x for x in (gate, up) if x is not None) < j < down), None)
@@ -1071,7 +1280,7 @@ def _recognize(bundle):
         if j_ is not None and _w_layout(j_, w_) != w_layout:
             raise NotDrawn(f"{w_} is read as {_w_layout(j_, w_)}, the Q/K/V weights as {w_layout}: mixed weight "
                            "layouts are not drawn")
-    inter = odim(wu)
+    inter = odim(wu) if gate_up is None else gate_up["inter"]
     ev["mlp"].append(f"{'gated: ' + wg + ' -> ' + str(act) + ' x ' if gated else ''}{wu} -> {wd}; inner width {inter}")
     # ---- norms and residuals: norm ops whose output feeds the projections; adds that combine branches
     pre_attn_ops = [j for j in lops if j < min(q_proj, k_proj, v_proj) and N[j].module != attn_mod and not N[j].module.startswith(attn_mod + ".")]
@@ -1188,6 +1397,16 @@ def _recognize(bundle):
     # before softmax: scalar scales and the one mask add only
     explained |= {j for j in pre_sm if j in hid and (N[j].func in TRANSPARENT or _scalar_only(j))}
     explained |= {j for j, _ in madds}
+    explained |= softcap_ops
+    if gate_up: explained |= gate_up["ops"]
+    final_softcap = None
+    after_ = [j for j in sorted(hid) if j > head and N[j].func == "tanh"]
+    if after_:
+        sc_ = _softcap_at(after_[0])
+        if sc_ is None or len(after_) > 1:
+            raise NotDrawn("a tanh on the logits that is not exactly tanh(x / c) * c: not drawn")
+        final_softcap = sc_[0]; explained |= sc_[1]
+        ev["softcap"].append(f"logits soft-capped: tanh(x / {final_softcap:g}) * {final_softcap:g}")
     bad = []
     bad += [("query path", j) for j in _proj_path_bad(q_hid)] + [("key path", j) for j in _proj_path_bad(k_hid)]
     bad += [("value path", j) for j in v_hid if not _moves_only(j)]
@@ -1305,8 +1524,13 @@ def _recognize(bundle):
         arrows.append(("output projection <- weighted sum", _hin(o_proj) == [apply_v]))
     if gated:
         prod = _hin(down)
-        arrows.append(("down projection <- act(gate) x up", len(prod) == 1 and N[prod[0]].func == "mul"
-                       and _hin(prod[0]) == sorted({act_op, up}) and act_op is not None and _hin(act_op) == [gate]))
+        if gate_up:
+            arrows.append(("down projection <- act(gate half) x up half", prod == [gate_up["prod"]]
+                           and _hin(prod[0]) == sorted({act_op, _thru(gate_up["u_edge"][0])})
+                           and _hin(act_op) == [_thru(gate_up["g_edge"][0])]))
+        else:
+            arrows.append(("down projection <- act(gate) x up", len(prod) == 1 and N[prod[0]].func == "mul"
+                           and _hin(prod[0]) == sorted({act_op, up}) and act_op is not None and _hin(act_op) == [gate]))
     else:
         arrows.append(("down projection <- act(up)", act_op is not None and _hin(down) == [act_op]
                        and (_hin(act_op) == [up] if not act_form else True)))
@@ -1321,11 +1545,36 @@ def _recognize(bundle):
     win = cfg.get("sliding_window")
     lt = cfg.get("layer_types")
     marks_sliding = (not lt) or any("sliding" in str(t) for t in lt)
-    if isinstance(win, int) and win > 0 and cfg.get("use_sliding_window") is not False and marks_sliding:
+    if isinstance(win, int) and win > 0 and cfg.get("use_sliding_window") is not False and marks_sliding \
+            and not any(m_[0] == "sliding" for m_ in kind_masks):
         mp = bundle.get("max_position_embeddings") or cfg.get("max_position_embeddings")
         if not mp or win < mp:
-            raise NotDrawn(f"the config declares a {win}-token sliding window, longer than this run's sequence, so "
-                           "the window is invisible in the recording: sliding attention is not drawn yet")
+            raise NotDrawn(f"the config declares a {win}-token sliding window but no layer's recorded mask construction "
+                           "contains one: the window cannot be drawn from what ran")
+    # layer kinds differ ONLY in the shared tensors their mask / rotation read (checked op by op)
+    seq0 = normseq(kind_rep_layer[0])
+    for k_, r_ in enumerate(kind_rep_layer[1:], 1):
+        for p_, (a_, b_) in enumerate(zip(seq0, normseq(r_))):
+            if a_ == b_: continue
+            j_ = L[r_][p_]
+            for e in N[j_].ins:
+                if e[0] != "op" or e[1] in hid or e[1] in set(L[r_]): continue
+                x_ = e[1]
+                trig_ = any(N[y].func in TRIG for y in R.back(x_, lambda z: False, 300)[1] + [x_])
+                if not (trig_ or N[x_].func == "where"):
+                    raise NotDrawn(f"layer {r_} differs from layer {kind_rep_layer[0]} in op {j_} {N[j_].func} reading "
+                                   f"{N[x_].func} (not a mask or rotation table): per-layer differences of that kind are "
+                                   "not drawn")
+    kinds = []
+    for k_ in range(len(kind_rep_layer)):
+        kinds.append({"mask": kind_masks[k_][0], "window": kind_masks[k_][1], "theta": kind_thetas[k_]})
+    kind_list = list(dict.fromkeys(repr(k_) for k_ in kinds))         # identical facts -> one drawn kind
+    kind_of_layer = [kind_list.index(repr(kinds[layer_kind[n_]])) for n_ in range(len(layer_ids))]
+    kinds = [eval(k_) for k_ in kind_list]
+    if len(kinds) > 1 or kinds[0]["window"]:
+        ev["layers"].append("layer kinds: " + ", ".join(
+            f"{chr(65 + n_)} = {k_['mask']}{' window ' + str(k_['window']) if k_['window'] else ''}"
+            f"{', RoPE theta ' + format(k_['theta'], 'g') if k_['theta'] else ''}" for n_, k_ in enumerate(kinds)))
     facts = dict(repo=repo, arch=arch, vocab=vocab, hidden=hidden, tied=tied, final_norm=final_norm, layers=len(layer_ids),
                  identical=len(identical), layer_ops=len(lops), kind=kind, num_heads=num_heads, num_kv=num_kv, head_dim=head_dim,
                  q_out=q_out, k_out=k_out, o_shape=((R.pshape.get(wo) if w_layout == "out_in" else tuple(reversed(R.pshape[wo])))
@@ -1334,6 +1583,9 @@ def _recognize(bundle):
                  qkv_width=split["out"] if fused else None, w_layout=w_layout,
                  rot_dim=(rot_dim if rope_q and rot_dim != head_dim else None),
                  parallel_norms=parallel_norms, pos_emb=pos_emb, head_bias=N[head].func == "addmm",
+                 gate_up=({"layout": gate_up["layout"], "inter": gate_up["inter"]} if gate_up else None),
+                 layer_kinds=kinds, kind_of_layer=kind_of_layer, attn_softcap=attn_softcap, final_softcap=final_softcap,
+                 attn_softcap_order=softcap_order,
                  norm_eps=norm_info["eps"], norm_weight=norm_info["weight"], final_eps=final_info["eps"],
                  final_weight=final_info["weight"], qk_eps=qk_info["eps"] if qk_info else None,
                  qk_weight=qk_info["weight"] if qk_info else None, embed_scale=embed_scale,
@@ -1395,7 +1647,8 @@ def _scorecard(F):
         ("decoder.attention", "head_dim", "head width", F["head_dim"], "execution_observed", "query reshape shape", hd_cfg),
         ("decoder.attention", "scores_scale", "score scale", round(F["scale"], 6) if F["scale"] else None,
          "execution_observed", "product of the scalar multipliers on the score path", None),
-        ("decoder.attention", "mask", "mask", F["mask"], "execution_observed", "captured additive mask operand on the scores", None),
+        ("decoder.attention", "mask", "mask", "sliding" if F.get("window") else F["mask"], "execution_observed",
+         "captured additive mask operand on the scores", None),
         ("decoder.attention", "rope_theta", "RoPE base", F["theta"], "execution_observed" if F["theta"] else "unknown",
          first("rope") or "no measurable rotation buffer", theta_cfg),
         ("decoder.attention", "qk_norm", "QK-norm", F["qk_norm"], "execution_observed", "norm ops on the query/key paths", None),
@@ -1426,6 +1679,20 @@ def _scorecard(F):
                   "the constant the recorded QK-norm statistic adds", None),
                  ("decoder.attention", "qk_norm_weight", "QK-norm weight", NORM_WEIGHT_TEXT[F["qk_weight"]], "execution_observed",
                   "how the recorded QK-norm reads its weight parameter", None)]
+    if F.get("layer_kinds") and (len(F["layer_kinds"]) > 1 or F["layer_kinds"][0]["window"]):
+        rle_, desc_ = layer_pattern_text(F)
+        rows += [("decoder.layer", "layer_pattern", "layer pattern", rle_, "execution_observed",
+                  "layers grouped by the shared mask / rotation tensors they read; each kind's mask replayed", None),
+                 ("decoder.layer", "layer_kinds", "layer kinds", desc_, "execution_observed", first("layers"), None)]
+    if F.get("attn_softcap"):
+        rows.append(("decoder.attention", "logit_softcap", "attention logit soft-cap", F["attn_softcap"],
+                     "execution_observed", first("softcap"), None))
+    if F.get("final_softcap"):
+        rows.append(("model", "final_logit_softcap", "final logit soft-cap", F["final_softcap"], "execution_observed",
+                     "div / tanh / mul on the logits", None))
+    if F.get("gate_up"):
+        rows.append(("decoder.ffn", "gate_up_split", "fused gate/up split", gate_up_text(F), "execution_observed",
+                     first("mlp_split"), None))
     if F.get("embed_scale"):
         rows.append(("model", "embedding_scale", "embedding scale", F["embed_scale"]["value"], "execution_observed",
                      first("embedding_scale"), None))
@@ -1470,6 +1737,11 @@ def norm_chips(eps, weight):
     return [f"eps {eps:g}", NORM_WEIGHT_TEXT[weight]]
 
 
+def gate_up_text(F):
+    I_ = fmt(F["gate_up"]["inter"])
+    return f"[gate {I_} | up {I_}]" if F["gate_up"]["layout"] == "gate_up" else f"[up {I_} | gate {I_}]"
+
+
 def qkv_split_text(F):
     """The page text of a fused Q/K/V split (the oracle's page_reader parses exactly this)."""
     if F.get("qkv_layout") == "qkv_blocks":
@@ -1477,7 +1749,32 @@ def qkv_split_text(F):
     return (f"per K/V group [q × {F['qkv_group']} | k | v] × {F['num_kv']}, head dim {F['head_dim']}")
 
 
+def layer_pattern_text(F):
+    """('A×5 B×1 ...', 'A = ...; B = ...') of a mixed / windowed layer stack (the page text page_reader parses)."""
+    ks, ko = F["layer_kinds"], F["kind_of_layer"]
+    runs, prev = [], None
+    for k in ko:
+        if runs and runs[-1][0] == k: runs[-1][1] += 1
+        else: runs.append([k, 1])
+    rle = " ".join(f"{chr(65 + k)}×{n}" for k, n in runs)
+    desc = "; ".join(f"{chr(65 + n)} = " + (f"sliding window {k['window']}" if k["window"] else "causal")
+                     + (f", RoPE θ {k['theta']:g}" if k["theta"] else "") for n, k in enumerate(ks))
+    return rle, desc
+
+
 def to_ir(F):
+    """Build unfold's ModelIR from execution facts. A stack of several layer kinds (sliding / full masks, local / global
+    rotation bases) is built kind by kind with the same code and assembled in the recorded per-layer order."""
+    kinds = F.get("layer_kinds") or [{"mask": "causal", "window": None, "theta": F["theta"]}]
+    if len(kinds) == 1 and not kinds[0]["window"]:
+        return _to_ir_core(F)
+    irs = [_to_ir_core(dict(F, theta=k["theta"], window=k["window"])) for k in kinds]
+    base = irs[F["kind_of_layer"][0]]
+    base.layers = [dataclasses.replace(irs[k].layers[0], index=i) for i, k in enumerate(F["kind_of_layer"])]
+    return base
+
+
+def _to_ir_core(F):
     """Build unfold's ModelIR from execution facts (same fields the code parser fills)."""
     import model_unfolder.ir as I
     G = F.get("graded") or {}
@@ -1497,7 +1794,8 @@ def to_ir(F):
         inv = 1 / F["scale"]; d = round(inv ** 2)
         scale_txt = f"scores × {F['scale']:.6g} (= 1/√{d})" if abs(math.sqrt(d) - inv) < 1e-3 else f"scores × {F['scale']:.6g}"
     attn = make(I.AttentionSpec, rope_dim=F.get("rot_dim"), kind=F["kind"], mixer_state="ordinary_attention", num_heads=F["num_heads"], num_kv_heads=F["num_kv"],
-                head_dim=F["head_dim"], rope_theta=F["theta"], mask=F["mask"], qk_norm=F["qk_norm"], qk_norm_kind=F["qk_norm_kind"],
+                head_dim=F["head_dim"], rope_theta=F["theta"], mask="sliding" if F.get("window") else F["mask"],
+                window_size=F.get("window"), qk_norm=F["qk_norm"], qk_norm_kind=F["qk_norm_kind"],
                 qk_norm_axis="last_dimension" if F["qk_norm"] else None, qk_norm_extent=F["qn_extent"],
                 qk_norm_placement=("after_reshape" if F["qn_extent"] == F["head_dim"] else "before_reshape") if F["qk_norm"] else None,
                 rope=F["rope"], position_kind="rope" if F["rope"] else None, position_application="qk_rotation" if F["rope"] else None,
@@ -1507,7 +1805,7 @@ def to_ir(F):
                                  "location": f"keys after {F['cache']['write']['key']['after']}, values after {F['cache']['write']['value']['after']}",
                                  "guard": "observed in a run with use_cache=True"} if cache_ok else None))
     ffn = make(I.FFNSpec, kind="dense", activation=F["act"], intermediate_size=F["inter"], gated=F["gated"], bias=F.get("ffn_bias", False),
-               projection_mode="split" if F["gated"] else None)
+               projection_mode=("fused_gate_up" if F.get("gate_up") else "split") if F["gated"] else None)
     H, hd, nh, nkv = F["hidden"], F["head_dim"], F["num_heads"], F["num_kv"]
     attn_facts = [f"{nh} Q heads", f"{nkv} KV heads", f"head dim {hd}"]
     if F["theta"]: attn_facts.append(f"RoPE θ {fmt(round(F['theta']))}")
@@ -1530,6 +1828,8 @@ def to_ir(F):
         children = [c for c in children if c["id"] not in ("q_proj", "k_proj", "v_proj")]
     if F.get("w_layout") == "in_out": attn_facts.append("weights stored [in, out]")
     if F.get("rot_dim"): attn_facts.append(f"partial RoPE {F['rot_dim']}/{hd}")
+    if F.get("window"): attn_facts.append(f"sliding window {F['window']}")
+    if F.get("attn_softcap"): attn_facts.append(f"logit soft-cap {F['attn_softcap']:g}")
     if F["qk_norm"]:
         where = "before RoPE" if F["norm_before_rope"] else "after RoPE"
         children += [{"id": "q_norm", "title": f"Query {NK.get(F['qk_norm_kind'], 'norm')}", "description": f"Recorded {NK.get(F['qk_norm_kind'])} on Q over the last axis ({F['qn_extent']}), {where}.", "facts": norm_chips(F["qk_eps"], F["qk_weight"]) if F.get("qk_eps") is not None else []},
@@ -1542,7 +1842,11 @@ def to_ir(F):
         children += [{"id": "q_rope", "title": "Apply RoPE (Q)", "description": f"Rotate-half rotary embedding recorded on the query heads; frequency base from the built model's buffer: {th}." + part, "facts": [f"frequency base {th}"] + pf},
                      {"id": "k_rope", "title": "Apply RoPE (K)", "description": f"Rotate-half rotary embedding recorded on the key heads; {th}." + part, "facts": [f"frequency base {th}"] + pf}]
     children += [
-        {"id": "scaled_scores", "title": "Scaled dot-product scores", "description": f"Q·Kᵀ recorded; {scale_txt or 'no scale constant recorded'}; mask: {F['mask'] or 'none'} (read from the mask tensor's values).",
+        {"id": "scaled_scores", "title": "Scaled dot-product scores", "description": f"Q·Kᵀ recorded; {scale_txt or 'no scale constant recorded'}"
+         + (f"; scores soft-capped tanh(x / {F['attn_softcap']:g}) × {F['attn_softcap']:g} {F.get('attn_softcap_order')} the "
+            "mask is added" if F.get("attn_softcap") else "")
+         + (f"; mask: sliding window {F['window']} (causal; window read from the replayed mask construction)." if F.get("window")
+            else f"; mask: {F['mask'] or 'none'} (read from the mask tensor's values)."),
          "facts": [f"{nh} Q heads", f"{nkv} KV heads"] + ([f"{nh // nkv} Q per KV head"] if nkv and nh % nkv == 0 and nh != nkv else [])},
         {"id": "attn_softmax", "title": "Softmax weights", "description": "Recorded softmax over each query row."},
         {"id": "attn_apply_v", "title": "Matrix multiplication", "description": "Recorded weights · V — one context vector per head."},
@@ -1572,6 +1876,13 @@ def to_ir(F):
             {"id": "multiply", "label": "x", "title": "Gate product", "description": f"Recorded {actl}(gate) × up."},
             {"id": "down_proj", "label": "Linear (down)", "title": "Down projection", "description": "Recorded matmul back to the residual width.", "facts": [f"{fmt(F['inter'])} → {fmt(H)}"]},
         ]
+        if F.get("gate_up"):
+            gu_ = gate_up_text(F)
+            ffn_children = [{"id": "gate_up_proj", "label": "Linear (gate|up)", "title": "Fused gate/up projection",
+                             "description": f"One recorded matmul produces the gate and up halves, split as {gu_} (traced "
+                                            "from the recorded split ops).",
+                             "facts": [f"{fmt(H)} → {fmt(2 * F['inter'])}", f"split {gu_}"]}] + \
+                ffn_children[2:]
         ffn_block = {"id": "ffn", "role": "ffn", "kind": "ffn", "label": "Gated FFN", "title": "Gated feed-forward",
                      "description": "Gated MLP — recorded gate path modulates the up projection before the down projection.",
                      "facts": [actl, f"hidden {fmt(F['inter'])}", "split gate/up"], "view": "gated_ffn",
@@ -1636,6 +1947,8 @@ def to_ir(F):
     ]
     if F.get("head_bias"):
         model_blocks[-1]["facts"] = model_blocks[-1]["facts"] + ["with bias"]
+    if F.get("final_softcap"):
+        model_blocks[-1]["facts"] = model_blocks[-1]["facts"] + [f"logit soft-cap {F['final_softcap']:g}"]
     if F.get("embed_scale"):
         model_blocks[1]["facts"] = model_blocks[1]["facts"] + [f"scaled × {F['embed_scale']['value']:.8g}"]
     if F.get("pos_emb"):

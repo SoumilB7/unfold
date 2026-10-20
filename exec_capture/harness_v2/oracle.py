@@ -35,6 +35,17 @@ TOL = 1e-4          # max |real - ref| / max |ref| per stage. float64 everywhere
 # (projections of an O(1) stream are ~1e-3, so a QK-norm's mean square is comparable to its eps and the scores stay O(1))
 # seed 4 shrinks ONLY the embedding (the residual stream) and keeps every projection at full scale: a post / sandwich
 # output norm then sees a sublayer output whose mean square is comparable to eps, while its normalized output is O(1)
+# TEMPORARY (Soumil's Q5 ruling, 2026-10-19): only the end-to-end composite of a run longer than a stated window is
+# gated at TOL_LONG_E2E, with the measured cause stated on the row; every stage keeps TOL. Measured on Gemma-3-1b
+# (6 layers, 528 tokens, 262k vocabulary): end to end 1.71e-4, every stage <= 2.1e-5. Diagnosis: the library's
+# float32 RMSNorm cast is NOT the cause (patched to float64: 1.66e-4); the library's float32 RoPE tables ARE (patched
+# to float64 tables: 9.2e-6, every stage <= 1.0e-6). Mirroring float32 tables in the reference only reached 1.27e-4
+# (the library also builds inv_freq itself in float32), so the reference stays float64 and the margin is stated.
+# The same cause at 257 tokens: end to end 1.06e-4 as is, 8.9e-6 with float64 tables -- so every run longer than
+# LONG_S = 128 tokens is a "long run" for the end-to-end composite (stages keep TOL at every length).
+LONG_S, TOL_LONG_E2E = 128, 3e-4
+LONG_RUN_CAUSE = ("the library's float32 RoPE angle tables at long positions (Q5 diagnosis on Gemma-3-1b: as is 1.06e-4 "
+                  "at 257 tokens / 1.71e-4 at 528; with float64 tables 8.9e-6 / 9.2e-6)")
 EPS_SEED_SCALE, EPS_SEEDS = 1e-3, {2: "all", 3: "projections", 4: "embedding"}
 CONVENTIONS = [
     "GQA: query head h reads K/V head h // (heads / kv_heads) (contiguous groups; the page says 'N Q per KV head')",
@@ -230,9 +241,16 @@ class Reference:
         return (g[..., :G * d].reshape(B, S, n * G * d), g[..., G * d:(G + 1) * d].reshape(B, S, n * d),
                 g[..., (G + 1) * d:].reshape(B, S, n * d))
 
-    def inv_freq(self):
+    def kind(self, i):
+        """The page's kind of layer i: its mask, window and rotation base (one kind unless the page states a pattern)."""
+        P = self.P
+        if P.get("kinds"): return P["kinds"][P["kind_of_layer"][i]]
+        return {"mask": P["mask"], "window": P.get("window"), "theta": P["theta"]}
+
+    def inv_freq(self, theta=None):
         P = self.P; d = P.get("rot_dim") or P["head_dim"]
-        f = [P["theta"] ** (-(2 * i) / d) for i in range(d // 2)]
+        theta = P["theta"] if theta is None else theta
+        f = [theta ** (-(2 * i) / d) for i in range(d // 2)]
         if P["llama3"]:
             fac, ctx = P["llama3"]["factor"], P["llama3"]["original_max_position_embeddings"]
             lo, hi = self.l3_extra["low_freq_factor"], self.l3_extra["high_freq_factor"]
@@ -246,15 +264,15 @@ class Reference:
             f = [sc(x) for x in f]
         return torch.tensor(f, dtype=torch.float64)
 
-    def rope(self, x, S):
+    def rope(self, x, S, theta=None):
         r = self.P.get("rot_dim")
         if r:                                              # partial: rotate the first r dims, pass the rest through
-            return torch.cat([self._rope_full(x[..., :r], S), x[..., r:]], -1)
-        return self._rope_full(x, S)
+            return torch.cat([self._rope_full(x[..., :r], S, theta), x[..., r:]], -1)
+        return self._rope_full(x, S, theta)
 
-    def _rope_full(self, x, S):
+    def _rope_full(self, x, S, theta=None):
         pos = torch.arange(S, dtype=torch.float64)
-        ang = pos[:, None] * self.inv_freq()[None, :]
+        ang = pos[:, None] * self.inv_freq(theta)[None, :]
         ang = torch.cat([ang, ang], -1)                               # [S, d]
         cos, sin = ang.cos().to(x.dtype), ang.sin().to(x.dtype)
         h = x.shape[-1] // 2
@@ -280,18 +298,31 @@ class Reference:
         if per_head and P["qk_norm_before_rope"]:
             q, k = self.qk_norm(q, "qn", i), self.qk_norm(k, "kn", i)
         if P["rope"]:
-            if P["rope_form"] != "rotate_half" or not P["theta"]:
+            if P["rope_form"] != "rotate_half" or not self.kind(i)["theta"]:
                 raise NotCheckable(f"the page's rotation ({P['rope_form']}, theta {P['theta']}) has no reference")
-            q, k = self.rope(q, S), self.rope(k, S)
+            q, k = self.rope(q, S, self.kind(i)["theta"]), self.rope(k, S, self.kind(i)["theta"])
         if per_head and P["qk_norm_before_rope"] is False:
             q, k = self.qk_norm(q, "qn", i), self.qk_norm(k, "kn", i)
         g = nh // nkv
         kr = k[:, self._group_index()]                                # [B, nh, S, hd]
         s = q @ kr.transpose(-1, -2)
         if P["scale"] is not None: s = s * P["scale"]
-        if P["mask"] != "causal":
+        kd = self.kind(i)
+        ii = torch.arange(S)[:, None]; jj = torch.arange(S)[None, :]
+        if kd["mask"] == "sliding" and kd["window"]:        # causal band of the stated width
+            allowed = (jj <= ii) & (jj > ii - kd["window"])
+        elif kd["mask"] == "causal":
+            allowed = jj <= ii
+        else:
             raise NotCheckable(f"mask {P['mask']!r} has no reference")
-        s = s.masked_fill(torch.triu(torch.ones(S, S, dtype=torch.bool), 1), float("-inf"))
+        c_ = P.get("attn_softcap")                            # the page's attention-logit soft-cap, in its stated order
+        if c_ and P.get("attn_softcap_order") == "before":
+            s = torch.tanh(s / c_) * c_
+        s = s.masked_fill(~allowed, float("-inf"))
+        if c_ and P.get("attn_softcap_order") == "after":     # a masked score becomes -c, not -inf
+            s = torch.tanh(s / c_) * c_
+        elif c_ and P.get("attn_softcap_order") != "before":
+            raise NotCheckable(f"soft-cap order {P.get('attn_softcap_order')!r} has no reference")
         return torch.softmax(s, -1), v
 
     def _group_index(self):
@@ -318,7 +349,11 @@ class Reference:
         act = ACTS.get(P["act"])
         if act is None: raise NotCheckable(f"activation {P['act']!r} has no reference")
         bb = lambda r: W(r + "_b", i) if P["ffn_bias"] else None
-        if P["gated"]:
+        if P["gated"] and P.get("gate_up"):                  # one fused projection, split as the page states
+            y = self.lin(h, W("gate", i), bb("gate")); I_ = P["gate_up"][1]
+            g_, u_ = (y[..., :I_], y[..., I_:2 * I_]) if P["gate_up"][0] == "gate_up" else (y[..., I_:2 * I_], y[..., :I_])
+            z = act(g_) * u_
+        elif P["gated"]:
             z = act(self.lin(h, W("gate", i), bb("gate"))) * self.lin(h, W("up", i), bb("up"))
         else:
             z = act(self.lin(h, W("up", i), bb("up")))
@@ -366,7 +401,10 @@ class Reference:
         h = self.norm(P["final_norm"], x, self.W("nf_w", 0), self.W("nf_b", 0), P["final_eps"], P["final_weight"])
         head = self.W("emb", 0) if P["tied"] in (True, None) else self.W("head", 0)
         y = h @ head.T
-        return y + self.W("head_b", 0) if P.get("head_bias") else y
+        if P.get("head_bias"): y = y + self.W("head_b", 0)
+        if P.get("final_softcap"):                            # the page's final-logit soft-cap
+            y = torch.tanh(y / P["final_softcap"]) * P["final_softcap"]
+        return y
 
     def model(self, ids, n_layers):
         x = self.embed(ids)
@@ -385,6 +423,7 @@ STAGE_FACTS = {
     "layer output": "residual wiring (second add) / placement",
     "final norm + head": "final norm kind / tied head",
     "end to end": "every drawn fact composed",
+    "end to end (long run)": "every drawn fact composed, on the run longer than a stated window",
 }
 
 
@@ -483,7 +522,7 @@ def check(model, P, M, eps, l3_extra, n_layers, seeds=(0, 1), S=24, B=2, randomi
                 stage("layer output" + sfx, lambda: lo, lambda: ref.layer_output(x, a, m, i))
             last = _first(cap[n_layers - 1]["layer"][1])
             stage("final norm + head", lambda: logits, lambda: ref.final(last))
-            stage("end to end", lambda: logits, lambda: ref.model(ids, n_layers))
+            stage("end to end" if S <= LONG_S else "end to end (long run)", lambda: logits, lambda: ref.model(ids, n_layers))
         for k, v in st.items():
             worst[k] = max(worst[k], v)
     fails = [k for k, v in worst.items() if not (v <= tol)]
@@ -544,7 +583,8 @@ def static_checks(P, M, model, cfg):
     else:
         want.update(q=mat(nh * hd, H), k=mat(nkv * hd, H), v=mat(nkv * hd, H))
     if P["o_proj"]: want["o"] = mat(H, nh * hd)
-    if P["gated"]: want["gate"] = mat(I, H)
+    if P["gated"] and P.get("gate_up"): want["gate"] = want["up"] = mat(2 * I, H)
+    elif P["gated"]: want["gate"] = mat(I, H)
     if P.get("pos_emb"): want["pos"] = (P.get("pos_rows"), H)
     if P.get("head_bias"): want["head_b"] = (V,)
     if P["qk_norm"] and P.get("qk_weight") != "none": want.update(qn_w=(P["qk_norm_extent"],), kn_w=(P["qk_norm_extent"],))
@@ -601,6 +641,104 @@ def affordable_layers(cfg, budget_bytes=4.5e9):
     return L if L and full <= budget_bytes else min(2, L or 2)
 
 
+def config_window(B):
+    """The sliding window the library would build from this config (through its config class), else None."""
+    import transformers
+    cls = getattr(transformers, B["class"], None)
+    if cls is None: return None
+    c_ = cls.config_class.from_dict(dict(B["config"]))
+    w = getattr(c_, "sliding_window", None)
+    if not isinstance(w, int) or w <= 0 or getattr(c_, "use_sliding_window", None) is False: return None
+    lt = getattr(c_, "layer_types", None)
+    if lt and not any("sliding" in str(t) for t in lt): return None
+    return w
+
+
+_SIG_CACHE = {}
+def layer_signatures(B, stack_path):
+    """(signatures, why): one per layer of the FULL library model, built on the meta device (no memory): every scalar
+    attribute the library holds on the layer and its submodules (e.g. an attention module's sliding window / layer type,
+    which also selects its rotation table), keyed by submodule path. An attribute equal to the layer's own index in every
+    layer (an index, not a configuration) is left out. Library evidence, independent of the recognizer."""
+    key = (id(B), stack_path)
+    if key in _SIG_CACHE: return _SIG_CACHE[key][1]
+    import transformers
+    try:
+        cls = getattr(transformers, B["class"])
+        conf = cls.config_class.from_dict(dict(B["config"]))
+        with torch.device("meta"):
+            m = cls._from_config(conf, attn_implementation="eager")
+        stack = m.get_submodule(stack_path)                 # the page's layer stack (its parameter mapping)
+        raw = []
+        for layer in stack:
+            d = {}
+            for n, sub in layer.named_modules():
+                for k, v in vars(sub).items():
+                    if k.startswith("_") or k == "training": continue
+                    if v is None or isinstance(v, (bool, int, float, str)): d[(n, k)] = v
+            raw.append(d)
+        keys = set().union(*raw)
+        idx = {k for k in keys if all(r.get(k) == i for i, r in enumerate(raw))}
+        sigs = [tuple(sorted(((n + "." if n else "") + k, repr(r.get((n, k), "<absent>"))) for n, k in keys - idx))
+                for r in raw]
+        out = (sigs, "")
+    except Exception as e:
+        out = (None, f"{type(e).__name__}: {str(e)[:120]}")
+    _SIG_CACHE[key] = (B, out)
+    return out
+
+
+def unbuilt_layer_checks(B, P, nl, stack_path):
+    """The page's kind (mask, window, rotation base) of every layer the oracle does not build must be the kind of a
+    BUILT (run-checked) layer the library configures identically; a layer configured unlike every built one is
+    NOT_CHECKABLE (named), never PASS."""
+    n = P["layers"] or 0
+    if nl >= n: return []
+    sigs, why = layer_signatures(B, stack_path)
+    fact = "layer kind of unbuilt layers (mask / window / RoPE base)"
+    if sigs is None or len(sigs) != n:
+        return [("NOT_CHECKABLE", fact, f"layers {nl}..{n - 1} are not built and the library's per-layer configuration "
+                                        f"could not be read ({why or f'{0 if sigs is None else len(sigs)} layers'})")]
+    kinds = P.get("kinds") or [{"mask": P["mask"], "window": P.get("window"), "theta": P["theta"]}]
+    kol = P.get("kind_of_layer") or [0] * n
+    pk = lambda i: (kinds[kol[i]]["mask"], kinds[kol[i]].get("window"), kinds[kol[i]]["theta"])
+    desc = lambda t: (f"sliding window {t[1]}" if t[0] == "sliding" else t[0]) + (f", RoPE base {t[2]:g}" if t[2] else "")
+    out, unmatched = [], []
+    for i in range(nl, n):
+        rep_ = next((j for j in range(nl) if sigs[j] == sigs[i]), None)
+        if rep_ is None: unmatched.append(i); continue
+        if pk(i) != pk(rep_):
+            out.append(("FAIL", "layer kind", f"layer {i} is drawn as {desc(pk(i))}; the library configures it exactly like "
+                                              f"built layer {rep_}, which is checked as {desc(pk(rep_))}"))
+            break
+    if unmatched and not out:
+        ex = sorted(set(sigs[unmatched[0]]) - set(sigs[0]))[:3]
+        out.append(("NOT_CHECKABLE", fact, f"layers {unmatched[:6]}{'...' if len(unmatched) > 6 else ''} are configured "
+                                           f"unlike every built layer (e.g. {ex}) and are not built here"))
+    return out
+
+
+def model_dtype(B, n_layers, budget=4.5e9):
+    """float64 when the model with n_layers fits the budget, else float32 (stated on the row); None if neither fits."""
+    import transformers
+    cls = getattr(transformers, B["class"], None)
+    c_ = cls.config_class.from_dict(dict(B["config"])) if cls else None
+    g_ = lambda k: getattr(c_, k, None) if c_ is not None else None
+    H, V = g_("hidden_size") or 0, g_("vocab_size") or 0
+    I = g_("intermediate_size") or g_("n_inner") or 4 * H
+    tied = bool(g_("tie_word_embeddings"))
+    n_par = V * H * (1 if tied else 2) + n_layers * (4 * H * H + 3 * H * I)
+    for dt, b in ((torch.float64, 8), (torch.float32, 4)):
+        if n_par * b <= budget * (1 if b == 8 else 1.2): return dt, ""
+    return None, f"{n_par / 1e9:.1f}B parameters do not fit even in float32"
+
+
+def long_run_ok(P, S, budget=4e9):
+    """A batch-1 run of S tokens: the attention probabilities (heads x S^2, a few copies) and the logits fit."""
+    nh, V = P["num_heads"] or 1, P["vocab"] or 1
+    return S <= 4200 and (6 * nh * S * S * 8 + 3 * S * V * 8) <= budget
+
+
 def run_bundle(B, n_layers=None, seeds=(0, 1, 2, 3, 4), S=24, model=None, randomize_weights=True, f_edit=None, ir_edit=None):
     """One row: NOT_DRAWN / NOT_CHECKABLE / PASS / FAIL. `model`: an already-built real model (the mutant harness);
     `f_edit` edits the recognizer facts before to_ir (a self-consistent wrong page), `ir_edit` edits the rendered IR."""
@@ -626,15 +764,52 @@ def run_bundle(B, n_layers=None, seeds=(0, 1, 2, 3, 4), S=24, model=None, random
         eps, l3, und = undrawn_inputs(cfg, P)
         row["undrawn_inputs"] = und
         cfg = dict(cfg, num_hidden_layers=config_layers(B))
+        # every layer KIND the page states must run: build at least up to the first layer of each kind
+        kinds_ = P.get("kinds") or [{"mask": P["mask"], "window": P.get("window"), "theta": P["theta"]}]
+        need_ = (max(P["kind_of_layer"].index(k) for k in range(len(kinds_))) + 1) if P.get("kinds") else 1
         if model is None:
-            model = build_real(B, n_layers or affordable_layers(B))
+            # ... and the first layer of every distinct library per-layer configuration (meta-device signatures)
+            sigs_, _w = layer_signatures(B, M["_stack"])
+            need_lib = (max(sigs_.index(x) for x in set(sigs_)) + 1) if sigs_ else 1
+            n_build = max(n_layers or affordable_layers(B), min(max(need_, need_lib), P["layers"]))
+            dt_, why_ = model_dtype(B, n_build)
+            row["dtype"] = str(dt_).replace("torch.", "")
+            if dt_ is None:
+                raise NotCheckable(f"memory: {why_}")
+            model = build_real(B, n_build, dtype=dt_)
+        # a window must be crossed: one run longer than the widest stated window (when memory allows)
+        wins_ = [k["window"] for k in kinds_ if k.get("window")]
+        S_list = list(S) if isinstance(S, (tuple, list)) else [S]
+        if wins_:
+            S_long = max(wins_) + 16
+            if long_run_ok(P, S_long):
+                S_list.append(S_long)
+            else:
+                issues = issues + [("NOT_CHECKABLE", "sliding window", f"the stated window {max(wins_)} needs a run longer "
+                                    f"than {max(wins_)} tokens, too large for this machine (proven on a constructed model "
+                                    "with a small window instead)")]
+            row["window_runs"] = [x for x in S_list if x > max(wins_)]
+        else:
+            # the page states no window: a window the library would apply beyond every checked length is invisible
+            # to the runs, so a "full causal" page on a windowed model cannot PASS (the config only refuses a PASS here;
+            # it never supplies a drawn fact)
+            cw_ = config_window(B)
+            s_max = max(S) if isinstance(S, (tuple, list)) else S
+            if cw_ and cw_ >= s_max and long_run_ok(P, cw_ + 16):
+                S_list.append(cw_ + 16)                              # the config picks a run LENGTH only: cross it
+                row["window_runs"] = [cw_ + 16]
+            elif cw_ and cw_ >= s_max:
+                issues = issues + [("NOT_CHECKABLE", "sliding window", f"the page states full causal attention; the "
+                                    f"model's config declares a {cw_}-token window, longer than every checked run "
+                                    f"({s_max}): full vs windowed attention is not distinguishable here")]
         nl = len(model.get_submodule(M["_stack"]))
         row["real_layers_built"], row["drawn_layers"] = nl, P["layers"]
-        issues = issues + static_checks(P, M, model, cfg)
+        issues = issues + static_checks(P, M, model, cfg) + unbuilt_layer_checks(B, P, nl, M["_stack"])
         size_fail = any(v == "FAIL" and f in set(ROLE_FACT.values()) for v, f, _ in issues)
         if not size_fail:                                            # wrong sizes: the reference cannot run
-            for S_ in (S if isinstance(S, (tuple, list)) else (S,)):   # several lengths: worst stage error kept
-                r_ = check(model, P, M, eps, l3, nl, seeds=seeds, S=S_, randomize_weights=randomize_weights)
+            for S_ in S_list:                                        # worst stage error kept
+                r_ = check(model, P, M, eps, l3, nl, seeds=seeds if S_ <= 300 else seeds[:1] + tuple(x for x in seeds if x in EPS_SEEDS),
+                           S=S_, B=2 if S_ <= 300 else 1, randomize_weights=randomize_weights)
                 if res is None:
                     res = r_; res["S"] = [S_]
                 else:
@@ -642,7 +817,12 @@ def run_bundle(B, n_layers=None, seeds=(0, 1, 2, 3, 4), S=24, model=None, random
                     res["errors"].update({k: v for k, v in r_["errors"].items() if k not in res["errors"]})
                     res["S"].append(S_)
             order = list(res["stages"])
-            res["fail_stages"] = [k for k, v in res["stages"].items() if not (v <= res["tol"])]
+            res["fail_stages"] = [k for k, v in res["stages"].items()
+                                  if not (v <= (TOL_LONG_E2E if k == "end to end (long run)" else res["tol"]))]
+            if "end to end (long run)" in res["stages"]:
+                res["long_run_note"] = (f"end to end (long run) {res['stages']['end to end (long run)']:.2e}, tol "
+                                        f"{TOL_LONG_E2E:g} (temporary, measured), stages tol {res['tol']:g}; cause: "
+                                        + LONG_RUN_CAUSE)
             res["first_fail"] = min(res["fail_stages"], key=order.index) if res["fail_stages"] else None
             res["first_fail_facts"] = (STAGE_FACTS[re.sub(r" \[layer \d+\]$", "", res["first_fail"])]
                                        if res["first_fail"] else None)

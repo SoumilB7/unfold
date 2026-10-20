@@ -58,7 +58,10 @@ def mutant_row(name, n_seeds=5, **edits):
 # ---------------------------------------------------------------------- hand-made wrong page facts
 # Each is a self-consistent wrong PAGE: the recognizer facts are edited before to_ir (f), or the rendered IR is edited
 # so that spec AND text say the wrong thing (ir). The functional check must catch it, not only the page reader.
-def _theta(F): F["theta"] = F["theta"] * 10
+def _theta(F):                                         # every stated base x 10 (a layer-kind page states one per kind)
+    F["theta"] = F["theta"] * 10
+    if F.get("layer_kinds"):
+        F["layer_kinds"] = [dict(k, theta=k["theta"] * 10 if k["theta"] else k["theta"]) for k in F["layer_kinds"]]
 def _place(F): F["placement"] = {"pre": "post", "post": "double", "double": "pre"}[F["placement"]]
 def _wform(F): F["norm_weight"] = "1+w" if F["norm_weight"] == "w" else "w"
 def _eps10(F): F["norm_eps"] *= 10

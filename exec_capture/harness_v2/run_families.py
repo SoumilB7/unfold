@@ -30,10 +30,20 @@ for p in sorted(glob.glob(os.path.join(cap_dir, "*.capture.json.gz"))):
     res["rows"][repo] = row
     print(f"{repo}: {row['verdict']}  e2e={row.get('end_to_end')}  {row.get('first_fail_facts') or row.get('reason', '')[:150]}",
           flush=True)
-    if repo in WRONG_ON and row["verdict"] == "PASS":
-        model = oracle.build_real(B, 2)
-        for wname, (kind, edit, test, *_flags) in WRONG.items():
-            if not applicable(row["page_facts"], test): continue
+    # wrong pages on a PASS row, or on a row whose only open item is a window too long to cross here
+    only_window = row["verdict"].startswith("NOT_CHECKABLE(sliding window") and not row.get("fail_stages")
+    if repo in WRONG_ON and (row["verdict"] == "PASS" or only_window):
+        import exec_to_ir
+        from selftest_oracle_families import WRONG as FAM_WRONG
+        F0 = exec_to_ir.recognize(B)
+        n_ = row.get("real_layers_built") or 2
+        dt_ = {"float64": oracle.torch.float64, "float32": oracle.torch.float32}.get(row.get("dtype"), oracle.torch.float64)
+        model = oracle.build_real(B, n_, dtype=dt_)
+        cases = [(w, k, e, t, "page") for w, (k, e, t, *_f) in WRONG.items()] + \
+                [(w, "f", e, t, "facts") for w, (e, t) in FAM_WRONG.items()]
+        for wname, kind, edit, test, on in cases:
+            if on == "page" and not applicable(row["page_facts"], test): continue
+            if on == "facts" and not applicable(F0, test): continue
             try:
                 r = oracle.run_bundle(B, model=model, S=(24, 257), seeds=(0, 2, 3, 4), **edit_kw(kind, edit))
             except Exception as e:                   # a crash is reported as such, never as a refusal
